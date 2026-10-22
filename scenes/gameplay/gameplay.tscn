@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dmkdsdb2fxvsp"]
+
+[ext_resource type="PackedScene" uid="uid://b3hpw3fug50nl" path="res://scenes/gameplay/map.tscn" id="1_elxb5"]
+
+[node name="Gameplay" type="Node2D" unique_id=2066207175]
+
+[node name="Camera" type="Camera2D" parent="." unique_id=517635858]
+
+[node name="Map" parent="." unique_id=42535945 instance=ExtResource("1_elxb5")]
