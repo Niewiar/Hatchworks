@@ -2,17 +2,19 @@ class_name  MapManager
 extends Node2D
 
 @export var map_size := Vector2i(512, 512)
-@export_enum("Grass", "Dirt", "Moss", "Sand", "Rock") var selected_material: int = 1
 
 @onready var terrain_controller: TerrainController = $Terrain
 @onready var brush_controller: BrushController = $Brush
 
-var _painting_active := false
-var _painting_mode := false
+enum MODE {NONE, PAINT, BUILD}
 
-func active_painting_mode(active: bool):
-	_painting_mode = active
-	brush_controller.activate(_painting_mode)
+var _mode: MODE = MODE.NONE
+var _painting_active := false
+var selected_material: int = 0 #"Grass", "Dirt", "Moss", "Sand", "Rock"
+
+func set_mode(mode: MODE):
+	_mode = mode
+	brush_controller.activate(_mode == MODE.PAINT)
 
 func _ready() -> void:
 	if not terrain_controller.initialize(map_size):
@@ -22,14 +24,16 @@ func _ready() -> void:
 	InputManager.on_mouse_scroll.connect(_on_mouse_scroll)
 
 func _on_lmb(pressed: bool) -> void:
-	if not _painting_mode:
-		terrain_controller.end_stroke()
-		return
-	
-	_painting_active = pressed
-	terrain_controller.end_stroke()
-	if _painting_active:
-		_paint_at_mouse()
+	match _mode:
+		MODE.NONE: 
+			return
+		MODE.PAINT:
+			_painting_active = pressed
+			terrain_controller.end_stroke()
+			if _painting_active:
+				_paint_at_mouse()
+		MODE.BUILD:
+			pass
 
 func _on_mouse_move(_viewport_position: Vector2) -> void:
 	if get_viewport().gui_get_hovered_control() != null:
@@ -48,5 +52,5 @@ func _paint_at_mouse() -> void:
 	)
 
 func _on_mouse_scroll(direction: int) -> void:
-	if _painting_mode:
+	if _mode == MODE.PAINT:
 		brush_controller.change_size(direction)

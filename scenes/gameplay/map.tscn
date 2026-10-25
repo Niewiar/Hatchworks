@@ -21,3 +21,4 @@ z_index = 1
 script = ExtResource("4_brush")
 brush_shader = ExtResource("5_brush_shader")
 paint_surface = NodePath("../Terrain")
+brush_max_radius = 48
