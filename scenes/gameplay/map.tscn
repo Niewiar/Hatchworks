@@ -8,7 +8,7 @@
 
 [node name="Map" type="Node2D" unique_id=42535945]
 script = ExtResource("1_5lkh7")
-selected_material = 4
+map_size = Vector2i(2096, 2096)
 
 [node name="Terrain" type="Sprite2D" parent="." unique_id=1831717796]
 unique_name_in_owner = true

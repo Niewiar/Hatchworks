@@ -61,19 +61,12 @@ func _queue_upload() -> void:
 	_upload_pending = true
 	_upload_paint_texture.call_deferred()
 
-
 func _upload_paint_texture() -> void:
 	_paint_texture.update(_paint_tex)
 	_upload_pending = false
 
-
-func is_ready_to_paint() -> bool:
-	return _paint_tex != null
-
-
 func contains_mask_point(mask_position: Vector2) -> bool:
-	return is_ready_to_paint() and Rect2(Vector2.ZERO, Vector2(_paint_tex.get_size())).has_point(mask_position)
-
+	return Rect2(Vector2.ZERO, Vector2(_paint_tex.get_size())).has_point(mask_position)
 
 func _world_to_mask(world_position: Vector2) -> Vector2:
 	# World positions already include the camera; undo the sprite transform only.
@@ -81,15 +74,10 @@ func _world_to_mask(world_position: Vector2) -> Vector2:
 	var rect := get_rect()
 	return (local - rect.position) / rect.size * Vector2(_paint_tex.get_size())
 
-
 func end_stroke() -> void:
 	_has_previous_stamp = false
 
-
 func paint(material_index: int, world_position: Vector2, radius: float, hardness: float) -> void:
-	if not is_ready_to_paint() or radius <= 0.0:
-		end_stroke()
-		return
 	var point := _world_to_mask(world_position)
 	if not contains_mask_point(point):
 		end_stroke()
@@ -106,7 +94,6 @@ func paint(material_index: int, world_position: Vector2, radius: float, hardness
 	_has_previous_stamp = true
 	# Coalesce the stamps from an input batch into one deferred GPU upload.
 	_queue_upload()
-
 
 func _paint_stamp(brush_pos: Vector2, material_index: int, radius: float, hardness: float) -> void:
 	var map_size := _paint_tex.get_size()

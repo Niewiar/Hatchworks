@@ -4,10 +4,10 @@ extends Sprite2D
 @export var brush_shader: Shader
 @export var paint_surface: Sprite2D
 @export_range(2, 96, 1) var brush_radius: int = 18
+@export_range(2, 50, 1) var brush_max_radius: int = 50
 @export_range(0.1, 0.95, 0.05) var brush_hardness: float = 0.7
 
 var _brush_material: ShaderMaterial
-
 
 func _ready() -> void:
 	hide()
@@ -22,30 +22,23 @@ func _ready() -> void:
 	_brush_material.shader = brush_shader
 	material = _brush_material
 
-
-func is_ready_to_draw() -> bool:
-	return _brush_material != null
-
-
-func change_size(direction: int) -> void:
-	brush_radius = clampi(brush_radius + direction * 4, 2, 96)
-
-
-func activate_brush(enabled: bool = true) -> void:
-	set_process(enabled and is_ready_to_draw() and is_instance_valid(paint_surface) and paint_surface.texture != null)
-	if is_processing():
-		_update_preview()
+func activate(active: bool):
+	if active:
+		show()
+		set_process(true)
 	else:
 		hide()
+		set_process(false)
 
+func change_size(direction: int) -> void:
+	brush_radius = mini(clampi(brush_radius + direction * 4, 2, 96), brush_max_radius)
 
 func _process(_delta: float) -> void:
 	_update_preview()
 
-
 func _update_preview() -> void:
 	if not is_instance_valid(paint_surface) or paint_surface.texture == null:
-		activate_brush(false)
+		hide()
 		return
 	var rect := paint_surface.get_rect()
 	var local_position := paint_surface.get_local_mouse_position()
