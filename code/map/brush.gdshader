@@ -1,5 +1,5 @@
-shader_type canvas_item;
-render_mode unshaded;
+shader_type spatial;
+render_mode unshaded, cull_disabled, depth_draw_never, fog_disabled;
 
 uniform float brush_radius = 18.0;
 uniform float brush_hardness = 0.7;
@@ -16,7 +16,6 @@ vec4 over(vec4 background, vec4 foreground) {
 
 void fragment() {
 	float distance_from_center = length((UV - vec2(0.5)) * brush_diameter);
-	// Derivatives keep the outline thin at different camera zooms and sprite scales.
 	float pixel_width = max(fwidth(distance_from_center), 0.0001);
 	float edge_distance = abs(distance_from_center - brush_radius) / pixel_width;
 	float outline = 1.0 - smoothstep(0.35, 1.0, edge_distance);
@@ -24,5 +23,7 @@ void fragment() {
 	float falloff = 1.0 - smoothstep(brush_radius * brush_hardness, brush_radius, distance_from_center);
 	vec4 color = vec4(outline_color.rgb, fill_opacity * falloff);
 	color = over(color, vec4(shadow_color.rgb, shadow_color.a * shadow));
-	COLOR = over(color, vec4(outline_color.rgb, outline_color.a * outline));
+	vec4 result = over(color, vec4(outline_color.rgb, outline_color.a * outline));
+	ALBEDO = result.rgb;
+	ALPHA = result.a;
 }

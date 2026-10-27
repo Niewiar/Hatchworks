@@ -1,9 +1,8 @@
-shader_type canvas_item;
-render_mode unshaded;
-
-// Mask data: R dirt, G moss, B sand, A rock; grass is the remainder.
+shader_type spatial;
+render_mode diffuse_lambert, specular_disabled;
 uniform sampler2D paint_map : hint_default_transparent, filter_linear, repeat_disable;
 uniform vec2 map_size = vec2(512.0);
+uniform vec2 world_size = vec2(16.0);
 
 group_uniforms Appearance;
 uniform float terrain_seed = 17.0;
@@ -50,8 +49,6 @@ vec4 terrain_weights(vec2 uv, vec2 size, vec2 p) {
 	if (transition_width < 0.01) {
 		return clamp(center, vec4(0.0), vec4(1.0));
 	}
-	// A small disk filter gives even a repeatedly painted hard mask a soft margin.
-	// Slowly rotated sample positions avoid an axis-aligned cross or a square halo.
 	float angle = ground_noise(p / 19.0 + 223.0) * 6.283185;
 	vec2 turn = vec2(cos(angle), sin(angle));
 	vec4 softened = center * 0.12;
@@ -69,7 +66,6 @@ float transition_score(float weight, vec2 p, float offset) {
 	if (weight < 0.0001 || weight > 0.9999) {
 		return weight;
 	}
-	// Fine connected patches, shared by both sides of a material boundary.
 	float patches = (ground_noise(p / 4.0 + offset) - 0.5) * 3.2;
 	float specks = (ground_noise(p / 1.6 + offset + 91.0) - 0.5) * 0.9;
 	float roughness = clamp(edge_roughness * 0.4, 0.0, 2.0);
@@ -81,8 +77,6 @@ float line_distance(vec2 p, vec2 a, vec2 b) {
 	float along = clamp(dot(p - a, ab) / max(dot(ab, ab), 0.001), 0.0, 1.0);
 	return length(p - a - ab * along);
 }
-
-// Nearest cell distance, cell variation and light-facing slope.
 vec3 ground_cells(vec2 p) {
 	vec2 cell = floor(p);
 	vec2 local = fract(p);
@@ -126,8 +120,6 @@ vec3 grass_surface(vec2 p, float macro, float middle) {
 	color *= 1.0 + (grain - 0.5) * 0.07 * detail_strength;
 	return color;
 }
-
-// Blade coverage, foot shadow, and the displacement from this pixel to the root.
 vec4 grass_marks(vec2 p, float middle, float edge) {
 	vec2 cell = floor(p / 10.0);
 	vec2 local = mod(p, 10.0);
@@ -157,7 +149,6 @@ vec3 dirt_surface(vec2 p, float macro, float middle) {
 }
 
 vec3 moss_surface(vec2 p, float macro, float middle) {
-	// A flat, fine carpet on the same soil as the meadow; no embossed mounds.
 	float carpet = ground_noise(p / 5.0 + 61.0);
 	float nap = ground_noise(p / 1.6 + 31.0);
 	float grain = hash12(floor(p));
@@ -165,7 +156,6 @@ vec3 moss_surface(vec2 p, float macro, float middle) {
 	vec3 color = vegetation * (0.78 + macro * 0.23 + middle * 0.13);
 	color *= 1.0 + ((carpet - 0.5) * 0.18 + (nap - 0.5) * 0.19 + (grain - 0.5) * 0.07) * detail_strength;
 	color = mix(color, dirt_tint.rgb * 0.82, smoothstep(0.7, 0.9, middle) * 0.1);
-	// Dense 1-2px fronds distinguish moss from the sparse, taller meadow tufts.
 	vec2 cell = floor(p / 5.0);
 	vec2 random = hash22(cell + 131.0);
 	vec2 local = mod(p, 5.0) - vec2(1.2) - random * 2.3;
@@ -186,7 +176,6 @@ vec3 sand_surface(vec2 p, float macro, float middle) {
 }
 
 vec3 rock_surface(vec2 p, float macro, float middle) {
-	// Mineral soil with 1-3px grit. Large rocks belong to placeable objects.
 	float grain = hash12(floor(p));
 	float crumbs = ground_noise(p / 1.8 + 57.0);
 	float mineral = ground_noise(p / 5.0 + 61.0);
@@ -199,6 +188,10 @@ vec3 rock_surface(vec2 p, float macro, float middle) {
 	vec3 chip_color = rock_tint.rgb * (0.86 + grit.y * 0.2 + grit.z * 0.1);
 	color = mix(color, chip_color, chip * detail_strength * 0.7);
 	return mix(color, dirt_tint.rgb * 0.8, step(0.985, grain) * 0.22 * detail_strength);
+}
+
+void vertex() {
+	UV = VERTEX.xz / world_size + vec2(0.5);
 }
 
 void fragment() {
@@ -215,8 +208,6 @@ void fragment() {
 	float grass_score = transition_score(grass, p, 0.0);
 	float macro = ground_noise(p / 145.0) * 0.65 + ground_noise(p / 57.0 + 47.0) * 0.35;
 	float middle = ground_noise(p / 21.0 + 19.0);
-	// Normalize all contributing materials, including three-way joins.
-	// Squared coverage keeps fine patches distinct without a winner-takes-all cut.
 	vec4 coverage = scores * scores;
 	float grass_coverage = grass_score * grass_score;
 	float total = max(grass_coverage + dot(coverage, vec4(1.0)), 0.0001);
@@ -237,12 +228,13 @@ void fragment() {
 				vec2 root_uv = (pixel + vec2(0.5) + marks.zw * terrain_scale + root_warp) / size;
 				root_grass = clamp(1.0 - dot(texture(paint_map, root_uv), vec4(1.0)), 0.0, 1.0);
 			}
-			// Rooted blades cross the boundary instead of fading with its color.
 			float leaf_shade = hash12(floor(p / 10.0) + 43.0);
 			vec3 leaf = grass_tint.rgb * mix(0.8, 1.36, leaf_shade);
 			color *= 1.0 - marks.y * root_grass * 0.2;
 			color = mix(color, leaf, marks.x * root_grass);
 		}
 	}
-	COLOR = vec4(clamp(color, vec3(0.0), vec3(1.0)), 1.0);
+	ALBEDO = clamp(color, vec3(0.0), vec3(1.0));
+	ROUGHNESS = 1.0;
+	SPECULAR = 0.0;
 }

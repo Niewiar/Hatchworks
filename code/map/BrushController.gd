@@ -1,11 +1,11 @@
 class_name BrushController
-extends Sprite2D
+extends MeshInstance3D
 
 @export var brush_shader: Shader
-@export var paint_surface: Sprite2D
-@export_range(2, 96, 1) var brush_radius: int = 18
-@export_range(2, 50, 1) var brush_max_radius: int = 50
-@export_range(0.1, 0.95, 0.05) var brush_hardness: float = 0.7
+@export var paint_surface: TerrainController
+@export_range(2, 96, 1) var brush_radius := 18
+@export_range(2, 96, 1) var brush_max_radius := 50
+@export_range(0.1, 0.95, 0.05) var brush_hardness := 0.7
 
 var _brush_material: ShaderMaterial
 
@@ -15,47 +15,38 @@ func _ready() -> void:
 	if brush_shader == null:
 		push_error("Assign a brush preview shader.")
 		return
-	var image := Image.create(1, 1, false, Image.FORMAT_RGBA8)
-	image.fill(Color.WHITE)
-	texture = ImageTexture.create_from_image(image)
+	var plane := PlaneMesh.new()
+	plane.size = Vector2.ONE
+	mesh = plane
+	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_brush_material = ShaderMaterial.new()
 	_brush_material.shader = brush_shader
-	material = _brush_material
+	material_override = _brush_material
 
-func activate(active: bool):
-	if active:
-		show()
-		set_process(true)
-	else:
-		hide()
-		set_process(false)
+func activate(active: bool) -> void:
+	visible = active
+	set_process(active)
 
 func change_size(direction: int) -> void:
-	brush_radius = mini(clampi(brush_radius + direction * 4, 2, 96), brush_max_radius)
+	brush_radius = clampi(brush_radius + direction * 4, 2, brush_max_radius)
 
 func _process(_delta: float) -> void:
-	_update_preview()
-
-func _update_preview() -> void:
-	if not is_instance_valid(paint_surface) or paint_surface.texture == null:
+	if not is_instance_valid(paint_surface) or get_viewport().gui_get_hovered_control() != null:
 		hide()
 		return
-	var rect := paint_surface.get_rect()
-	var local_position := paint_surface.get_local_mouse_position()
-	visible = paint_surface.is_visible_in_tree() and rect.has_point(local_position)
-	if not visible:
+	var camera := get_viewport().get_camera_3d()
+	var point = GroundPicker3D.from_screen(camera, get_viewport().get_mouse_position(), paint_surface)
+	if point == null or not paint_surface.contains_world_point(point):
+		hide()
 		return
-	# Follow the pointer in world space, preserving the terrain's pixel scale.
-	var mask_transform := paint_surface.global_transform
-	mask_transform.origin = paint_surface.to_global(local_position)
-	var pixel_scale := rect.size / paint_surface.texture.get_size()
-	mask_transform.x *= pixel_scale.x
-	mask_transform.y *= pixel_scale.y
-	# Keep enough transparent padding for the outline, including when zoomed out.
-	var screen_transform := get_viewport().canvas_transform * mask_transform
-	var screen_scale := maxf(minf(screen_transform.x.length(), screen_transform.y.length()), 0.001)
-	var diameter := (float(brush_radius) + 4.0 / screen_scale) * 2.0
-	global_transform = mask_transform.scaled_local(Vector2(diameter, diameter))
+	show()
+	var screen_origin := camera.unproject_position(point)
+	var screen_x := camera.unproject_position(point + paint_surface.global_basis.x / paint_surface.pixels_per_unit)
+	var screen_z := camera.unproject_position(point + paint_surface.global_basis.z / paint_surface.pixels_per_unit)
+	var screen_scale := maxf(minf(screen_origin.distance_to(screen_x), screen_origin.distance_to(screen_z)), 0.001)
+	var diameter := 2.0 * (brush_radius + 4.0 / screen_scale)
+	var world_diameter := diameter / paint_surface.pixels_per_unit
+	global_transform = Transform3D(paint_surface.global_basis.scaled(Vector3(world_diameter, 1, world_diameter)), point + paint_surface.global_basis.y.normalized() * 0.018)
 	_brush_material.set_shader_parameter("brush_radius", float(brush_radius))
 	_brush_material.set_shader_parameter("brush_hardness", brush_hardness)
 	_brush_material.set_shader_parameter("brush_diameter", diameter)

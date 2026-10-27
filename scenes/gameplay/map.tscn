@@ -1,24 +1,30 @@
-[gd_scene format=3 uid="uid://b3hpw3fug50nl"]
+[gd_scene load_steps=7 format=3 uid="uid://b3hpw3fug50nl"]
 
-[ext_resource type="Script" uid="uid://puh84m677ex5" path="res://code/map/MapManager.gd" id="1_5lkh7"]
-[ext_resource type="Script" uid="uid://cec8y6fu8c73x" path="res://code/map/TerrainController.gd" id="2_terrain"]
-[ext_resource type="Shader" uid="uid://c2m6mk3hugaye" path="res://code/map/terrain.gdshader" id="3_s48kg"]
-[ext_resource type="Script" uid="uid://dpv5osx1er2kj" path="res://code/map/BrushController.gd" id="4_brush"]
-[ext_resource type="Shader" uid="uid://cjp7hrpqhryd6" path="res://code/map/brush.gdshader" id="5_brush_shader"]
+[ext_resource type="Script" path="res://code/map/MapManager.gd" id="1"]
+[ext_resource type="Script" path="res://code/map/TerrainController.gd" id="2"]
+[ext_resource type="Shader" path="res://code/map/terrain.gdshader" id="3"]
+[ext_resource type="Script" path="res://code/map/BrushController.gd" id="4"]
+[ext_resource type="Shader" path="res://code/map/brush.gdshader" id="5"]
+[ext_resource type="Script" path="res://code/contructions/fances/FancesController.gd" id="6"]
 
-[node name="Map" type="Node2D" unique_id=42535945]
-script = ExtResource("1_5lkh7")
+[node name="Map" type="Node3D"]
+script = ExtResource("1")
 map_size = Vector2i(2096, 2096)
+pixels_per_unit = 32.0
 
-[node name="Terrain" type="Sprite2D" parent="." unique_id=1831717796]
+[node name="Terrain" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
-script = ExtResource("2_terrain")
-terrain_shader = ExtResource("3_s48kg")
+script = ExtResource("2")
+terrain_shader = ExtResource("3")
 
-[node name="Brush" type="Sprite2D" parent="." unique_id=558934855 node_paths=PackedStringArray("paint_surface")]
+[node name="Brush" type="MeshInstance3D" parent="." node_paths=PackedStringArray("paint_surface")]
+unique_name_in_owner = true
 visible = false
-z_index = 1
-script = ExtResource("4_brush")
-brush_shader = ExtResource("5_brush_shader")
+script = ExtResource("4")
+brush_shader = ExtResource("5")
 paint_surface = NodePath("../Terrain")
 brush_max_radius = 48
+
+[node name="Fances" type="Node3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("6")
