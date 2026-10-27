@@ -13,6 +13,7 @@ const PREVIEW_SHADER = preload("res://code/contructions/fances/fence_preview.gds
 @export var pixels_per_unit := 32.0
 var map_bounds := Rect2(-1048, -1048, 2096, 2096)
 var _preview_material: ShaderMaterial
+var _terrain: TerrainController
 
 @export_range(4.0, 32.0, 1.0) var snap_radius := 14.0
 @export_range(2.0, 32.0, 1.0) var minimum_length := 8.0
@@ -89,7 +90,7 @@ func begin_drawing(world_position: Vector3) -> void:
 	if not is_processing():
 		return
 	var local_position := world_to_map(world_position)
-	var post_id := _find_post_at(local_position, true)
+	var post_id := _find_post_at(local_position)
 	_start_position = _posts[post_id].position if post_id else local_position
 	_drawing = true
 	_update_preview_at(local_position)
@@ -121,9 +122,6 @@ func get_spans() -> Array:
 
 func get_post(post_id: int) -> FencePostState:
 	return _posts.get(post_id) as FencePostState
-
-func get_span(span_id: int) -> FenceSpanState:
-	return _spans.get(span_id) as FenceSpanState
 
 func damage_span(span_id: int, amount: float) -> bool:
 	if not _spans.has(span_id) or amount <= 0.0:
@@ -162,7 +160,7 @@ func remove_post(post_id: int) -> bool:
 	_finish_edit()
 	return true
 
-func _find_post_at(point: Vector2, _include_body: bool) -> int:
+func _find_post_at(point: Vector2) -> int:
 	var best_id := 0
 	var best_distance := snap_radius * snap_radius
 	for post: FencePostState in _posts.values():
@@ -190,7 +188,7 @@ func _set_hovered_post(post_id: int) -> void:
 func _update_preview_at(mouse: Vector2) -> void:
 	_last_mouse = mouse
 	_preview_dirty = false
-	var post_id := _find_post_at(mouse, true)
+	var post_id := _find_post_at(mouse)
 	_set_hovered_post(post_id)
 	var target := _posts[post_id].position if post_id else mouse
 	var data: FanceData = FANCES_DATABASE.fances[selected_fance]
@@ -283,7 +281,7 @@ func _update_preview_views(data: FanceData) -> void:
 		state.position = _pending_points[index]
 		state.data = data
 		state.health = data.post_max_health
-		view.configure(state, pixels_per_unit, _post_rotation_at(state.position, _pending_points))
+		view.configure(state, pixels_per_unit, _post_rotation_at(state.position, _pending_points), _terrain)
 	for index in _preview_spans.size():
 		var view := _preview_spans[index]
 		view.visible = index < _pending_points.size() - 1
@@ -291,7 +289,7 @@ func _update_preview_views(data: FanceData) -> void:
 			var state := FenceSpanState.new()
 			state.data = data
 			state.health = data.max_health
-			view.configure(state, _pending_points[index], _pending_points[index + 1], pixels_per_unit)
+			view.configure(state, _pending_points[index], _pending_points[index + 1], pixels_per_unit, _terrain)
 
 func _ensure_post(point: Vector2, data: FanceData) -> int:
 	var existing := _find_exact_post(point)
@@ -307,7 +305,7 @@ func _ensure_post(point: Vector2, data: FanceData) -> int:
 	var view := FencePostView.new()
 	_built_root.add_child(view)
 	_post_views[post.id] = view
-	view.configure(post, pixels_per_unit)
+	view.configure(post, pixels_per_unit, 0.0, _terrain)
 	return post.id
 
 func _add_span(start_id: int, end_id: int, data: FanceData, integrity: float = 1.0) -> int:
@@ -330,7 +328,7 @@ func _add_span(start_id: int, end_id: int, data: FanceData, integrity: float = 1
 	var view := SPAN_SCENE.instantiate() as Node3D
 	_built_root.add_child(view)
 	_span_views[span.id] = view
-	view.configure(span, _posts[start_id].position, _posts[end_id].position, pixels_per_unit)
+	view.configure(span, _posts[start_id].position, _posts[end_id].position, pixels_per_unit, _terrain)
 	return span.id
 
 func _remove_span_internal(span_id: int) -> void:
@@ -359,7 +357,7 @@ func _finish_edit() -> void:
 		var integrity := post.integrity()
 		post.data = best
 		post.health = best.post_max_health * integrity
-		_post_views[post_id].configure(post, pixels_per_unit, _post_rotation_at(post.position))
+		_post_views[post_id].configure(post, pixels_per_unit, _post_rotation_at(post.position), _terrain)
 	_preview_dirty = true
 	network_changed.emit()
 
@@ -411,7 +409,8 @@ func world_to_map(world_position: Vector3) -> Vector2:
 	return Vector2(local.x, local.z) * pixels_per_unit
 
 func map_to_world(point: Vector2) -> Vector3:
-	return to_global(Vector3(point.x, 0, point.y) / pixels_per_unit)
+	var world := to_global(Vector3(point.x, 0, point.y) / pixels_per_unit)
+	return _terrain.surface_position(world) if _terrain != null else world
 
 func get_post_at_screen(screen_position: Vector2, camera: Camera3D) -> int:
 	if camera == null:
@@ -445,8 +444,19 @@ func _cursor_map_position() -> Variant:
 	var post_id := get_post_at_screen(screen, camera)
 	if post_id:
 		return _posts[post_id].position
-	var point = GroundPicker3D.from_screen(camera, screen, self)
+	var point = GroundPicker3D.from_screen(camera, screen, _terrain if _terrain != null else self)
 	if point == null:
 		return null
 	var local := world_to_map(point)
 	return local if map_bounds.has_point(local) else null
+
+func configure_surface(terrain: TerrainController) -> void:
+	_terrain = terrain
+	_terrain.height_changed.connect(_update_ground)
+
+func _update_ground() -> void:
+	for view: FencePostView in _post_views.values():
+		view.refresh()
+	for view: Node3D in _span_views.values():
+		view.refresh()
+	_preview_dirty = true

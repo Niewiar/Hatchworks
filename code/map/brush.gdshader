@@ -1,4 +1,5 @@
 shader_type spatial;
+#include "res://code/map/terrain_height.gdshaderinc"
 render_mode unshaded, cull_disabled, depth_draw_never, fog_disabled;
 
 uniform float brush_radius = 18.0;
@@ -12,6 +13,10 @@ vec4 over(vec4 background, vec4 foreground) {
 	float alpha = foreground.a + background.a * (1.0 - foreground.a);
 	vec3 rgb = foreground.rgb * foreground.a + background.rgb * background.a * (1.0 - foreground.a);
 	return vec4(rgb / max(alpha, 0.0001), alpha);
+}
+
+void vertex() {
+	VERTEX = follow_terrain(VERTEX, MODEL_MATRIX, 0.035);
 }
 
 void fragment() {
