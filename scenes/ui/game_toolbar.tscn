@@ -1,0 +1,350 @@
+[gd_scene format=3 uid="uid://ram2uck0nfvg"]
+
+[ext_resource type="Script" uid="uid://qy8tgo14100w" path="res://code/ui/GameToolbar.gd" id="1_n1sdo"]
+[ext_resource type="Texture2D" uid="uid://bmgu2u55ajm8u" path="res://assets/ui/buttons.png" id="1_qv1gk"]
+[ext_resource type="Texture2D" uid="uid://djt52flv14yhr" path="res://assets/ui/icons.png" id="3_ibaem"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lg3ar"]
+atlas = ExtResource("1_qv1gk")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oqoow"]
+atlas = ExtResource("1_qv1gk")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sghfa"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(512, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ibaem"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(768, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1byw5"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(0, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_po2dj"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(256, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ey720"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(512, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y81xg"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(768, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ny63g"]
+atlas = ExtResource("1_qv1gk")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u114x"]
+atlas = ExtResource("1_qv1gk")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iafs0"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(0, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vu21r"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(256, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_stone"]
+atlas = ExtResource("3_ibaem")
+region = Rect2(1024, 0, 256, 256)
+
+[sub_resource type="ButtonGroup" id="FenceTypes"]
+[node name="GameToolbar" type="Control" unique_id=960911768]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_n1sdo")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1572403575]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -70.0
+offset_top = -136.0
+offset_right = 70.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="ConstructionsButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1119161433]
+visible = false
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="Wood" type="CheckButton" parent="VBoxContainer/ConstructionsButtons" unique_id=509349297]
+button_group = SubResource("FenceTypes")
+button_pressed = true
+metadata/fence_index = 0
+tooltip_text = "Wooden fence"
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/ConstructionsButtons/Wood" unique_id=95243519]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_sghfa")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Stone" type="CheckButton" parent="VBoxContainer/ConstructionsButtons"]
+button_group = SubResource("FenceTypes")
+metadata/fence_index = 1
+tooltip_text = "Stone fence"
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/ConstructionsButtons/Stone"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_stone")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PaintButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1814079591]
+visible = false
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="Grass" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=226930164]
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Grass" unique_id=67883552]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_ibaem")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Dirt" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=2066441338]
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Dirt" unique_id=1521165328]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_1byw5")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Moss" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=418814586]
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Moss" unique_id=597622262]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_po2dj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Sand" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=383592614]
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Sand" unique_id=829825387]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_ey720")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Rock" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=1923287409]
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Rock" unique_id=2099143880]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_y81xg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BaseButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1165230477]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+offset_transform_position = Vector2(0, -10)
+mouse_filter = 2
+
+[node name="PaintButton" type="CheckButton" parent="VBoxContainer/BaseButtons" unique_id=94730263]
+tooltip_text = "Paint terrain"
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
+theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/PaintButton" unique_id=1748678280]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_iafs0")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BuildButton" type="CheckButton" parent="VBoxContainer/BaseButtons" unique_id=520531800]
+tooltip_text = "Fences"
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
+theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/BuildButton" unique_id=786235585]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_vu21r")
+expand_mode = 1
+stretch_mode = 5

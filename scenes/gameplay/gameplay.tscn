@@ -1,0 +1,54 @@
+[gd_scene load_steps=5 format=3 uid="uid://dmkdsdb2fxvsp"]
+
+[ext_resource type="PackedScene" path="res://scenes/gameplay/map.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_toolbar.tscn" id="2"]
+[ext_resource type="Script" path="res://code/map/MapCameraController.gd" id="3"]
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.15, 0.20, 0.18, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.75, 0.80, 0.88, 1)
+ambient_light_energy = 0.65
+reflected_light_source = 1
+tonemap_mode = 2
+
+[node name="Gameplay" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.95, -0.65, 0)
+light_color = Color(1, 0.94, 0.82, 1)
+light_energy = 1.1
+shadow_enabled = true
+directional_shadow_max_distance = 100.0
+
+[node name="Camera" type="Node3D" parent="."]
+script = ExtResource("3")
+
+[node name="Camera3D" type="Camera3D" parent="Camera"]
+position = Vector3(0, 25, 17.5)
+rotation = Vector3(-0.960, 0, 0)
+projection = 1
+current = true
+size = 38.0
+near = 0.05
+far = 250.0
+
+[node name="Map" parent="." node_paths=PackedStringArray("camera_controller") instance=ExtResource("1")]
+camera_controller = NodePath("../Camera")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GameToolbar" parent="CanvasLayer" node_paths=PackedStringArray("map_manager") instance=ExtResource("2")]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_vertical = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+map_manager = NodePath("../../Map")
