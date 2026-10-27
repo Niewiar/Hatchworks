@@ -6,6 +6,7 @@ extends Node3D
 @export var camera_controller: MapCameraController
 
 @onready var terrain_controller: TerrainController = $Terrain
+@onready var water_controller: WaterController = $Water
 @onready var brush_controller: BrushController = $Brush
 @onready var fances_controller: FenceController = %Fances
 @onready var regions_controller: RegionsController = $Regions
@@ -29,6 +30,7 @@ var _held_plane_height := 0.0
 func _ready() -> void:
 	if not terrain_controller.initialize(map_size, pixels_per_unit):
 		return
+	water_controller.initialize(terrain_controller)
 	fances_controller.configure_world(pixels_per_unit, Rect2(-Vector2(map_size) * 0.5, Vector2(map_size)))
 	fances_controller.configure_surface(terrain_controller)
 	brush_controller.configure_surface()

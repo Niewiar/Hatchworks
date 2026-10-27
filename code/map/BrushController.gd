@@ -26,6 +26,7 @@ func _ready() -> void:
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_brush_material = ShaderMaterial.new()
 	_brush_material.shader = brush_shader
+	_brush_material.render_priority = 20
 	material_override = _brush_material
 
 func configure_surface() -> void:

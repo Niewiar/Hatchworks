@@ -33,6 +33,7 @@ func initialize(terrain: TerrainController, fences: FenceController) -> void:
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_region_material = ShaderMaterial.new()
 	_region_material.shader = region_shader
+	_region_material.render_priority = 10
 	_region_material.set_shader_parameter("world_size", terrain.world_size)
 	_region_material.set_shader_parameter("grid_size", Vector2(_grid_size))
 	material_override = _region_material

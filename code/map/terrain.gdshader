@@ -3,6 +3,8 @@ render_mode diffuse_lambert, specular_disabled;
 uniform sampler2D paint_map : hint_default_transparent, filter_linear, repeat_disable;
 uniform vec2 map_size = vec2(512.0);
 uniform vec2 world_size = vec2(16.0);
+uniform float water_level = -1000.0;
+varying float ground_elevation;
 
 group_uniforms Appearance;
 uniform float terrain_seed = 17.0;
@@ -192,6 +194,7 @@ vec3 rock_surface(vec2 p, float macro, float middle) {
 
 void vertex() {
 	UV = VERTEX.xz / world_size + vec2(0.5);
+	ground_elevation = VERTEX.y;
 }
 
 void fragment() {
@@ -234,6 +237,8 @@ void fragment() {
 			color = mix(color, leaf, marks.x * root_grass);
 		}
 	}
+	float wet_shore = 1.0 - smoothstep(0.0, 0.22, ground_elevation - water_level);
+	color *= 1.0 - wet_shore * 0.20;
 	ALBEDO = clamp(color, vec3(0.0), vec3(1.0));
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;

@@ -22,6 +22,13 @@ enum SCULPT_TOOL { RAISE, LOWER, SMOOTH, FLATTEN }
 @export var maximum_height := 6.0
 @export_range(10.0, 60.0, 1.0) var maximum_sculpt_slope := 40.0
 
+@export_group("Terrain generation")
+@export var generate_on_start := true
+@export var generation_seed := 0
+@export_range(0.0, 4.0, 0.1) var starting_height_variation := 1.8
+@export_range(8.0, 64.0, 1.0) var terrain_wavelength := 22.0
+@export_range(0.0, 8.0, 0.25) var spawn_clearing_radius := 2.5
+
 const TARGET_WEIGHTS := [Color(0,0,0,0), Color(1,0,0,0), Color(0,1,0,0), Color(0,0,1,0), Color(0,0,0,1)]
 
 var pixels_per_unit := 32.0
@@ -145,6 +152,7 @@ func _create_height_surface() -> void:
 	_height_cell = world_size / Vector2(_height_size - Vector2i.ONE)
 	_heights.resize(_height_size.x * _height_size.y)
 	_heights.fill(0)
+	_generate_starting_heights()
 	_collision_heights = _heights.duplicate()
 	var plane := PlaneMesh.new()
 	plane.size = world_size
@@ -153,10 +161,19 @@ func _create_height_surface() -> void:
 	_mesh_arrays = plane.get_mesh_arrays()
 	_vertex_indices.resize(_heights.size())
 	var vertices: PackedVector3Array = _mesh_arrays[Mesh.ARRAY_VERTEX]
+	var normals: PackedVector3Array = _mesh_arrays[Mesh.ARRAY_NORMAL]
 	for index in vertices.size():
 		var point := Vector2(vertices[index].x, vertices[index].z)
 		var cell := Vector2i(((point + world_size * 0.5) / _height_cell).round())
-		_vertex_indices[cell.y * _height_size.x + cell.x] = index
+		var height_index := cell.y * _height_size.x + cell.x
+		_vertex_indices[height_index] = index
+		var vertex := vertices[index]
+		vertex.y = _heights[height_index]
+		vertices[index] = vertex
+		normals[index] = _height_normal(cell)
+		_collision_heights[height_index] = _heights[height_index] / _height_cell.x
+	_mesh_arrays[Mesh.ARRAY_VERTEX] = vertices
+	_mesh_arrays[Mesh.ARRAY_NORMAL] = normals
 	var surface := ArrayMesh.new()
 	surface.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, _mesh_arrays)
 	mesh = surface
@@ -207,7 +224,13 @@ func _sample_height(point: Vector2) -> float:
 	var cell := Vector2i(grid.floor()).min(_height_size - Vector2i(2,2))
 	var fraction := grid - Vector2(cell)
 	var index := cell.y * _height_size.x + cell.x
-	return lerpf(lerpf(_heights[index], _heights[index + 1], fraction.x), lerpf(_heights[index + _height_size.x], _heights[index + _height_size.x + 1], fraction.x), fraction.y)
+	var first := _heights[index]
+	var right := _heights[index+1]
+	var front := _heights[index+_height_size.x]
+	if fraction.x + fraction.y <= 1.0:
+		return first + (right-first)*fraction.x + (front-first)*fraction.y
+	var last := _heights[index+_height_size.x+1]
+	return last + (front-last)*(1.0-fraction.x) + (right-last)*(1.0-fraction.y)
 
 func intersect_ray(world_origin: Vector3, world_direction: Vector3) -> Variant:
 	var origin := to_local(world_origin)
@@ -357,11 +380,7 @@ func _upload_height_surface() -> void:
 			var vertex := vertices[vertex_index]
 			vertex.y = _heights[index]
 			vertices[vertex_index] = vertex
-			var left := _heights[y * _height_size.x + maxi(0,x-1)]
-			var right := _heights[y * _height_size.x + mini(_height_size.x-1,x+1)]
-			var back := _heights[maxi(0,y-1) * _height_size.x + x]
-			var front := _heights[mini(_height_size.y-1,y+1) * _height_size.x + x]
-			normals[vertex_index] = Vector3((left-right)/(_height_cell.x*2),1,(back-front)/(_height_cell.y*2)).normalized()
+			normals[vertex_index] = _height_normal(Vector2i(x,y))
 	_mesh_arrays[Mesh.ARRAY_VERTEX] = vertices
 	_mesh_arrays[Mesh.ARRAY_NORMAL] = normals
 	var surface := ArrayMesh.new()
@@ -372,3 +391,42 @@ func _upload_height_surface() -> void:
 	_height_texture.update(image)
 	_height_upload_pending = false
 	height_changed.emit()
+
+func _generate_starting_heights() -> void:
+	if not generate_on_start or starting_height_variation <= 0.0:
+		return
+	var random := RandomNumberGenerator.new()
+	if generation_seed == 0:
+		random.randomize()
+	else:
+		random.seed = generation_seed
+	var hills := FastNoiseLite.new()
+	hills.seed = random.randi_range(1,2147483647)
+	hills.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	hills.frequency = 1.0 / terrain_wavelength
+	hills.fractal_type = FastNoiseLite.FRACTAL_FBM
+	hills.fractal_octaves = 3
+	hills.fractal_gain = 0.42
+	var basins := FastNoiseLite.new()
+	basins.seed = random.randi_range(1,2147483647)
+	basins.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	basins.frequency = 0.65 / terrain_wavelength
+	basins.fractal_octaves = 2
+	var offset := Vector2(random.randf_range(-1000,1000),random.randf_range(-1000,1000))
+	for y in _height_size.y:
+		for x in _height_size.x:
+			var point := Vector2(x,y) * _height_cell - world_size * 0.5
+			var sample_point := point + offset
+			var height := (hills.get_noise_2dv(sample_point) * 1.45 + basins.get_noise_2dv(sample_point) * 0.45) * starting_height_variation + 0.05
+			if spawn_clearing_radius > 0.0:
+				height *= smoothstep(spawn_clearing_radius*0.35,spawn_clearing_radius*1.75,point.length())
+			_heights[y * _height_size.x + x] = clampf(height,minimum_height,maximum_height)
+
+func _height_normal(cell: Vector2i) -> Vector3:
+	var left := maxi(0,cell.x-1)
+	var right := mini(_height_size.x-1,cell.x+1)
+	var back := maxi(0,cell.y-1)
+	var front := mini(_height_size.y-1,cell.y+1)
+	var dx := (_heights[cell.y*_height_size.x+left]-_heights[cell.y*_height_size.x+right]) / ((right-left)*_height_cell.x)
+	var dz := (_heights[back*_height_size.x+cell.x]-_heights[front*_height_size.x+cell.x]) / ((front-back)*_height_cell.y)
+	return Vector3(dx,1,dz).normalized()
