@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://b3hpw3fug50nl"]
+[gd_scene load_steps=11 format=3 uid="uid://b3hpw3fug50nl"]
 
 [ext_resource type="Script" path="res://code/map/MapManager.gd" id="1"]
 [ext_resource type="Script" path="res://code/map/TerrainController.gd" id="2"]
@@ -6,6 +6,12 @@
 [ext_resource type="Script" path="res://code/map/BrushController.gd" id="4"]
 [ext_resource type="Shader" path="res://code/map/brush.gdshader" id="5"]
 [ext_resource type="Script" path="res://code/contructions/fances/FancesController.gd" id="6"]
+
+[ext_resource type="Script" path="res://code/map/RegionsController.gd" id="7"]
+[ext_resource type="Shader" path="res://code/map/regions.gdshader" id="8"]
+
+[ext_resource type="Script" path="res://code/map/WaterController.gd" id="9"]
+[ext_resource type="Shader" path="res://code/map/water.gdshader" id="10"]
 
 [node name="Map" type="Node3D"]
 script = ExtResource("1")
@@ -16,6 +22,10 @@ pixels_per_unit = 32.0
 unique_name_in_owner = true
 script = ExtResource("2")
 terrain_shader = ExtResource("3")
+
+[node name="Water" type="MeshInstance3D" parent="."]
+script = ExtResource("9")
+water_shader = ExtResource("10")
 
 [node name="Brush" type="MeshInstance3D" parent="." node_paths=PackedStringArray("paint_surface")]
 unique_name_in_owner = true
@@ -28,3 +38,8 @@ brush_max_radius = 48
 [node name="Fances" type="Node3D" parent="."]
 unique_name_in_owner = true
 script = ExtResource("6")
+
+[node name="Regions" type="MeshInstance3D" parent="."]
+visible = false
+script = ExtResource("7")
+region_shader = ExtResource("8")

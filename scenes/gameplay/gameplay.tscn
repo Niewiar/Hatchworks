@@ -1,54 +1,58 @@
-[gd_scene load_steps=5 format=3 uid="uid://dmkdsdb2fxvsp"]
+[gd_scene format=3 uid="uid://dmkdsdb2fxvsp"]
 
-[ext_resource type="PackedScene" path="res://scenes/gameplay/map.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/game_toolbar.tscn" id="2"]
-[ext_resource type="Script" path="res://code/map/MapCameraController.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://b3hpw3fug50nl" path="res://scenes/gameplay/map.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://ram2uck0nfvg" path="res://scenes/ui/game_toolbar.tscn" id="2"]
+[ext_resource type="Script" uid="uid://b234vjc1w2spp" path="res://code/map/MapCameraController.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://k8j1b0cw20hv" path="res://scenes/creatures/mossling.tscn" id="3_m3hu3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/tooltip_controller.tscn" id="5_tooltips"]
 
 [sub_resource type="Environment" id="Environment"]
 background_mode = 1
-background_color = Color(0.15, 0.20, 0.18, 1)
+background_color = Color(0.15, 0.2, 0.18, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.75, 0.80, 0.88, 1)
+ambient_light_color = Color(0.75, 0.8, 0.88, 1)
 ambient_light_energy = 0.65
 reflected_light_source = 1
 tonemap_mode = 2
 
-[node name="Gameplay" type="Node3D"]
+[node name="Gameplay" type="Node3D" unique_id=1167394295]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1104193744]
 environment = SubResource("Environment")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
-rotation = Vector3(-0.95, -0.65, 0)
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1645856408]
+transform = Transform3D(0.7960838, 0.49226803, -0.3520267, 0, 0.5816831, 0.8134155, 0.6051864, -0.64754695, 0.4630685, 0, 0, 0)
 light_color = Color(1, 0.94, 0.82, 1)
 light_energy = 1.1
 shadow_enabled = true
-directional_shadow_max_distance = 100.0
 
-[node name="Camera" type="Node3D" parent="."]
-script = ExtResource("3")
-
-[node name="Camera3D" type="Camera3D" parent="Camera"]
-position = Vector3(0, 25, 17.5)
-rotation = Vector3(-0.960, 0, 0)
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1834812868]
+transform = Transform3D(0.894427, 0.27206972, -0.35493433, 0, 0.7936567, 0.6083659, 0.44721395, -0.5441389, 0.709868, -7, 12.6, 14)
 projection = 1
 current = true
-size = 38.0
-near = 0.05
+size = 9.0
 far = 250.0
+script = ExtResource("3")
 
-[node name="Map" parent="." node_paths=PackedStringArray("camera_controller") instance=ExtResource("1")]
-camera_controller = NodePath("../Camera")
+[node name="Map" parent="." unique_id=35037054 node_paths=PackedStringArray("camera_controller") instance=ExtResource("1")]
+camera_controller = NodePath("../Camera3D")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="Mossling" parent="." unique_id=280441931 instance=ExtResource("3_m3hu3") node_paths=PackedStringArray("terrain_controller")]
+terrain_controller = NodePath("../Map/Terrain")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6971632, 0)
 
-[node name="GameToolbar" parent="CanvasLayer" node_paths=PackedStringArray("map_manager") instance=ExtResource("2")]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1628525015]
+
+[node name="GameToolbar" parent="CanvasLayer" unique_id=349067347 node_paths=PackedStringArray("map_manager", "tooltip_controller", "region_tooltip") instance=ExtResource("2")]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 1.0
 grow_vertical = 0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 map_manager = NodePath("../../Map")
+tooltip_controller = NodePath("../TooltipController")
+region_tooltip = NodePath("../TooltipController/RegionTooltip")
+
+[node name="TooltipController" parent="CanvasLayer" unique_id=306451366 instance=ExtResource("5_tooltips")]

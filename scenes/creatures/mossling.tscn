@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://k8j1b0cw20hv"]
+
+[ext_resource type="Script" uid="uid://dwf3vkdvg1c1w" path="res://code/creatures/creature.gd" id="1_4f8mf"]
+[ext_resource type="PackedScene" uid="uid://63lm2vayabd0" path="res://assets/creatures/mossling/mossling_v1.glb" id="2_u0svn"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_lg3ar"]
+
+[node name="Mossling" type="CharacterBody3D" unique_id=280441931 node_paths=PackedStringArray("animation_player")]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_4f8mf")
+animation_player = NodePath("mossling_v1/AnimationPlayer")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1694708186]
+shape = SubResource("SphereShape3D_lg3ar")
+
+[node name="mossling_v1" parent="." unique_id=1258856697 instance=ExtResource("2_u0svn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.52732646, 0)
+
+[node name="AnimationPlayer" parent="mossling_v1" index="1"]
+autoplay = &"Idle"
+
+[editable path="mossling_v1"]

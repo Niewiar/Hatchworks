@@ -4,6 +4,14 @@
 [ext_resource type="Texture2D" uid="uid://bmgu2u55ajm8u" path="res://assets/ui/buttons.png" id="1_qv1gk"]
 [ext_resource type="Texture2D" uid="uid://djt52flv14yhr" path="res://assets/ui/icons.png" id="3_ibaem"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/regions.svg" id="4_regions"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/raise.svg" id="sculpt_raise"]
+[ext_resource type="Texture2D" path="res://assets/ui/lower.svg" id="sculpt_lower"]
+[ext_resource type="Texture2D" path="res://assets/ui/smooth.svg" id="sculpt_smooth"]
+[ext_resource type="Texture2D" path="res://assets/ui/flatten.svg" id="sculpt_flatten"]
+[ext_resource type="Texture2D" path="res://assets/ui/sculpt.svg" id="sculpt_base"]
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_lg3ar"]
 atlas = ExtResource("1_qv1gk")
 region = Rect2(128, 0, 128, 128)
@@ -57,6 +65,8 @@ atlas = ExtResource("3_ibaem")
 region = Rect2(1024, 0, 256, 256)
 
 [sub_resource type="ButtonGroup" id="FenceTypes"]
+[sub_resource type="ButtonGroup" id="SculptTypes"]
+
 [node name="GameToolbar" type="Control" unique_id=960911768]
 layout_mode = 3
 anchors_preset = 15
@@ -66,6 +76,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+mouse_filter = 2
 script = ExtResource("1_n1sdo")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1572403575]
@@ -94,7 +105,7 @@ mouse_filter = 2
 button_group = SubResource("FenceTypes")
 button_pressed = true
 metadata/fence_index = 0
-tooltip_text = "Wooden fence"
+metadata/tooltip_title = "Wooden fence"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
@@ -123,7 +134,7 @@ stretch_mode = 5
 [node name="Stone" type="CheckButton" parent="VBoxContainer/ConstructionsButtons"]
 button_group = SubResource("FenceTypes")
 metadata/fence_index = 1
-tooltip_text = "Stone fence"
+metadata/tooltip_title = "Stone fence"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
@@ -158,6 +169,7 @@ size_flags_vertical = 4
 mouse_filter = 2
 
 [node name="Grass" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=226930164]
+metadata/tooltip_title = "Grass"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
@@ -184,6 +196,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="Dirt" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=2066441338]
+metadata/tooltip_title = "Dirt"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
@@ -210,6 +223,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="Moss" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=418814586]
+metadata/tooltip_title = "Moss"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
@@ -236,6 +250,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="Sand" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=383592614]
+metadata/tooltip_title = "Sand"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
@@ -262,6 +277,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="Rock" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=1923287409]
+metadata/tooltip_title = "Rock"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
@@ -287,6 +303,131 @@ texture = SubResource("AtlasTexture_y81xg")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="SculptButtons" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="Raise" type="CheckButton" parent="VBoxContainer/SculptButtons"]
+layout_mode = 2
+button_group = SubResource("SculptTypes")
+button_pressed = true
+metadata/sculpt_tool = 0
+metadata/tooltip_title = "Raise terrain"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/SculptButtons/Raise"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("sculpt_raise")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Lower" type="CheckButton" parent="VBoxContainer/SculptButtons"]
+layout_mode = 2
+button_group = SubResource("SculptTypes")
+button_pressed = false
+metadata/sculpt_tool = 1
+metadata/tooltip_title = "Lower terrain"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/SculptButtons/Lower"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("sculpt_lower")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Smooth" type="CheckButton" parent="VBoxContainer/SculptButtons"]
+layout_mode = 2
+button_group = SubResource("SculptTypes")
+button_pressed = false
+metadata/sculpt_tool = 2
+metadata/tooltip_title = "Smooth terrain"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/SculptButtons/Smooth"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("sculpt_smooth")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Flatten" type="CheckButton" parent="VBoxContainer/SculptButtons"]
+layout_mode = 2
+button_group = SubResource("SculptTypes")
+button_pressed = false
+metadata/sculpt_tool = 3
+metadata/tooltip_title = "Flatten to starting height"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/SculptButtons/Flatten"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("sculpt_flatten")
+expand_mode = 1
+stretch_mode = 5
+
+
 [node name="BaseButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1165230477]
 unique_name_in_owner = true
 layout_mode = 2
@@ -296,7 +437,8 @@ offset_transform_position = Vector2(0, -10)
 mouse_filter = 2
 
 [node name="PaintButton" type="CheckButton" parent="VBoxContainer/BaseButtons" unique_id=94730263]
-tooltip_text = "Paint terrain"
+metadata/mode = 1
+metadata/tooltip_title = "Paint terrain"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
@@ -322,8 +464,37 @@ texture = SubResource("AtlasTexture_iafs0")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="SculptButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
+metadata/mode = 4
+metadata/tooltip_title = "Shape terrain"
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
+theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/SculptButton"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("sculpt_base")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="BuildButton" type="CheckButton" parent="VBoxContainer/BaseButtons" unique_id=520531800]
-tooltip_text = "Fences"
+metadata/mode = 2
+metadata/tooltip_title = "Fences"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
@@ -348,3 +519,32 @@ mouse_filter = 2
 texture = SubResource("AtlasTexture_vu21r")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="RegionsButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
+metadata/mode = 3
+metadata/tooltip_title = "View regions"
+layout_mode = 2
+theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
+theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/RegionsButton"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_regions")
+expand_mode = 1
+stretch_mode = 5
+

@@ -24,6 +24,15 @@ class Builder:
 		for index in source_indices:
 			indices.append(base + index)
 
+	func drape(start: Vector2, end: Vector2, first_height: float, last_height: float) -> void:
+		var gradient := (end-start) * ((last_height-first_height)/maxf(start.distance_squared_to(end),0.001))
+		for index in vertices.size():
+			var vertex := vertices[index]
+			vertex.y += first_height + (Vector2(vertex.x,vertex.z)-start).dot(gradient)
+			vertices[index] = vertex
+			var normal := normals[index]
+			normals[index] = Vector3(normal.x-gradient.x*normal.y,normal.y,normal.z-gradient.y*normal.y).normalized()
+
 	func finish(pixels_per_unit: float) -> ArrayMesh:
 		for index in vertices.size():
 			vertices[index] /= pixels_per_unit
@@ -84,7 +93,7 @@ static func build_post(data: FanceData, integrity: float, seed_value: int, pixel
 		builder.box(Vector3(-1, data.height * 0.5, depth * 0.5 + 0.35), Vector3(0.8, data.height * 0.4, 0.4), data.outline_color.darkened(0.2), Basis(Vector3.FORWARD, 0.12))
 	return builder.finish(pixels_per_unit)
 
-static func build_span(data: FanceData, start: Vector2, end: Vector2, integrity: float, seed_value: int, pixels_per_unit: float) -> ArrayMesh:
+static func build_span(data: FanceData, start: Vector2, end: Vector2, integrity: float, seed_value: int, pixels_per_unit: float, start_height: float = 0.0, end_height: float = 0.0) -> ArrayMesh:
 	var builder := Builder.new()
 	var length := start.distance_to(end)
 	if length < 0.5:
@@ -126,4 +135,5 @@ static func build_span(data: FanceData, start: Vector2, end: Vector2, integrity:
 				builder.box(grain_center, Vector3(distance * rng.randf_range(0.6, 0.82), 0.55, 0.3), data.highlight_color.darkened(grain * 0.14), orientation)
 			if integrity < 0.65:
 				builder.box(center + normal * (data.thickness * 0.5 + 0.3), Vector3(1, 7.5, 0.5), data.outline_color, orientation)
+	builder.drape(start,end,start_height,end_height)
 	return builder.finish(pixels_per_unit)

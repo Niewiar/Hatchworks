@@ -3,11 +3,14 @@ extends MeshInstance3D
 
 @export var brush_shader: Shader
 @export var paint_surface: TerrainController
-@export_range(2, 96, 1) var brush_radius := 18
-@export_range(2, 96, 1) var brush_max_radius := 50
+@export_range(2, 192, 1) var brush_radius := 18
+@export_range(2, 192, 1) var brush_max_radius := 50
 @export_range(0.1, 0.95, 0.05) var brush_hardness := 0.7
 
 var _brush_material: ShaderMaterial
+var _sculpting := false
+var _paint_radius := 18
+var _sculpt_radius := 48
 
 func _ready() -> void:
 	hide()
@@ -17,18 +20,36 @@ func _ready() -> void:
 		return
 	var plane := PlaneMesh.new()
 	plane.size = Vector2.ONE
+	plane.subdivide_width = 24
+	plane.subdivide_depth = 24
 	mesh = plane
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_brush_material = ShaderMaterial.new()
 	_brush_material.shader = brush_shader
+	_brush_material.render_priority = 20
 	material_override = _brush_material
+
+func configure_surface() -> void:
+	paint_surface.bind_height_material(_brush_material)
+	extra_cull_margin = maxf(absf(paint_surface.minimum_height),absf(paint_surface.maximum_height))
+
+func set_sculpting(active: bool) -> void:
+	if active == _sculpting:
+		return
+	if active:
+		_paint_radius = brush_radius
+		brush_radius = _sculpt_radius
+	else:
+		_sculpt_radius = brush_radius
+		brush_radius = _paint_radius
+	_sculpting = active
 
 func activate(active: bool) -> void:
 	visible = active
 	set_process(active)
 
 func change_size(direction: int) -> void:
-	brush_radius = clampi(brush_radius + direction * 4, 2, brush_max_radius)
+	brush_radius = clampi(brush_radius + direction * 4, 32 if _sculpting else 2, 160 if _sculpting else brush_max_radius)
 
 func _process(_delta: float) -> void:
 	if not is_instance_valid(paint_surface) or get_viewport().gui_get_hovered_control() != null:
