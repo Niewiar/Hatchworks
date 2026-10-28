@@ -10,3 +10,5 @@ region = Rect2(512, 0, 256, 256)
 [resource]
 script = ExtResource("1")
 ui_icon = SubResource("Icon")
+id = &"wood"
+display_name = "Wooden fence"

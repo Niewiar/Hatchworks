@@ -4,6 +4,7 @@ extends Node3D
 signal network_changed
 signal selection_changed(index: int)
 signal span_damaged(span_id: int, health: float)
+signal preview_cost_changed(kind: int, cost: int, affordable: bool)
 
 const FANCES_DATABASE = preload("res://code/contructions/fances/FancesDatabase.tres")
 const SPAN_SCENE = preload("res://scenes/constructions/fance_representation.tscn")
@@ -14,6 +15,7 @@ const PREVIEW_SHADER = preload("res://code/contructions/fances/fence_preview.gds
 var map_bounds := Rect2(-1048, -1048, 2096, 2096)
 var _preview_material: ShaderMaterial
 var _terrain: TerrainController
+var _inventory: ResourceInventory
 
 @export_range(4.0, 32.0, 1.0) var snap_radius := 14.0
 @export_range(2.0, 32.0, 1.0) var minimum_length := 8.0
@@ -100,7 +102,8 @@ func finish_drawing(world_position: Vector3, commit: bool = true) -> Array[int]:
 	if not _drawing:
 		return created
 	_update_preview_at(world_to_map(world_position))
-	if commit and _preview_valid:
+	var price_data: FanceData = FANCES_DATABASE.fances[selected_fance]
+	if commit and _preview_valid and _inventory.spend(price_data.construction_resource,_path_cost(_pending_points,price_data)):
 		var points := _pending_points.duplicate()
 		var data: FanceData = FANCES_DATABASE.fances[selected_fance]
 		var ids: Array[int] = []
@@ -194,6 +197,10 @@ func _update_preview_at(mouse: Vector2) -> void:
 	var data: FanceData = FANCES_DATABASE.fances[selected_fance]
 	_pending_points = _make_path(_start_position, target, data.max_span_length) if _drawing else PackedVector2Array([target])
 	_preview_valid = _drawing and _pending_points.size() > 1 and not _is_path_blocked(_pending_points[0], _pending_points[-1])
+	var cost := _path_cost(_pending_points,data) if _drawing else 0
+	var affordable := _inventory != null and _inventory.can_afford(data.construction_resource,cost)
+	_preview_valid = _preview_valid and affordable
+	preview_cost_changed.emit(data.construction_resource,cost,affordable)
 	_preview_material.set_shader_parameter("valid", not _drawing or _preview_valid)
 	_update_preview_views(data)
 
@@ -449,6 +456,26 @@ func _cursor_map_position() -> Variant:
 		return null
 	var local := world_to_map(point)
 	return local if map_bounds.has_point(local) else null
+
+func configure_inventory(inventory: ResourceInventory) -> void:
+	_inventory = inventory
+	inventory.changed.connect(_on_inventory_changed)
+
+func _on_inventory_changed(_kind: int, _amount: float) -> void:
+	_preview_dirty = true
+
+func _path_cost(points: PackedVector2Array, data: FanceData) -> int:
+	if points.size() < 2:
+		return 0
+	var length := 0.0
+	var posts := 0
+	for index in range(1,points.size()):
+		length += points[index-1].distance_to(points[index])/pixels_per_unit
+	for point in points:
+		var id := _find_exact_post(point)
+		if id == 0 or _posts[id].data.post_priority < data.post_priority:
+			posts += 1
+	return ceili(maxf(0.0,length*maxf(0.0,data.material_per_meter)-0.0001))+posts*maxi(0,data.material_per_post)
 
 func configure_surface(terrain: TerrainController) -> void:
 	_terrain = terrain

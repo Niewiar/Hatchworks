@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="1"]
+
+[node name="ButtonTooltip" type="PanelContainer"]
+visible = false
+mouse_filter = 2
+theme = ExtResource("1")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+mouse_filter = 2
+text = "Tooltip"

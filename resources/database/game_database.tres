@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="GameDatabase" format=3 uid="uid://cm4f2gk3dr7mh"]
+
+[ext_resource type="Script" uid="uid://c3sw6o85wjpeg" path="res://code/database/CreatureSpecies.gd" id="2_20gof"]
+[ext_resource type="Script" uid="uid://pn4fm0mdi4h8" path="res://code/database/DepositDefinition.gd" id="4_wi5ox"]
+[ext_resource type="Script" uid="uid://bvsckk5ula0hu" path="res://code/environment/FloraSpecies.gd" id="6_0ds8o"]
+[ext_resource type="Script" uid="uid://bvpcguh38i5u8" path="res://code/database/ResourceDefinition.gd" id="12_yeha7"]
+[ext_resource type="Resource" uid="uid://7pwecegift6e" path="res://code/contructions/fances/FancesDatabase.tres" id="construction"]
+[ext_resource type="Resource" path="res://resources/database/creatures/mossling.tres" id="creature"]
+[ext_resource type="Resource" path="res://resources/database/deposits/stone.tres" id="deposit"]
+[ext_resource type="Resource" path="res://resources/flora/fern.tres" id="flora_fern"]
+[ext_resource type="Resource" path="res://resources/flora/grass.tres" id="flora_grass"]
+[ext_resource type="Resource" uid="uid://dpib0du0d8ehs" path="res://resources/flora/oak.tres" id="flora_oak"]
+[ext_resource type="Resource" path="res://resources/flora/reeds.tres" id="flora_reeds"]
+[ext_resource type="Resource" path="res://resources/flora/shrub.tres" id="flora_shrub"]
+[ext_resource type="Resource" path="res://resources/database/resources/fiber.tres" id="resource_fiber"]
+[ext_resource type="Resource" path="res://resources/database/resources/grass.tres" id="resource_grass"]
+[ext_resource type="Resource" path="res://resources/database/resources/ground_rock.tres" id="resource_ground_rock"]
+[ext_resource type="Resource" path="res://resources/database/resources/herbs.tres" id="resource_herbs"]
+[ext_resource type="Resource" path="res://resources/database/resources/moss.tres" id="resource_moss"]
+[ext_resource type="Resource" path="res://resources/database/resources/sand.tres" id="resource_sand"]
+[ext_resource type="Resource" path="res://resources/database/resources/stone.tres" id="resource_stone"]
+[ext_resource type="Resource" path="res://resources/database/resources/wood.tres" id="resource_wood"]
+[ext_resource type="Script" uid="uid://d1e5aexvmuq7c" path="res://code/database/GameDatabase.gd" id="script"]
+[ext_resource type="Resource" path="res://resources/database/world.tres" id="world"]
+
+[resource]
+script = ExtResource("script")
+creatures = Array[ExtResource("2_20gof")]([ExtResource("creature")])
+flora = Array[ExtResource("6_0ds8o")]([ExtResource("flora_oak"), ExtResource("flora_shrub"), ExtResource("flora_fern"), ExtResource("flora_reeds"), ExtResource("flora_grass")])
+resources = Array[ExtResource("12_yeha7")]([ExtResource("resource_grass"), ExtResource("resource_moss"), ExtResource("resource_sand"), ExtResource("resource_ground_rock"), ExtResource("resource_fiber"), ExtResource("resource_herbs"), ExtResource("resource_wood"), ExtResource("resource_stone")])
+deposits = Array[ExtResource("4_wi5ox")]([ExtResource("deposit")])
+construction = ExtResource("construction")
+world = ExtResource("world")

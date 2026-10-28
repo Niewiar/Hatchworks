@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://addons/hatchworks_database/database_field.gd" id="1"]
+[node name="DatabaseField" type="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("1")
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+[node name="Editors" type="VBoxContainer" parent="."]
+layout_mode = 2
+[node name="Text" type="LineEdit" parent="Editors"]
+layout_mode = 2
+[node name="Multiline" type="TextEdit" parent="Editors"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+wrap_mode = 1
+[node name="Number" type="SpinBox" parent="Editors"]
+layout_mode = 2
+[node name="Choice" type="OptionButton" parent="Editors"]
+layout_mode = 2
+[node name="Vector" type="HBoxContainer" parent="Editors"]
+layout_mode = 2
+[node name="Minimum" type="SpinBox" parent="Editors/Vector"]
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="Maximum" type="SpinBox" parent="Editors/Vector"]
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="Color" type="ColorPickerButton" parent="Editors"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+[node name="Asset" type="HBoxContainer" parent="Editors"]
+layout_mode = 2
+[node name="Path" type="LineEdit" parent="Editors/Asset"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "res://…"
+[node name="Browse" type="Button" parent="Editors/Asset"]
+layout_mode = 2
+text = "Browse"
+[node name="Clear" type="Button" parent="Editors/Asset"]
+layout_mode = 2
+text = "×"
+[node name="Paths" type="VBoxContainer" parent="Editors"]
+layout_mode = 2
+[node name="Text" type="TextEdit" parent="Editors/Paths"]
+custom_minimum_size = Vector2(0, 82)
+layout_mode = 2
+wrap_mode = 1
+[node name="Browse" type="Button" parent="Editors/Paths"]
+layout_mode = 2
+text = "Add meshes…"

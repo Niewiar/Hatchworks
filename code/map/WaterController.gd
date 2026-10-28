@@ -1,10 +1,13 @@
 class_name WaterController
 extends MeshInstance3D
 
-@export var water_level := -0.35:
+signal water_level_changed
+
+var water_level := -0.35:
 	set(value):
 		water_level = value
 		_apply_level()
+		water_level_changed.emit()
 @export var water_shader: Shader
 @export_group("Water appearance")
 @export_color_no_alpha var shallow_color := Color(0.23, 0.49, 0.43)

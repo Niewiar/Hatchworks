@@ -12,6 +12,12 @@
 [ext_resource type="Texture2D" path="res://assets/ui/flatten.svg" id="sculpt_flatten"]
 [ext_resource type="Texture2D" path="res://assets/ui/sculpt.svg" id="sculpt_base"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/harvest.svg" id="harvest_harvest"]
+[ext_resource type="Texture2D" path="res://assets/ui/gather_ground.svg" id="harvest_gather_ground"]
+[ext_resource type="Texture2D" path="res://assets/ui/gather_plants.svg" id="harvest_gather_plants"]
+[ext_resource type="Texture2D" path="res://assets/ui/axe.svg" id="harvest_axe"]
+[ext_resource type="Texture2D" path="res://assets/ui/pickaxe.svg" id="harvest_pickaxe"]
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_lg3ar"]
 atlas = ExtResource("1_qv1gk")
 region = Rect2(128, 0, 128, 128)
@@ -27,10 +33,6 @@ region = Rect2(512, 0, 256, 256)
 [sub_resource type="AtlasTexture" id="AtlasTexture_ibaem"]
 atlas = ExtResource("3_ibaem")
 region = Rect2(768, 0, 256, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1byw5"]
-atlas = ExtResource("3_ibaem")
-region = Rect2(0, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_po2dj"]
 atlas = ExtResource("3_ibaem")
@@ -67,6 +69,23 @@ region = Rect2(1024, 0, 256, 256)
 [sub_resource type="ButtonGroup" id="FenceTypes"]
 [sub_resource type="ButtonGroup" id="SculptTypes"]
 
+[sub_resource type="ButtonGroup" id="GatherTypes"]
+[sub_resource type="StyleBoxFlat" id="QuantityBadge"]
+content_margin_left = 7.0
+content_margin_top = 2.0
+content_margin_right = 7.0
+content_margin_bottom = 2.0
+bg_color = Color(0.025, 0.045, 0.03, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.45, 0.25, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_left = 7
+corner_radius_bottom_right = 7
+
 [node name="GameToolbar" type="Control" unique_id=960911768]
 layout_mode = 3
 anchors_preset = 15
@@ -92,6 +111,17 @@ offset_right = 70.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
+
+[node name="BuildCost" type="Label" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.9, 0.94, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0.025, 0.04, 0.03, 1)
+theme_override_constants/outline_size = 5
+text = "Draw a fence to see its cost"
+horizontal_alignment = 1
 
 [node name="ConstructionsButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1119161433]
 visible = false
@@ -169,6 +199,7 @@ size_flags_vertical = 4
 mouse_filter = 2
 
 [node name="Grass" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=226930164]
+metadata/material_index = 0
 metadata/tooltip_title = "Grass"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
@@ -184,10 +215,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -40.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -34.0
+offset_top = -34.0
+offset_right = 34.0
+offset_bottom = 34.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -195,34 +226,25 @@ texture = SubResource("AtlasTexture_ibaem")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Dirt" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=2066441338]
-metadata/tooltip_title = "Dirt"
-layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-icon_alignment = 1
-
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Dirt" unique_id=1521165328]
-texture_filter = 1
+[node name="Amount" type="Label" parent="VBoxContainer/PaintButtons/Grass"]
 layout_mode = 1
-anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 1.0
 offset_left = -40.0
-offset_top = -40.0
+offset_top = -25.0
 offset_right = 40.0
-offset_bottom = 40.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_bottom = -1.0
 mouse_filter = 2
-texture = SubResource("AtlasTexture_1byw5")
-expand_mode = 1
-stretch_mode = 5
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.9, 0.94, 0.78, 1)
+theme_override_styles/normal = SubResource("QuantityBadge")
+text = "20.0"
+horizontal_alignment = 1
 
 [node name="Moss" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=418814586]
+metadata/material_index = 2
 metadata/tooltip_title = "Moss"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
@@ -238,10 +260,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -40.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -34.0
+offset_top = -34.0
+offset_right = 34.0
+offset_bottom = 34.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -249,7 +271,25 @@ texture = SubResource("AtlasTexture_po2dj")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="Amount" type="Label" parent="VBoxContainer/PaintButtons/Moss"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -25.0
+offset_right = 40.0
+offset_bottom = -1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.9, 0.94, 0.78, 1)
+theme_override_styles/normal = SubResource("QuantityBadge")
+text = "20.0"
+horizontal_alignment = 1
+
 [node name="Sand" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=383592614]
+metadata/material_index = 3
 metadata/tooltip_title = "Sand"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
@@ -265,10 +305,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -40.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -34.0
+offset_top = -34.0
+offset_right = 34.0
+offset_bottom = 34.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -276,7 +316,25 @@ texture = SubResource("AtlasTexture_ey720")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="Amount" type="Label" parent="VBoxContainer/PaintButtons/Sand"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -25.0
+offset_right = 40.0
+offset_bottom = -1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.9, 0.94, 0.78, 1)
+theme_override_styles/normal = SubResource("QuantityBadge")
+text = "20.0"
+horizontal_alignment = 1
+
 [node name="Rock" type="CheckButton" parent="VBoxContainer/PaintButtons" unique_id=1923287409]
+metadata/material_index = 4
 metadata/tooltip_title = "Rock"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
@@ -292,16 +350,33 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -40.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -34.0
+offset_top = -34.0
+offset_right = 34.0
+offset_bottom = 34.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 texture = SubResource("AtlasTexture_y81xg")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="Amount" type="Label" parent="VBoxContainer/PaintButtons/Rock"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -25.0
+offset_right = 40.0
+offset_bottom = -1.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.9, 0.94, 0.78, 1)
+theme_override_styles/normal = SubResource("QuantityBadge")
+text = "20.0"
+horizontal_alignment = 1
 
 [node name="SculptButtons" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
@@ -428,6 +503,118 @@ expand_mode = 1
 stretch_mode = 5
 
 
+[node name="GatherButtons" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="Ground" type="CheckButton" parent="VBoxContainer/GatherButtons"]
+layout_mode = 2
+button_group = SubResource("GatherTypes")
+metadata/harvest_tool = 0
+button_pressed = true
+metadata/tooltip_title = "Gather ground layers"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/GatherButtons/Ground"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("harvest_gather_ground")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Plants" type="CheckButton" parent="VBoxContainer/GatherButtons"]
+layout_mode = 2
+button_group = SubResource("GatherTypes")
+metadata/harvest_tool = 1
+button_pressed = false
+metadata/tooltip_title = "Gather plants"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/GatherButtons/Plants"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("harvest_gather_plants")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Axe" type="CheckButton" parent="VBoxContainer/GatherButtons"]
+layout_mode = 2
+button_group = SubResource("GatherTypes")
+metadata/harvest_tool = 2
+button_pressed = false
+metadata/tooltip_title = "Chop trees"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/GatherButtons/Axe"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("harvest_axe")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Mining" type="CheckButton" parent="VBoxContainer/GatherButtons"]
+layout_mode = 2
+button_group = SubResource("GatherTypes")
+metadata/harvest_tool = 3
+button_pressed = false
+metadata/tooltip_title = "Mine rocks"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
+theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/GatherButtons/Mining"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("harvest_pickaxe")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="BaseButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1165230477]
 unique_name_in_owner = true
 layout_mode = 2
@@ -489,6 +676,30 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("sculpt_base")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GatherButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
+layout_mode = 2
+metadata/mode = 5
+metadata/tooltip_title = "Gather resources"
+theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
+theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
+theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/GatherButton"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("harvest_harvest")
 expand_mode = 1
 stretch_mode = 5
 

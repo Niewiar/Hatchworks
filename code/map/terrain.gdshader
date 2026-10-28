@@ -1,6 +1,9 @@
 shader_type spatial;
 render_mode diffuse_lambert, specular_disabled;
 uniform sampler2D paint_map : hint_default_transparent, filter_linear, repeat_disable;
+uniform sampler2D paint_influence : hint_default_black, filter_linear, repeat_disable;
+uniform sampler2D nature_map : hint_default_transparent, filter_linear, repeat_disable;
+uniform sampler2D bare_map : hint_default_black, filter_linear, repeat_disable;
 uniform vec2 map_size = vec2(512.0);
 uniform vec2 world_size = vec2(16.0);
 uniform float water_level = -1000.0;
@@ -46,8 +49,12 @@ vec2 boundary_warp(vec2 p) {
 	return broad * transition_width * 0.85 * clamp(edge_roughness * 0.4, 0.0, 2.0) + fine * edge_roughness * 2.0;
 }
 
+vec4 ground_weights(vec2 uv) {
+	return clamp(texture(paint_map,uv) + texture(nature_map,uv) * (1.0-texture(paint_influence,uv).r),vec4(0.0),vec4(1.0));
+}
+
 vec4 terrain_weights(vec2 uv, vec2 size, vec2 p) {
-	vec4 center = texture(paint_map, uv);
+	vec4 center = ground_weights(uv);
 	if (transition_width < 0.01) {
 		return clamp(center, vec4(0.0), vec4(1.0));
 	}
@@ -59,7 +66,7 @@ vec4 terrain_weights(vec2 uv, vec2 size, vec2 p) {
 		float radius = sqrt((float(i) + 0.5) / 12.0) * transition_width;
 		vec2 disk = vec2(cos(phase), sin(phase)) * radius;
 		vec2 offset = vec2(disk.x * turn.x - disk.y * turn.y, disk.x * turn.y + disk.y * turn.x);
-		softened += texture(paint_map, uv + offset / size) * (0.88 / 12.0);
+		softened += ground_weights(uv + offset / size) * (0.88 / 12.0);
 	}
 	return clamp(softened, vec4(0.0), vec4(1.0));
 }
@@ -229,7 +236,7 @@ void fragment() {
 			if (grass_coverage < 0.9999) {
 				vec2 root_warp = boundary_warp(p + marks.zw);
 				vec2 root_uv = (pixel + vec2(0.5) + marks.zw * terrain_scale + root_warp) / size;
-				root_grass = clamp(1.0 - dot(texture(paint_map, root_uv), vec4(1.0)), 0.0, 1.0);
+				root_grass = clamp(1.0 - dot(ground_weights(root_uv), vec4(1.0)), 0.0, 1.0);
 			}
 			float leaf_shade = hash12(floor(p / 10.0) + 43.0);
 			vec3 leaf = grass_tint.rgb * mix(0.8, 1.36, leaf_shade);
@@ -237,6 +244,8 @@ void fragment() {
 			color = mix(color, leaf, marks.x * root_grass);
 		}
 	}
+	float bare = texture(bare_map,mask_uv).r;
+	color = mix(color,dirt_tint.rgb*(0.78+macro*0.18),bare*0.7);
 	float wet_shore = 1.0 - smoothstep(0.0, 0.22, ground_elevation - water_level);
 	color *= 1.0 - wet_shore * 0.20;
 	ALBEDO = clamp(color, vec3(0.0), vec3(1.0));

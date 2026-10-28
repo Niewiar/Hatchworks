@@ -1,10 +1,9 @@
+@tool
 class_name FanceData
-extends Resource
+extends DatabaseEntry
 
 enum MaterialKind { WOOD, STONE }
 
-@export var id: StringName = &"wood"
-@export var display_name := "Wood"
 @export var material_kind: MaterialKind = MaterialKind.WOOD
 @export var ui_icon: Texture2D
 @export_range(24.0, 160.0, 1.0) var max_span_length := 84.0
@@ -17,3 +16,7 @@ enum MaterialKind { WOOD, STONE }
 @export var max_health := 100.0
 @export var post_max_health := 150.0
 @export var post_priority := 0
+@export_group("Construction cost")
+@export var construction_resource: ResourceInventory.KIND = ResourceInventory.KIND.WOOD
+@export var material_per_meter := 1.0
+@export var material_per_post := 1

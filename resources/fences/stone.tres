@@ -9,8 +9,6 @@ region = Rect2(1024, 0, 256, 256)
 
 [resource]
 script = ExtResource("1")
-id = &"stone"
-display_name = "Stone"
 material_kind = 1
 ui_icon = SubResource("Icon")
 max_span_length = 76.0
@@ -23,3 +21,6 @@ outline_color = Color(0.21, 0.24, 0.19, 1)
 max_health = 240.0
 post_max_health = 320.0
 post_priority = 10
+construction_resource = 10
+id = &"stone"
+display_name = "Stone fence"

@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="FancesDatabase" load_steps=5 format=3 uid="uid://7pwecegift6e"]
+[gd_resource type="Resource" script_class="FancesDatabase" format=3 uid="uid://7pwecegift6e"]
 
-[ext_resource type="Script" path="res://code/contructions/fances/FancesDatabase.gd" id="1"]
-[ext_resource type="Script" path="res://code/contructions/fances/FenceData.gd" id="2"]
-[ext_resource type="Resource" path="res://resources/fences/wood.tres" id="3"]
-[ext_resource type="Resource" path="res://resources/fences/stone.tres" id="4"]
+[ext_resource type="Script" uid="uid://5hd17r4ag1lv" path="res://code/contructions/fances/FancesDatabase.gd" id="1"]
+[ext_resource type="Script" uid="uid://pa7841vgmt2" path="res://code/contructions/fances/FenceData.gd" id="2"]
+[ext_resource type="Resource" uid="uid://g2oij465idsk" path="res://resources/fences/wood.tres" id="3"]
+[ext_resource type="Resource" uid="uid://wltwsg51guko" path="res://resources/fences/stone.tres" id="4"]
 
 [resource]
 script = ExtResource("1")
