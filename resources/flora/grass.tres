@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="FloraSpecies" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://code/environment/FloraSpecies.gd" id="1"]
+[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/grass_01.res" id="2"]
+[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/grass_02.res" id="3"]
+[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/grass_03.res" id="4"]
+
+[resource]
+script = ExtResource("1")
+kind = 4
+variants = Array[Mesh]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+density = 0.8
+spacing = 0.32
+growth_rate = 0.22
+decay_rate = 0.3
+canopy_radius = 0
+harvest_resource = 5
+harvest_amount = 1
+regrowth_delay = 15.0
+
+id = &"grass"
+display_name = "Meadow grass"
+moisture_range = Vector2(0.12, 1.01)
+shade_range = Vector2(-0.01, 0.8)
+maximum_slope = 0.6
+water_depth_range = Vector2(-100, -0.015)

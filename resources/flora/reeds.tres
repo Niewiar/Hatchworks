@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="FloraSpecies" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://code/environment/FloraSpecies.gd" id="1"]
+[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/reeds_01.res" id="2"]
+[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/reeds_02.res" id="3"]
+
+[resource]
+script = ExtResource("1")
+kind = 3
+variants = Array[Mesh]([ExtResource("2"), ExtResource("3")])
+density = 0.8
+spacing = 0.42
+growth_rate = 0.13
+decay_rate = 0.25
+canopy_radius = 0
+harvest_resource = 5
+harvest_amount = 1
+regrowth_delay = 20.0
+
+id = &"reeds"
+display_name = "Reeds"
+moisture_range = Vector2(0.52, 1.01)
+shade_range = Vector2(-0.01, 1.01)
+maximum_slope = 0.35
+water_depth_range = Vector2(-0.35, 0.22)

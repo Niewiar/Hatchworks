@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DepositDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DepositDefinition.gd" id="1"]
+[ext_resource type="ArrayMesh" path="res://assets/harvesting/rock_01.res" id="2"]
+[ext_resource type="ArrayMesh" path="res://assets/harvesting/rock_02.res" id="3"]
+[ext_resource type="ArrayMesh" path="res://assets/harvesting/rock_03.res" id="4"]
+[ext_resource type="Material" path="res://resources/harvesting/rock_material.tres" id="5"]
+[resource]
+script = ExtResource("1")
+id = &"stone_deposit"
+display_name = "Stone deposit"
+variants = Array[Mesh]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+material = ExtResource("5")

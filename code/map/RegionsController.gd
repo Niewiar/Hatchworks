@@ -9,6 +9,7 @@ signal region_hovered(region: Region)
 
 var _terrain: TerrainController
 var _fences: FenceController
+var _water: WaterController
 var _grid_size := Vector2i.ZERO
 var _cell_extent := Vector2.ZERO
 var _region_ids := PackedInt32Array()
@@ -18,11 +19,13 @@ var _region_texture: ImageTexture
 var _hovered_region: Region
 var _rebuild_pending := false
 var _coverage_dirty := true
+var _water_coverage_dirty := true
 var _view_active := false
 
-func initialize(terrain: TerrainController, fences: FenceController) -> void:
+func initialize(terrain: TerrainController, fences: FenceController, water: WaterController) -> void:
 	_terrain = terrain
 	_fences = fences
+	_water = water
 	_grid_size = Vector2i(ceil(terrain.world_size / cell_size))
 	_cell_extent = terrain.world_size / Vector2(_grid_size)
 	var plane := terrain.create_surface_mesh()
@@ -42,6 +45,8 @@ func initialize(terrain: TerrainController, fences: FenceController) -> void:
 	hide()
 	_fences.network_changed.connect(_queue_rebuild)
 	_terrain.terrain_changed.connect(_on_terrain_changed)
+	_terrain.height_changed.connect(_on_water_changed)
+	_water.water_level_changed.connect(_on_water_changed)
 	_queue_rebuild()
 
 func activate_view(active: bool) -> void:
@@ -57,6 +62,7 @@ func get_region_at(world_position: Vector3) -> Region:
 	var cell := Vector2i(_world_to_grid(world_position).floor())
 	if cell.x < 0 or cell.y < 0 or cell.x >= _grid_size.x or cell.y >= _grid_size.y:
 		return null
+	_refresh_coverage()
 	return _regions.get(_region_ids[cell.y * _grid_size.x + cell.x]) as Region
 
 func hover_at(world_position: Vector3) -> void:
@@ -147,6 +153,7 @@ func _rebuild() -> void:
 		_region_texture.update(image)
 	_region_material.set_shader_parameter("region_map", _region_texture)
 	_coverage_dirty = true
+	_water_coverage_dirty = true
 	_rebuild_pending = false
 	visible = _view_active
 	if _view_active:
@@ -173,8 +180,38 @@ func _on_terrain_changed() -> void:
 		if _hovered_region != null:
 			region_hovered.emit(_hovered_region)
 
+func _on_water_changed() -> void:
+	_water_coverage_dirty = true
+	if _view_active:
+		_refresh_water_coverage()
+		if _hovered_region != null:
+			region_hovered.emit(_hovered_region)
+
+func _refresh_water_coverage() -> void:
+	if not _water_coverage_dirty or _rebuild_pending:
+		return
+	var flooded_cells := PackedInt32Array()
+	flooded_cells.resize(_regions.size() + 1)
+	var normal := _terrain.global_basis.y.normalized()
+	for y in _grid_size.y:
+		for x in _grid_size.x:
+			var id := _region_ids[y * _grid_size.x + x]
+			if id <= 0:
+				continue
+			var point := (Vector2(x, y) + Vector2(0.5, 0.5)) * _cell_extent - _terrain.world_size * 0.5
+			var ground := _terrain.surface_position(_terrain.to_global(Vector3(point.x, 0, point.y)))
+			if (ground - _water.global_position).dot(normal) < 0.0:
+				flooded_cells[id] += 1
+	var sample_area := _cell_extent.x * _cell_extent.y
+	for region: Region in _regions.values():
+		region.water_area = flooded_cells[region.id] * sample_area
+	_water_coverage_dirty = false
+
 func _refresh_coverage() -> void:
-	if not _coverage_dirty or _rebuild_pending:
+	if _rebuild_pending:
+		return
+	_refresh_water_coverage()
+	if not _coverage_dirty:
 		return
 	var samples := _terrain.sample_coverage(_grid_size).get_data()
 	var totals: Dictionary[int, PackedFloat64Array] = {}

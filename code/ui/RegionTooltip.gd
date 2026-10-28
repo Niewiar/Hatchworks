@@ -4,10 +4,16 @@ extends PanelContainer
 @onready var _title: Label = $Content/Header/Title
 @onready var _area: Label = $Content/Area
 @onready var _rows: VBoxContainer = $Content/TerrainRows
+@onready var _water_value: Label = $Content/WaterRow/Value
+@onready var _water_bar: ProgressBar = $Content/WaterRow/Bar
+@onready var _water_area: Label = $Content/WaterArea
 
 func set_region(region: Region) -> void:
 	_title.text = "Region %d" % region.id
 	_area.text = "%s · %.1f m²" % ["Open terrain" if region.touches_map_edge else "Fenced area", region.area]
+	_water_value.text = "%.1f%%" % region.water_coverage
+	_water_bar.value = region.water_coverage
+	_water_area.text = "Water surface: %.1f m²" % region.water_area
 	var tenths := PackedInt32Array()
 	tenths.resize(5)
 	var remainders := PackedFloat32Array()

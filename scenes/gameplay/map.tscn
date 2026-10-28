@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b3hpw3fug50nl"]
+[gd_scene load_steps=29 format=3 uid="uid://b3hpw3fug50nl"]
 
 [ext_resource type="Script" path="res://code/map/MapManager.gd" id="1"]
 [ext_resource type="Script" path="res://code/map/TerrainController.gd" id="2"]
@@ -13,8 +13,23 @@
 [ext_resource type="Script" path="res://code/map/WaterController.gd" id="9"]
 [ext_resource type="Shader" path="res://code/map/water.gdshader" id="10"]
 
+
+[ext_resource type="Script" path="res://code/environment/EnvironmentController.gd" id="11"]
+[ext_resource type="Script" path="res://code/environment/VegetationController.gd" id="12"]
+[ext_resource type="Material" path="res://resources/flora/foliage_material.tres" id="18"]
+
+[ext_resource type="Script" path="res://code/resources/ResourceInventory.gd" id="19_inventory"]
+[ext_resource type="Script" path="res://code/harvesting/HarvestController.gd" id="20_harvest"]
+[ext_resource type="Script" path="res://code/harvesting/RockController.gd" id="21_rocks"]
+[ext_resource type="Script" path="res://code/harvesting/HarvestTool.gd" id="22_tool"]
+[ext_resource type="ArrayMesh" path="res://assets/harvesting/axe.res" id="23_axe"]
+[ext_resource type="ArrayMesh" path="res://assets/harvesting/pickaxe.res" id="24_pickaxe"]
+
+[ext_resource type="Resource" path="res://resources/database/game_database.tres" id="database"]
+
 [node name="Map" type="Node3D"]
 script = ExtResource("1")
+database = ExtResource("database")
 map_size = Vector2i(2096, 2096)
 pixels_per_unit = 32.0
 
@@ -43,3 +58,25 @@ script = ExtResource("6")
 visible = false
 script = ExtResource("7")
 region_shader = ExtResource("8")
+[node name="Environment" type="Node" parent="."]
+script = ExtResource("11")
+
+[node name="Vegetation" type="Node3D" parent="."]
+script = ExtResource("12")
+foliage_material = ExtResource("18")
+
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("19_inventory")
+
+[node name="Rocks" type="Node3D" parent="."]
+script = ExtResource("21_rocks")
+
+[node name="Harvest" type="Node" parent="." node_paths=PackedStringArray("tool_view")]
+script = ExtResource("20_harvest")
+tool_view = NodePath("../HarvestTool")
+
+[node name="HarvestTool" type="MeshInstance3D" parent="."]
+visible = false
+script = ExtResource("22_tool")
+axe_mesh = ExtResource("23_axe")
+pickaxe_mesh = ExtResource("24_pickaxe")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 [ext_resource type="Script" path="res://code/ui/RegionTooltip.gd" id="1"]
 [ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="2"]
 [sub_resource type="StyleBoxFlat" id="GrassFill"]
@@ -31,6 +31,12 @@ corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_left = 3
 corner_radius_bottom_right = 3
+[sub_resource type="StyleBoxFlat" id="WaterFill"]
+bg_color = Color(0.23, 0.57, 0.55, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
 [node name="RegionTooltip" type="PanelContainer"]
 visible = false
 custom_minimum_size = Vector2(360, 0)
@@ -56,6 +62,36 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.60, 0.69, 0.56, 1)
 theme_override_font_sizes/font_size = 14
 text = "Terrain"
+[node name="WaterRow" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+[node name="Name" type="Label" parent="Content/WaterRow"]
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+mouse_filter = 2
+text = "Water"
+[node name="Bar" type="ProgressBar" parent="Content/WaterRow"]
+custom_minimum_size = Vector2(110, 8)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/fill = SubResource("WaterFill")
+show_percentage = false
+step = 0.01
+[node name="Value" type="Label" parent="Content/WaterRow"]
+custom_minimum_size = Vector2(68, 0)
+layout_mode = 2
+mouse_filter = 2
+text = "0.0%"
+horizontal_alignment = 2
+[node name="WaterArea" type="Label" parent="Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.60, 0.75, 0.71, 1)
+theme_override_font_sizes/font_size = 13
+text = "Water surface: 0.0 m²"
 [node name="Separator" type="HSeparator" parent="Content"]
 layout_mode = 2
 mouse_filter = 2
@@ -64,7 +100,7 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.66, 0.75, 0.58, 1)
-text = "TERRAIN COVERAGE"
+text = "GROUND COMPOSITION"
 [node name="TerrainRows" type="VBoxContainer" parent="Content"]
 layout_mode = 2
 mouse_filter = 2

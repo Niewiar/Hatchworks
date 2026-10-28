@@ -17,20 +17,27 @@ enum SCULPT_TOOL { RAISE, LOWER, SMOOTH, FLATTEN }
 
 @export_group("Terrain shape")
 @export_range(0.25, 1.0, 0.25) var height_spacing := 0.5
-@export_range(0.1, 4.0, 0.1) var sculpt_speed := 1.0
+var sculpt_speed := 1.0
 @export var minimum_height := -4.0
 @export var maximum_height := 6.0
-@export_range(10.0, 60.0, 1.0) var maximum_sculpt_slope := 40.0
+var maximum_sculpt_slope := 40.0
 
 @export_group("Terrain generation")
 @export var generate_on_start := true
 @export var generation_seed := 0
-@export_range(0.0, 4.0, 0.1) var starting_height_variation := 1.8
-@export_range(8.0, 64.0, 1.0) var terrain_wavelength := 22.0
-@export_range(0.0, 8.0, 0.25) var spawn_clearing_radius := 2.5
+var starting_height_variation := 1.8
+var terrain_wavelength := 22.0
+var spawn_clearing_radius := 2.5
 
 const TARGET_WEIGHTS := [Color(0,0,0,0), Color(1,0,0,0), Color(0,1,0,0), Color(0,0,1,0), Color(0,0,0,1)]
 
+var world_seed := 0
+var _natural_image: Image
+var _natural_texture: ImageTexture
+var _paint_influence: Image
+var _paint_influence_texture: ImageTexture
+var _bare_soil: Image
+var _bare_texture: ImageTexture
 var pixels_per_unit := 32.0
 var world_size := Vector2.ZERO
 var _map_size := Vector2i.ZERO
@@ -72,11 +79,21 @@ func initialize(map_size: Vector2i, pixel_density: float = 32.0) -> bool:
 	_paint_tex = Image.create(map_size.x, map_size.y, false, Image.FORMAT_RGBA8)
 	_paint_tex.fill(TARGET_WEIGHTS[0])
 	_paint_texture = ImageTexture.create_from_image(_paint_tex)
+	world_seed = generation_seed if generation_seed != 0 else randi_range(1,2147483647)
+	_natural_image = null
+	_natural_texture = ImageTexture.create_from_image(Image.create(1,1,false,Image.FORMAT_RGBA8))
+	_paint_influence = Image.create(map_size.x,map_size.y,false,Image.FORMAT_R8)
+	_paint_influence_texture = ImageTexture.create_from_image(_paint_influence)
+	_bare_soil = Image.create(map_size.x,map_size.y,false,Image.FORMAT_R8)
+	_bare_texture = ImageTexture.create_from_image(_bare_soil)
 	_create_height_surface()
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	_terrain_mat = ShaderMaterial.new()
 	_terrain_mat.shader = terrain_shader
 	_terrain_mat.set_shader_parameter("paint_map", _paint_texture)
+	_terrain_mat.set_shader_parameter("paint_influence", _paint_influence_texture)
+	_terrain_mat.set_shader_parameter("nature_map", _natural_texture)
+	_terrain_mat.set_shader_parameter("bare_map", _bare_texture)
 	_terrain_mat.set_shader_parameter("map_size", Vector2(map_size))
 	_terrain_mat.set_shader_parameter("world_size", world_size)
 	_terrain_mat.set_shader_parameter("terrain_seed", float(terrain_seed))
@@ -95,6 +112,8 @@ func _queue_upload() -> void:
 
 func _upload_paint_texture() -> void:
 	_paint_texture.update(_paint_tex)
+	_paint_influence_texture.update(_paint_influence)
+	_bare_texture.update(_bare_soil)
 	_upload_pending = false
 	terrain_changed.emit()
 
@@ -111,41 +130,156 @@ func _world_to_mask(world_position: Vector3) -> Vector2:
 func sample_coverage(sample_size: Vector2i) -> Image:
 	var sample := _paint_tex.duplicate() as Image
 	sample.resize(sample_size.x, sample_size.y, Image.INTERPOLATE_TRILINEAR)
-	return sample
+	if _natural_image == null:
+		return sample
+	var natural := _natural_image.duplicate() as Image
+	natural.resize(sample_size.x,sample_size.y,Image.INTERPOLATE_BILINEAR)
+	var influence := _paint_influence.duplicate() as Image
+	influence.resize(sample_size.x,sample_size.y,Image.INTERPOLATE_TRILINEAR)
+	var data := sample.get_data()
+	var base := natural.get_data()
+	var strengths := influence.get_data()
+	for index in strengths.size():
+		var amount := 1.0-float(strengths[index])/255.0
+		for channel in 4:
+			var offset := index*4+channel
+			data[offset] = clampi(roundi(data[offset]+base[offset]*amount),0,255)
+	return Image.create_from_data(sample_size.x,sample_size.y,false,Image.FORMAT_RGBA8,data)
+
+func set_natural_coverage(coverage: Image) -> void:
+	if _natural_image != null and _natural_image.get_size() == coverage.get_size() and _natural_image.get_data() == coverage.get_data():
+		return
+	_natural_image = coverage.duplicate() as Image
+	var display := coverage.duplicate() as Image
+	display.resize(coverage.get_width()*2,coverage.get_height()*2,Image.INTERPOLATE_CUBIC)
+	if _natural_texture.get_size() != Vector2(display.get_size()):
+		_natural_texture = ImageTexture.create_from_image(display)
+		_terrain_mat.set_shader_parameter("nature_map",_natural_texture)
+	else:
+		_natural_texture.update(display)
+	terrain_changed.emit()
 
 func end_stroke() -> void:
 	_has_previous_stamp = false
 
-func paint(material_index: int, world_position: Vector3, radius: float, hardness: float) -> void:
+func paint(material_index: int, world_position: Vector3, radius: float, hardness: float, available: float) -> float:
 	var point := _world_to_mask(world_position)
-	if not _contains_mask_point(point):
+	if not _contains_mask_point(point) or material_index not in ResourceInventory.GROUND_TYPES or available <= 0.0:
 		end_stroke()
-		return
+		return 0.0
+	var used := 0.0
 	if _has_previous_stamp and _last_material == material_index:
-		var spacing := maxf(1.0, radius * 0.35)
-		var steps := maxi(1, ceili(_last_paint_position.distance_to(point) / spacing))
-		for step in range(1, steps + 1):
-			_paint_stamp(_last_paint_position.lerp(point, float(step) / steps), material_index, radius, hardness)
+		var spacing := maxf(1.0,radius*0.35)
+		var steps := maxi(1,ceili(_last_paint_position.distance_to(point)/spacing))
+		for step in range(1,steps+1):
+			used += _paint_stamp(_last_paint_position.lerp(point,float(step)/steps),material_index,radius,hardness,available-used)
+			if used >= available:
+				break
 	else:
-		_paint_stamp(point, material_index, radius, hardness)
+		used = _paint_stamp(point,material_index,radius,hardness,available)
 	_last_paint_position = point
 	_last_material = material_index
 	_has_previous_stamp = true
-	_queue_upload()
+	if used > 0.0:
+		_queue_upload()
+	return used
 
-func _paint_stamp(brush_pos: Vector2, material_index: int, radius: float, hardness: float) -> void:
-	var min_x := maxi(0, floori(brush_pos.x - radius))
-	var max_x := mini(_map_size.x - 1, ceili(brush_pos.x + radius))
-	var min_y := maxi(0, floori(brush_pos.y - radius))
-	var max_y := mini(_map_size.y - 1, ceili(brush_pos.y + radius))
-	var target: Color = TARGET_WEIGHTS[clampi(material_index, 0, TARGET_WEIGHTS.size() - 1)]
-	for y in range(min_y, max_y + 1):
-		for x in range(min_x, max_x + 1):
-			var distance := (Vector2(x, y) + Vector2(0.5, 0.5)).distance_to(brush_pos)
+func _coverage_at_pixel(x: int, y: int) -> Color:
+	return _paint_tex.get_pixel(x,y)+_nature_at_pixel(x,y)*(1.0-_paint_influence.get_pixel(x,y).r)
+
+func _nature_at_pixel(x: int, y: int) -> Color:
+	if _natural_image == null:
+		return Color(0,0,0,0)
+	var size := _natural_image.get_size()
+	var grid := ((Vector2(x,y)+Vector2(0.5,0.5))/Vector2(_map_size)*Vector2(size)-Vector2(0.5,0.5)).clamp(Vector2.ZERO,Vector2(size-Vector2i.ONE))
+	var first := Vector2i(grid.floor())
+	var last := (first+Vector2i.ONE).min(size-Vector2i.ONE)
+	var fraction := grid-Vector2(first)
+	var back := _natural_image.get_pixel(first.x,first.y).lerp(_natural_image.get_pixel(last.x,first.y),fraction.x)
+	var front := _natural_image.get_pixel(first.x,last.y).lerp(_natural_image.get_pixel(last.x,last.y),fraction.x)
+	return back.lerp(front,fraction.y)
+
+func _resource_weight(coverage: Color, material_index: int) -> float:
+	if material_index == 0:
+		return maxf(0.0,1.0-coverage.r-coverage.g-coverage.b-coverage.a)
+	return maxf(0.0,coverage[material_index-1])
+
+func _paint_stamp(brush_pos: Vector2, material_index: int, radius: float, hardness: float, available: float) -> float:
+	if available <= 0.0:
+		return 0.0
+	var first := Vector2i((brush_pos-Vector2.ONE*radius).floor()).max(Vector2i.ZERO)
+	var last := Vector2i((brush_pos+Vector2.ONE*radius).ceil()).min(_map_size-Vector2i.ONE)
+	var target: Color = TARGET_WEIGHTS[material_index]
+	var pixel_area := 1.0/(pixels_per_unit*pixels_per_unit)
+	var used := 0.0
+	var changed := false
+	for y in range(first.y,last.y+1):
+		for x in range(first.x,last.x+1):
+			var distance := (Vector2(x,y)+Vector2(0.5,0.5)).distance_to(brush_pos)
 			if distance >= radius:
 				continue
-			var amount := 1.0 - smoothstep(radius * clampf(hardness, 0.0, 0.99), radius, distance)
-			_paint_tex.set_pixel(x, y, _paint_tex.get_pixel(x, y).lerp(target, amount))
+			var amount := 1.0-smoothstep(radius*clampf(hardness,0.0,0.99),radius,distance)
+			var old_color := _paint_tex.get_pixel(x,y)
+			var old_influence := _paint_influence.get_pixel(x,y)
+			var old_bare := _bare_soil.get_pixel(x,y)
+			var nature := _nature_at_pixel(x,y)
+			var before := _resource_weight(old_color+nature*(1.0-old_influence.r),material_index)
+			_paint_tex.set_pixel(x,y,old_color.lerp(target,amount))
+			_paint_influence.set_pixel(x,y,Color(lerpf(old_influence.r,1.0,amount),0,0,1))
+			_bare_soil.set_pixel(x,y,Color(old_bare.r*(1.0-amount),0,0,1))
+			var new_color := _paint_tex.get_pixel(x,y)
+			var new_influence := _paint_influence.get_pixel(x,y)
+			var new_bare := _bare_soil.get_pixel(x,y)
+			var after := _resource_weight(new_color+nature*(1.0-new_influence.r),material_index)
+			var cost := maxf(0.0,after-before)*pixel_area
+			if cost > available-used+0.000000001:
+				_paint_tex.set_pixel(x,y,old_color)
+				_paint_influence.set_pixel(x,y,old_influence)
+				_bare_soil.set_pixel(x,y,old_bare)
+				if changed:
+					_queue_upload()
+				return used
+			used += cost
+			changed = changed or old_color != new_color or old_influence != new_influence or old_bare != new_bare
+	if changed:
+		_queue_upload()
+	return used
+
+func harvest_ground(world_position: Vector3, radius: float) -> PackedFloat64Array:
+	var result := PackedFloat64Array([0,0,0,0,0])
+	var point := _world_to_mask(world_position)
+	if not _contains_mask_point(point):
+		end_stroke()
+		return result
+	var steps := 1
+	if _has_previous_stamp and _last_material == -2:
+		steps = maxi(1,ceili(_last_paint_position.distance_to(point)/maxf(1.0,radius*0.35)))
+	else:
+		_last_paint_position = point
+	for step in range(1,steps+1):
+		var center := _last_paint_position.lerp(point,float(step)/steps)
+		var first := Vector2i((center-Vector2.ONE*radius).floor()).max(Vector2i.ZERO)
+		var last := Vector2i((center+Vector2.ONE*radius).ceil()).min(_map_size-Vector2i.ONE)
+		var pixel_area := 1.0/(pixels_per_unit*pixels_per_unit)
+		for y in range(first.y,last.y+1):
+			for x in range(first.x,last.x+1):
+				if (Vector2(x,y)+Vector2(0.5,0.5)).distance_squared_to(center) >= radius*radius or _bare_soil.get_pixel(x,y).r >= 0.999:
+					continue
+				var cover := _coverage_at_pixel(x,y)
+				for kind in ResourceInventory.GROUND_TYPES:
+					result[kind] += _resource_weight(cover,kind)*pixel_area
+				_paint_tex.set_pixel(x,y,TARGET_WEIGHTS[1])
+				_paint_influence.set_pixel(x,y,Color(1,0,0,1))
+				_bare_soil.set_pixel(x,y,Color(1,0,0,1))
+	_last_paint_position = point
+	_last_material = -2
+	_has_previous_stamp = true
+	var total := 0.0
+	for quantity in result:
+		total += quantity
+	if total > 0.0:
+		_queue_upload()
+	return result
 
 func _create_height_surface() -> void:
 	_height_size = Vector2i(ceil(world_size / height_spacing)) + Vector2i.ONE
@@ -396,10 +530,7 @@ func _generate_starting_heights() -> void:
 	if not generate_on_start or starting_height_variation <= 0.0:
 		return
 	var random := RandomNumberGenerator.new()
-	if generation_seed == 0:
-		random.randomize()
-	else:
-		random.seed = generation_seed
+	random.seed = world_seed
 	var hills := FastNoiseLite.new()
 	hills.seed = random.randi_range(1,2147483647)
 	hills.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH

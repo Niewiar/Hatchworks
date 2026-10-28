@@ -3,13 +3,13 @@ extends CharacterBody3D
 
 @export var terrain_controller: TerrainController
 @export var animation_player: AnimationPlayer
-@export_range(0.5, 4.0, 0.1) var hold_height := 1.8
+@export var species_id: StringName = &"mossling"
+
+var hold_height := 1.8
+var _species: CreatureSpecies
 
 enum STATE { GROUNDED, HELD, FALLING, LANDING }
 
-const FOLLOW_SPEED := 14.0
-const ROTATION_SPEED := 9.0
-const MAX_TILT := 0.24
 
 var _state: STATE = STATE.GROUNDED
 var _ground_offset := 0.5
@@ -22,6 +22,11 @@ var _landing_elapsed := 0.0
 var _landing_strength := 0.0
 
 func _ready() -> void:
+	var database := load(GameDatabase.DEFAULT_PATH) as GameDatabase
+	_species = database.creature(species_id)
+	if _species == null:
+		_species = CreatureSpecies.new()
+	hold_height = _species.hold_height
 	_rest_rotation = rotation
 	if terrain_controller != null:
 		_ground_offset = global_position.y - terrain_controller.surface_position(global_position).y
@@ -88,17 +93,17 @@ func release() -> void:
 
 func _update_held(delta: float) -> void:
 	var previous := global_position
-	global_position = global_position.lerp(_hold_target, 1.0 - exp(-FOLLOW_SPEED * delta))
+	global_position = global_position.lerp(_hold_target, 1.0 - exp(-_species.follow_speed * delta))
 	var motion := Basis(Vector3.UP, _rest_rotation.y).inverse() * ((global_position - previous) / delta)
 	var target_rotation := _rest_rotation + Vector3(
-		clampf(motion.z * 0.045, -MAX_TILT, MAX_TILT),
+		clampf(motion.z * 0.045, -_species.maximum_tilt, _species.maximum_tilt),
 		clampf(-motion.x * 0.012, -0.1, 0.1),
-		clampf(-motion.x * 0.045, -MAX_TILT, MAX_TILT)
+		clampf(-motion.x * 0.045, -_species.maximum_tilt, _species.maximum_tilt)
 	)
 	_update_rotation(target_rotation, delta)
 
 func _update_rotation(target: Vector3, delta: float) -> void:
-	var weight := 1.0 - exp(-ROTATION_SPEED * delta)
+	var weight := 1.0 - exp(-_species.rotation_speed * delta)
 	rotation = Vector3(
 		lerp_angle(rotation.x, target.x, weight),
 		lerp_angle(rotation.y, target.y, weight),

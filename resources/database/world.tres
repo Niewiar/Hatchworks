@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="WorldBalance" format=3]
+[ext_resource type="Script" path="res://code/database/WorldBalance.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"default_world"
+display_name = "Default world"

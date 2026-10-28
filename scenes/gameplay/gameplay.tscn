@@ -6,6 +6,10 @@
 [ext_resource type="PackedScene" uid="uid://k8j1b0cw20hv" path="res://scenes/creatures/mossling.tscn" id="3_m3hu3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/tooltip_controller.tscn" id="5_tooltips"]
 
+[ext_resource type="PackedScene" path="res://scenes/ui/resource_panel.tscn" id="resource_panel"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/terrain_resource_panel.tscn" id="terrain_resources"]
+
 [sub_resource type="Environment" id="Environment"]
 background_mode = 1
 background_color = Color(0.15, 0.2, 0.18, 1)
@@ -56,3 +60,9 @@ tooltip_controller = NodePath("../TooltipController")
 region_tooltip = NodePath("../TooltipController/RegionTooltip")
 
 [node name="TooltipController" parent="CanvasLayer" unique_id=306451366 instance=ExtResource("5_tooltips")]
+
+[node name="ResourcePanel" parent="CanvasLayer" node_paths=PackedStringArray("inventory") instance=ExtResource("resource_panel")]
+inventory = NodePath("../../Map/Inventory")
+
+[node name="TerrainResourcePanel" parent="CanvasLayer" node_paths=PackedStringArray("inventory") instance=ExtResource("terrain_resources")]
+inventory = NodePath("../../Map/Inventory")
