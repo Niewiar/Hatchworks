@@ -1,9 +1,8 @@
 shader_type spatial;
 render_mode diffuse_lambert, specular_disabled;
-uniform sampler2D paint_map : hint_default_transparent, filter_linear, repeat_disable;
-uniform sampler2D paint_influence : hint_default_black, filter_linear, repeat_disable;
+uniform sampler2D ground_map : hint_default_transparent, filter_linear, repeat_disable;
+uniform sampler2D ground_influence : hint_default_black, filter_linear, repeat_disable;
 uniform sampler2D nature_map : hint_default_transparent, filter_linear, repeat_disable;
-uniform sampler2D bare_map : hint_default_black, filter_linear, repeat_disable;
 uniform vec2 map_size = vec2(512.0);
 uniform vec2 world_size = vec2(16.0);
 uniform float water_level = -1000.0;
@@ -17,7 +16,6 @@ uniform float edge_roughness : hint_range(0.0, 6.0) = 2.5;
 uniform float transition_width : hint_range(0.0, 24.0, 0.5) = 10.0;
 uniform vec4 grass_tint : source_color = vec4(0.36, 0.43, 0.255, 1.0);
 uniform vec4 dirt_tint : source_color = vec4(0.47, 0.365, 0.255, 1.0);
-uniform vec4 moss_tint : source_color = vec4(0.285, 0.37, 0.205, 1.0);
 uniform vec4 sand_tint : source_color = vec4(0.70, 0.615, 0.435, 1.0);
 uniform vec4 rock_tint : source_color = vec4(0.48, 0.465, 0.395, 1.0);
 group_uniforms;
@@ -50,7 +48,7 @@ vec2 boundary_warp(vec2 p) {
 }
 
 vec4 ground_weights(vec2 uv) {
-	return clamp(texture(paint_map,uv) + texture(nature_map,uv) * (1.0-texture(paint_influence,uv).r),vec4(0.0),vec4(1.0));
+	return clamp(texture(ground_map,uv) + texture(nature_map,uv) * (1.0-texture(ground_influence,uv).r),vec4(0.0),vec4(1.0));
 }
 
 vec4 terrain_weights(vec2 uv, vec2 size, vec2 p) {
@@ -157,24 +155,6 @@ vec3 dirt_surface(vec2 p, float macro, float middle) {
 	return add_pebbles(color, p, 0.15);
 }
 
-vec3 moss_surface(vec2 p, float macro, float middle) {
-	float carpet = ground_noise(p / 5.0 + 61.0);
-	float nap = ground_noise(p / 1.6 + 31.0);
-	float grain = hash12(floor(p));
-	vec3 vegetation = mix(grass_tint.rgb, moss_tint.rgb, 0.92);
-	vec3 color = vegetation * (0.78 + macro * 0.23 + middle * 0.13);
-	color *= 1.0 + ((carpet - 0.5) * 0.18 + (nap - 0.5) * 0.19 + (grain - 0.5) * 0.07) * detail_strength;
-	color = mix(color, dirt_tint.rgb * 0.82, smoothstep(0.7, 0.9, middle) * 0.1);
-	vec2 cell = floor(p / 5.0);
-	vec2 random = hash22(cell + 131.0);
-	vec2 local = mod(p, 5.0) - vec2(1.2) - random * 2.3;
-	float active = step(hash12(cell + 211.0), (0.36 + carpet * 0.42) * detail_strength);
-	float frond = min(line_distance(local, vec2(-0.8, 0.4), vec2(0.0, -0.7)), line_distance(local, vec2(0.0, -0.7), vec2(1.0, 0.0)));
-	float leaf = (1.0 - smoothstep(0.18, 0.55, frond)) * active;
-	vec3 leaf_color = mix(vegetation * 1.18, grass_tint.rgb * 0.98, random.x * 0.5);
-	return mix(color, leaf_color, leaf * 0.72);
-}
-
 vec3 sand_surface(vec2 p, float macro, float middle) {
 	float grain = hash12(floor(p) + 83.0);
 	float waves = sin(p.x * 0.23 + p.y * 0.08 + ground_noise(p / 24.0) * 6.0);
@@ -211,6 +191,7 @@ void fragment() {
 	vec2 warp = boundary_warp(p);
 	vec2 mask_uv = (pixel + vec2(0.5) + warp) / size;
 	vec4 weights = terrain_weights(mask_uv, size, p);
+	weights.g = 0.0;
 	float grass = max(1.0 - dot(weights, vec4(1.0)), 0.0);
 	float highest = max(grass, max(max(weights.r, weights.g), max(weights.b, weights.a)));
 	float edge = 1.0 - smoothstep(0.55, 0.97, highest);
@@ -226,7 +207,6 @@ void fragment() {
 	vec3 color = vec3(0.0);
 	if (grass_coverage > 0.0) { color += grass_surface(p, macro, middle) * grass_coverage; }
 	if (coverage.r > 0.0) { color += dirt_surface(p, macro, middle) * coverage.r; }
-	if (coverage.g > 0.0) { color += moss_surface(p, macro, middle) * coverage.g; }
 	if (coverage.b > 0.0) { color += sand_surface(p, macro, middle) * coverage.b; }
 	if (coverage.a > 0.0) { color += rock_surface(p, macro, middle) * coverage.a; }
 	if (grass_coverage > 0.0001) {
@@ -244,8 +224,7 @@ void fragment() {
 			color = mix(color, leaf, marks.x * root_grass);
 		}
 	}
-	float bare = texture(bare_map,mask_uv).r;
-	color = mix(color,dirt_tint.rgb*(0.78+macro*0.18),bare*0.7);
+	color = mix(color,dirt_tint.rgb*(0.78+macro*0.18),weights.r*0.7);
 	float wet_shore = 1.0 - smoothstep(0.0, 0.22, ground_elevation - water_level);
 	color *= 1.0 - wet_shore * 0.20;
 	ALBEDO = clamp(color, vec3(0.0), vec3(1.0));

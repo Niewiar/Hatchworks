@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://b3hpw3fug50nl"]
+[gd_scene format=3 uid="uid://b3hpw3fug50nl"]
 
 [ext_resource type="Script" path="res://code/map/MapManager.gd" id="1"]
 [ext_resource type="Script" path="res://code/map/TerrainController.gd" id="2"]
@@ -8,7 +8,6 @@
 [ext_resource type="Script" path="res://code/contructions/fances/FancesController.gd" id="6"]
 
 [ext_resource type="Script" path="res://code/map/RegionsController.gd" id="7"]
-[ext_resource type="Shader" path="res://code/map/regions.gdshader" id="8"]
 
 [ext_resource type="Script" path="res://code/map/WaterController.gd" id="9"]
 [ext_resource type="Shader" path="res://code/map/water.gdshader" id="10"]
@@ -26,6 +25,14 @@
 [ext_resource type="ArrayMesh" path="res://assets/harvesting/pickaxe.res" id="24_pickaxe"]
 
 [ext_resource type="Resource" path="res://resources/database/game_database.tres" id="database"]
+
+[ext_resource type="Script" path="res://code/creatures/CreatureNavigation.gd" id="navigation"]
+[ext_resource type="Script" path="res://code/contructions/BuildingController.gd" id="buildings"]
+
+[ext_resource type="Script" path="res://code/discovery/DiscoveryController.gd" id="discoveries"]
+[ext_resource type="Script" path="res://code/resources/ItemInventory.gd" id="items"]
+
+[ext_resource type="PackedScene" path="res://scenes/incubation/incubator.tscn" id="starting_incubator"]
 
 [node name="Map" type="Node3D"]
 script = ExtResource("1")
@@ -54,10 +61,8 @@ brush_max_radius = 48
 unique_name_in_owner = true
 script = ExtResource("6")
 
-[node name="Regions" type="MeshInstance3D" parent="."]
-visible = false
+[node name="Regions" type="Node" parent="."]
 script = ExtResource("7")
-region_shader = ExtResource("8")
 [node name="Environment" type="Node" parent="."]
 script = ExtResource("11")
 
@@ -80,3 +85,16 @@ visible = false
 script = ExtResource("22_tool")
 axe_mesh = ExtResource("23_axe")
 pickaxe_mesh = ExtResource("24_pickaxe")
+
+[node name="Buildings" type="Node3D" parent="."]
+script = ExtResource("buildings")
+
+[node name="Navigation" type="Node" parent="."]
+script = ExtResource("navigation")
+
+[node name="Items" type="Node" parent="."]
+script = ExtResource("items")
+[node name="Discoveries" type="Node" parent="."]
+script = ExtResource("discoveries")
+
+[node name="Incubator" parent="Buildings" instance=ExtResource("starting_incubator")]

@@ -1,0 +1,39 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://code/contructions/FeederController.gd" id="script"]
+[ext_resource type="ArrayMesh" path="res://assets/constructions/feeder_body.res" id="body"]
+[ext_resource type="ArrayMesh" path="res://assets/constructions/feeder_food.res" id="food"]
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(2.4,0.92,1.1)
+[node name="Feeder" type="MeshInstance3D"]
+script = ExtResource("script")
+mesh = ExtResource("body")
+[node name="Food" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.72,0)
+mesh = ExtResource("food")
+visible = false
+[node name="Body" type="StaticBody3D" parent="."]
+collision_layer = 2
+collision_mask = 0
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+position = Vector3(0,0.5,0)
+shape = SubResource("shape")
+[node name="SupplyInput" type="Marker3D" parent="."]
+position = Vector3(1.46,0.76,0)
+rotation_degrees = Vector3(0,-90,0)
+[node name="FeedingSpots" type="Node3D" parent="."]
+[node name="FrontLeft" type="Marker3D" parent="FeedingSpots"]
+position = Vector3(-0.55,0,1.65)
+[node name="FrontRight" type="Marker3D" parent="FeedingSpots"]
+position = Vector3(0.55,0,1.65)
+[node name="BackLeft" type="Marker3D" parent="FeedingSpots"]
+position = Vector3(-0.55,0,-1.65)
+[node name="BackRight" type="Marker3D" parent="FeedingSpots"]
+position = Vector3(0.55,0,-1.65)
+[node name="Timer" type="Label3D" parent="."]
+position = Vector3(0,1.4,0)
+billboard = 1
+pixel_size = 0.004
+font_size = 28
+outline_size = 6
+text = "Feeder · 0 / 20"
+modulate = Color(0.9,0.95,0.78,1)

@@ -1,0 +1,35 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://code/ui/NotificationController.gd" id="script"]
+[node name="Notifications" type="MarginContainer"]
+propagate_maximum_size = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+z_index = 80
+script = ExtResource("script")
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 104
+theme_override_constants/margin_bottom = 18
+[node name="Scroll" type="ScrollContainer" parent="."]
+propagate_maximum_size = false
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(300,0)
+custom_maximum_size = Vector2(300,440)
+size_flags_horizontal = 8
+size_flags_vertical = 8
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 5
+mouse_filter = 1
+[node name="Stack" type="VBoxContainer" parent="Scroll"]
+propagate_maximum_size = true
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 6

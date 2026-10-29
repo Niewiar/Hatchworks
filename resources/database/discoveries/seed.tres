@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/seed.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"seed"
+display_name = "Seed"
+description = "A possibility waiting for water. Discovering it does not plant anything on the map."
+icon = ExtResource("icon")
+reward_item = &""
+reward_count = 0

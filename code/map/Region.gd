@@ -10,3 +10,5 @@ var water_area := 0.0
 var water_coverage: float:
 	get:
 		return water_area / area * 100.0 if area > 0.0 else 0.0
+
+var center := Vector3.ZERO

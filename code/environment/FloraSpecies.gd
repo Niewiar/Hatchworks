@@ -11,7 +11,6 @@ enum KIND { TREE, SHRUB, FERN, REEDS, GRASS }
 @export var minimum_scale := 0.8
 @export var maximum_scale := 1.2
 @export var growth_rate := 0.15
-@export var decay_rate := 0.2
 @export var canopy_radius := 0.0
 @export var trunk_radius := 0.12
 @export var trunk_height := 1.3
@@ -19,11 +18,10 @@ enum KIND { TREE, SHRUB, FERN, REEDS, GRASS }
 @export_group("Harvesting")
 @export var harvest_resource: ResourceInventory.KIND = ResourceInventory.KIND.FIBER
 @export var harvest_amount := 1
-@export var regrowth_delay := 20.0
 
 @export_group("Habitat")
-@export var moisture_range := Vector2(0.12, 1.01)
-@export var shade_range := Vector2(-0.01, 0.8)
 @export var maximum_slope := 0.6
 @export var water_depth_range := Vector2(-100.0, -0.015)
 @export_range(1, 100, 1) var hits_required := 4
+
+@export var ground_material := -1

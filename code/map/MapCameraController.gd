@@ -7,6 +7,12 @@ extends Camera3D
 
 var _world_size := Vector2(65.5, 65.5)
 var _orbit_center := Vector3.ZERO
+var _focused := false
+var _restoring := false
+var _focus_point := Vector3.ZERO
+var _saved_transform := Transform3D.IDENTITY
+var _saved_size := 9.0
+var _focus_size := 5.0
 
 func configure(world_size: Vector2) -> void:
 	_world_size = world_size
@@ -36,6 +42,9 @@ func orbit(horizontal_delta: float) -> void:
 	global_basis = (turn * global_basis).orthonormalized()
 
 func zoom(direction: int, screen_position: Vector2, surface: Node3D) -> void:
+	if _focused:
+		_focus_size = clampf(_focus_size*pow(0.9,direction),minimum_zoom,12.0)
+		return
 	var before = GroundPicker3D.from_screen(self, screen_position, surface)
 	size = clampf(size * pow(0.9, direction), minimum_zoom, maximum_zoom)
 	var after = GroundPicker3D.from_screen(self, screen_position, surface)
@@ -51,3 +60,44 @@ func _clamp_position(surface: Node3D) -> void:
 	local.x = clampf(local.x, -_world_size.x * 0.5, _world_size.x * 0.5)
 	local.z = clampf(local.z, -_world_size.y * 0.5, _world_size.y * 0.5)
 	global_position += surface.to_global(local) - focus
+
+func focus_on(point: Vector3) -> void:
+	if not _focused:
+		_saved_transform = global_transform
+		_saved_size = size
+		_focus_size = clampf(minf(size,5.0),minimum_zoom,maximum_zoom)
+	_focused = true
+	_restoring = false
+	_focus_point = point
+	set_process(true)
+
+func track_focus(point: Vector3) -> void:
+	_focus_point = point
+
+func release_focus() -> void:
+	if not _focused:
+		return
+	_focused = false
+	_restoring = true
+	set_process(true)
+
+func begin_navigation() -> void:
+	_restoring = false
+	set_process(_focused)
+
+func _process(delta: float) -> void:
+	var weight := 1.0-exp(-8.0*delta)
+	if _focused:
+		global_position = global_position.lerp(_focus_point+global_basis.z*20.0+global_basis.x*0.55,weight)
+		size = lerpf(size,_focus_size,weight)
+	elif _restoring:
+		global_position = global_position.lerp(_saved_transform.origin,weight)
+		global_basis = global_basis.slerp(_saved_transform.basis,weight).orthonormalized()
+		size = lerpf(size,_saved_size,weight)
+		if global_position.distance_to(_saved_transform.origin) < 0.01 and absf(size-_saved_size) < 0.01:
+			global_transform = _saved_transform
+			size = _saved_size
+			_restoring = false
+			set_process(false)
+	else:
+		set_process(false)

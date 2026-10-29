@@ -1,0 +1,121 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://code/ui/InspectionPanel.gd" id="script"]
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://scenes/ui/creature_card.tscn" id="creature"]
+[sub_resource type="StyleBoxFlat" id="SatietyFill"]
+bg_color = Color(0.52,0.7,0.26,1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+[sub_resource type="StyleBoxFlat" id="SatietyBackground"]
+bg_color = Color(0.1,0.16,0.11,1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+[node name="InspectionPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
+script = ExtResource("script")
+[node name="Position" type="MarginContainer" parent="."]
+propagate_maximum_size = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 104
+theme_override_constants/margin_bottom = 148
+[node name="Panel" type="PanelContainer" parent="Position"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+custom_minimum_size = Vector2(352,0)
+custom_maximum_size = Vector2(390,640)
+propagate_maximum_size = true
+size_flags_horizontal = 8
+size_flags_vertical = 4
+[node name="Scroll" type="ScrollContainer" parent="Position/Panel"]
+propagate_maximum_size = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 5
+custom_maximum_size = Vector2(-1,560)
+[node name="Content" type="VBoxContainer" parent="Position/Panel/Scroll"]
+propagate_maximum_size = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+[node name="Close" type="Button" parent="Position/Panel/Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Close focus · RMB"
+[node name="CreatureCard" parent="Position/Panel/Scroll/Content" instance=ExtResource("creature")]
+unique_name_in_owner = true
+layout_mode = 2
+[node name="Generic" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
+propagate_maximum_size = true
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+[node name="Title" type="Label" parent="Position/Panel/Scroll/Content/Generic"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Incubator"
+[node name="Description" type="RichTextLabel" parent="Position/Panel/Scroll/Content/Generic"]
+unique_name_in_owner = true
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+[node name="EggChoice" type="OptionButton" parent="Position/Panel/Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+[node name="Status" type="Label" parent="Position/Panel/Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+[node name="Satiety" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
+propagate_maximum_size = true
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/Satiety"]
+propagate_maximum_size = true
+layout_mode = 2
+[node name="Label" type="Label" parent="Position/Panel/Scroll/Content/Satiety/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Satiety"
+[node name="SatietyValue" type="Label" parent="Position/Panel/Scroll/Content/Satiety/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "100%"
+[node name="SatietyBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/Satiety"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,16)
+layout_mode = 2
+mouse_filter = 2
+show_percentage = false
+theme_override_styles/fill = SubResource("SatietyFill")
+theme_override_styles/background = SubResource("SatietyBackground")
+[node name="Progress" type="ProgressBar" parent="Position/Panel/Scroll/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+show_percentage = false
+[node name="Action" type="Button" parent="Position/Panel/Scroll/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "Start incubation"

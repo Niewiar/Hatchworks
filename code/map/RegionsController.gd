@@ -1,11 +1,9 @@
 class_name RegionsController
-extends MeshInstance3D
+extends Node
 
 signal regions_changed
-signal region_hovered(region: Region)
 
 @export_range(0.125, 1.0, 0.125) var cell_size := 0.25
-@export var region_shader: Shader
 
 var _terrain: TerrainController
 var _fences: FenceController
@@ -14,13 +12,9 @@ var _grid_size := Vector2i.ZERO
 var _cell_extent := Vector2.ZERO
 var _region_ids := PackedInt32Array()
 var _regions: Dictionary[int, Region] = {}
-var _region_material: ShaderMaterial
-var _region_texture: ImageTexture
-var _hovered_region: Region
 var _rebuild_pending := false
 var _coverage_dirty := true
 var _water_coverage_dirty := true
-var _view_active := false
 
 func initialize(terrain: TerrainController, fences: FenceController, water: WaterController) -> void:
 	_terrain = terrain
@@ -28,33 +22,11 @@ func initialize(terrain: TerrainController, fences: FenceController, water: Wate
 	_water = water
 	_grid_size = Vector2i(ceil(terrain.world_size / cell_size))
 	_cell_extent = terrain.world_size / Vector2(_grid_size)
-	var plane := terrain.create_surface_mesh()
-	plane.size = terrain.world_size
-	mesh = plane
-	global_transform = terrain.global_transform
-	global_position += terrain.global_basis.y.normalized() * 0.025
-	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_region_material = ShaderMaterial.new()
-	_region_material.shader = region_shader
-	_region_material.render_priority = 10
-	_region_material.set_shader_parameter("world_size", terrain.world_size)
-	_region_material.set_shader_parameter("grid_size", Vector2(_grid_size))
-	material_override = _region_material
-	terrain.bind_height_material(_region_material)
-	extra_cull_margin = maxf(absf(terrain.minimum_height),absf(terrain.maximum_height))
-	hide()
 	_fences.network_changed.connect(_queue_rebuild)
 	_terrain.terrain_changed.connect(_on_terrain_changed)
 	_terrain.height_changed.connect(_on_water_changed)
 	_water.water_level_changed.connect(_on_water_changed)
 	_queue_rebuild()
-
-func activate_view(active: bool) -> void:
-	_view_active = active
-	visible = active and not _rebuild_pending
-	clear_hover()
-	if active and not _rebuild_pending:
-		_refresh_coverage()
 
 func get_region_at(world_position: Vector3) -> Region:
 	if _rebuild_pending or not _terrain.contains_world_point(world_position):
@@ -65,20 +37,6 @@ func get_region_at(world_position: Vector3) -> Region:
 	_refresh_coverage()
 	return _regions.get(_region_ids[cell.y * _grid_size.x + cell.x]) as Region
 
-func hover_at(world_position: Vector3) -> void:
-	var region := get_region_at(world_position)
-	if region == _hovered_region:
-		return
-	_hovered_region = region
-	_region_material.set_shader_parameter("hovered_region", region.id if region != null else 0)
-	region_hovered.emit(region)
-
-func clear_hover() -> void:
-	_hovered_region = null
-	if _region_material != null:
-		_region_material.set_shader_parameter("hovered_region", 0)
-	region_hovered.emit(null)
-
 func _world_to_grid(world_position: Vector3) -> Vector2:
 	var local := _terrain.to_local(world_position)
 	return (Vector2(local.x, local.z) + _terrain.world_size * 0.5) / _cell_extent
@@ -87,8 +45,6 @@ func _queue_rebuild() -> void:
 	if _rebuild_pending:
 		return
 	_rebuild_pending = true
-	hide()
-	clear_hover()
 	_rebuild.call_deferred()
 
 func _rebuild() -> void:
@@ -121,6 +77,7 @@ func _rebuild() -> void:
 			var index := queue[head]
 			head += 1
 			region.cell_count += 1
+			region.center += Vector3(index%_grid_size.x,0,index/_grid_size.x)
 			var x := index % _grid_size.x
 			var y := index / _grid_size.x
 			if x == 0 or y == 0 or x == _grid_size.x - 1 or y == _grid_size.y - 1:
@@ -142,22 +99,12 @@ func _rebuild() -> void:
 				queue[tail] = index + _grid_size.x
 				tail += 1
 		region.area = region.cell_count * _cell_extent.x * _cell_extent.y
-	var ids := PackedFloat32Array()
-	ids.resize(count)
-	for index in count:
-		ids[index] = float(_region_ids[index])
-	var image := Image.create_from_data(_grid_size.x, _grid_size.y, false, Image.FORMAT_RF, ids.to_byte_array())
-	if _region_texture == null:
-		_region_texture = ImageTexture.create_from_image(image)
-	else:
-		_region_texture.update(image)
-	_region_material.set_shader_parameter("region_map", _region_texture)
+		var center := Vector2(region.center.x,region.center.z)/region.cell_count
+		center = (center+Vector2(0.5,0.5))*_cell_extent-_terrain.world_size*0.5
+		region.center = _terrain.surface_position(_terrain.to_global(Vector3(center.x,0,center.y)))
 	_coverage_dirty = true
 	_water_coverage_dirty = true
 	_rebuild_pending = false
-	visible = _view_active
-	if _view_active:
-		_refresh_coverage()
 	regions_changed.emit()
 
 func _block_segment(first: Vector2, last: Vector2, radius: float) -> void:
@@ -175,17 +122,9 @@ func _block_segment(first: Vector2, last: Vector2, radius: float) -> void:
 
 func _on_terrain_changed() -> void:
 	_coverage_dirty = true
-	if _view_active:
-		_refresh_coverage()
-		if _hovered_region != null:
-			region_hovered.emit(_hovered_region)
 
 func _on_water_changed() -> void:
 	_water_coverage_dirty = true
-	if _view_active:
-		_refresh_water_coverage()
-		if _hovered_region != null:
-			region_hovered.emit(_hovered_region)
 
 func _refresh_water_coverage() -> void:
 	if not _water_coverage_dirty or _rebuild_pending:
@@ -223,14 +162,12 @@ func _refresh_coverage() -> void:
 			continue
 		var offset := index * 4
 		var dirt := float(samples[offset]) / 255.0
-		var moss := float(samples[offset + 1]) / 255.0
 		var sand := float(samples[offset + 2]) / 255.0
 		var rock := float(samples[offset + 3]) / 255.0
-		var grass := maxf(0, 1.0 - dirt - moss - sand - rock)
+		var grass := maxf(0, 1.0 - dirt - sand - rock)
 		var weights := totals[id]
 		weights[0] += grass
 		weights[1] += dirt
-		weights[2] += moss
 		weights[3] += sand
 		weights[4] += rock
 		totals[id] = weights
@@ -242,3 +179,9 @@ func _refresh_coverage() -> void:
 		for index in 5:
 			region.terrain_coverage[index] = weights[index] / maxf(total, 0.0001) * 100.0
 	_coverage_dirty = false
+
+func region_id_at(world_position: Vector3) -> int:
+	if _rebuild_pending or not _terrain.contains_world_point(world_position):
+		return 0
+	var cell := Vector2i(_world_to_grid(world_position).floor()).clamp(Vector2i.ZERO,_grid_size-Vector2i.ONE)
+	return _region_ids[cell.y*_grid_size.x+cell.x]

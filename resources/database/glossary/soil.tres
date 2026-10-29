@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GlossaryEntry" format=3]
+[ext_resource type="Script" path="res://code/database/GlossaryEntry.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/gather_ground.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"soil"
+display_name = "Dry soil"
+description = "Bare soil above the waterline gives Tuftlings room to sow grass. Grassy ground with space for new tufts is also suitable."
+keywords = PackedStringArray("soil")
+icon = ExtResource("icon")

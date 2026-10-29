@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/water.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"water"
+display_name = "Water"
+description = "Revealed by lowering the ground below the water level. Tuftlings need water to bathe."
+icon = ExtResource("icon")
+reward_item = &""
+reward_count = 0

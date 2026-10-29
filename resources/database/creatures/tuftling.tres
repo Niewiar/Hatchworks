@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
+[ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/tuftling.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"tuftling"
+display_name = "Tuftling"
+scene = ExtResource("2")
+
+description = "After bathing, a Tuftling carries water and seeds in its coat. Shaking on bare soil, it creates grassy ground and sows fresh grass tufts, bringing the empty landscape to life."

@@ -41,6 +41,7 @@ func _apply_level() -> void:
 	if _terrain == null or _water_material == null:
 		return
 	global_position = _terrain.to_global(Vector3(0, water_level, 0))
+	_terrain.surface_water_level = water_level
 	_water_material.set_shader_parameter("water_level", water_level)
 	var ground_material := _terrain.material_override as ShaderMaterial
 	if ground_material != null:

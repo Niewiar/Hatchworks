@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GlossaryEntry" format=3 uid="uid://c42igad2yxd0o"]
+
+[ext_resource type="Script" uid="uid://bki0w5epgofuo" path="res://code/database/GlossaryEntry.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+keywords = PackedStringArray("grass")
+id = &"grass"
+display_name = "Grassy ground"
+description = "Tuftlings create grassy ground and grass tufts on dry soil. Gathering the tufts yields Plant Fiber and leaves the grassy ground intact."

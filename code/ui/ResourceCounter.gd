@@ -23,4 +23,4 @@ func initialize(inventory: ResourceInventory) -> void:
 
 func _on_changed(kind: int, _amount: float) -> void:
 	if kind == resource_kind:
-		_value.text = _inventory.quantity_text(resource_kind)+(" m²" if resource_kind in ResourceInventory.GROUND_TYPES else "")
+		_value.text = _inventory.quantity_text(resource_kind)

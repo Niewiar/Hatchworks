@@ -1,22 +1,32 @@
 @tool
 extends RefCounted
 
-const CATEGORIES := ["Creatures","Flora","Resources","Deposits","Construction","World Balance"]
+const CATEGORIES := ["Discoveries","Recipes","Creatures","Eggs","Flora","Resources","Deposits","Construction","Buildings","Glossary","World Balance"]
 const SCRIPTS := {
+	"Discoveries": preload("res://code/database/DiscoveryDefinition.gd"),
+	"Recipes": preload("res://code/database/DiscoveryRecipe.gd"),
+	"Buildings": preload("res://code/database/BuildingDefinition.gd"),
+	"Eggs": preload("res://code/database/EggDefinition.gd"),
+	"Glossary": preload("res://code/database/GlossaryEntry.gd"),
 	"Creatures": preload("res://code/database/CreatureSpecies.gd"),
 	"Flora": preload("res://code/environment/FloraSpecies.gd"),
 	"Resources": preload("res://code/database/ResourceDefinition.gd"),
 	"Deposits": preload("res://code/database/DepositDefinition.gd"),
 	"Construction": preload("res://code/contructions/fances/FenceData.gd")
 }
-const FOLDERS := {"Creatures":"creatures","Flora":"flora","Resources":"resources","Deposits":"deposits","Construction":"construction"}
+const FOLDERS := {"Discoveries":"discoveries","Recipes":"recipes","Buildings":"buildings","Eggs":"eggs","Glossary":"glossary","Creatures":"creatures","Flora":"flora","Resources":"resources","Deposits":"deposits","Construction":"construction"}
 const COLUMNS := {
+	"Discoveries":["display_name","reward_item","reward_count"],
+	"Recipes":["display_name","first","second","result"],
+	"Buildings":["display_name","wood_cost","stone_cost","fiber_cost"],
+	"Eggs":["display_name","incubation_seconds","creature_id"],
+	"Glossary":["display_name","id"],
 	"Creatures":["display_name","hold_height","follow_speed","rotation_speed","maximum_tilt"],
-	"Flora":["display_name","density","growth_rate","harvest_amount","regrowth_delay"],
+	"Flora":["display_name","density","growth_rate","harvest_amount"],
 	"Resources":["display_name","kind","starting_amount"],
 	"Deposits":["display_name","density","hits_required","harvest_amount"],
 	"Construction":["display_name","material_per_meter","material_per_post","max_health"],
-	"World Balance":["display_name","water_level","wetting_speed","drying_speed","ground_change_speed"]
+	"World Balance":["display_name","water_level","starting_height_variation","sculpt_speed","gather_interval"]
 }
 
 static func field(key: String, label: String, type: String = "text", low: float = 0.0, high: float = 10000.0, step: float = 0.01, choices: Array = []) -> Dictionary:
@@ -25,18 +35,28 @@ static func field(key: String, label: String, type: String = "text", low: float 
 static func fields(category: String) -> Array:
 	var result := [field("id","Stable ID"),field("display_name","Name"),field("description","Description","multiline")]
 	match category:
+		"Discoveries":
+			result.append_array([field("icon","Icon","Texture2D"),field("reward_item","First discovery reward","item"),field("reward_count","First discovery quantity","number",0,100,1)])
+		"Recipes":
+			result.append_array([field("first","Ingredient A","discovery"),field("second","Ingredient B","discovery"),field("result","Result","discovery")])
 		"Creatures":
-			result.append_array([field("scene","Creature scene","PackedScene"),field("icon","Icon","Texture2D"),field("hold_height","Hold height (m)","number",0.5,4,0.1),field("follow_speed","Hold follow speed","number",0.1,50,0.1),field("rotation_speed","Rotation speed","number",0.1,50,0.1),field("maximum_tilt","Maximum tilt (rad)","number",0,0.8,0.01)])
+			result.append_array([field("scene","Creature scene","PackedScene"),field("icon","Icon","Texture2D"),field("hold_height","Hold height (m)","number",0.5,4,0.1),field("follow_speed","Hold follow speed","number",0.1,50,0.1),field("rotation_speed","Rotation speed","number",0.1,50,0.1),field("maximum_tilt","Maximum tilt (rad)","number",0,0.8,0.01),field("walk_speed","Walking speed (m/s)","number",0.2,5,0.1),field("swim_speed","Swimming speed (m/s)","number",0.2,5,0.1),field("minimum_swim_depth","Bathing depth (m)","number",0.1,1,0.05),field("bathing_seconds","Bathing duration (s)","number",1,30,0.5),field("shaking_seconds","Shaking duration (s)","number",0.5,10,0.1),field("resting_seconds","Rest duration (s)","number",0.5,30,0.5),field("grass_per_cycle","Grass tufts per cycle","number",1,12,1),field("grass_radius","Grass patch radius (m)","number",0.4,3,0.1),field("food_resource","Food","resource"),field("food_per_feeding","Food per feeding","number",1,10,1),field("satiety_seconds","Full satiety duration (s)","number",30,3600,1),field("feeding_threshold","Seek food below (%)","number",1,90,1),field("satiety_per_meal","Satiety restored per meal (%)","number",1,100,1),field("feeding_seconds","Eating duration (s)","number",0.5,10,0.1)])
 		"Flora":
-			result.append_array([field("kind","Plant type","enum",0,4,1,["Tree","Shrub","Fern","Reeds","Grass"]),field("variants","Mesh variants · one path per line","meshes"),field("density","Candidates per m²","number",0,2,0.001),field("spacing","Spacing (m)","number",0.1,20,0.05),field("minimum_scale","Minimum scale","number",0.1,4,0.05),field("maximum_scale","Maximum scale","number",0.1,4,0.05),field("growth_rate","Growth per second","number",0,5,0.001),field("decay_rate","Decay per second","number",0,5,0.001),field("moisture_range","Moisture range (0–1)","vector",-0.01,1.01,0.01),field("shade_range","Shade range (0–1)","vector",-0.01,1.01,0.01),field("maximum_slope","Maximum slope (rise / run)","number",0,4,0.01),field("water_depth_range","Water depth range (m)","vector",-100,20,0.005),field("canopy_radius","Canopy radius (m)","number",0,10,0.05),field("trunk_radius","Trunk radius (m)","number",0.01,2,0.01),field("trunk_height","Trunk height (m)","number",0.1,10,0.1),field("harvest_resource","Harvest resource","resource"),field("harvest_amount","Harvest amount","number",1,10000,1),field("hits_required","Tree hits required","number",1,100,1),field("regrowth_delay","Regrowth delay (s)","number",0,10000,1)])
+			result.append_array([field("kind","Plant type","enum",0,4,1,["Tree","Shrub","Fern","Reeds","Grass"]),field("variants","Mesh variants · one path per line","meshes"),field("density","Candidates per m²","number",0,2,0.001),field("spacing","Spacing (m)","number",0.1,20,0.05),field("minimum_scale","Minimum scale","number",0.1,4,0.05),field("maximum_scale","Maximum scale","number",0.1,4,0.05),field("growth_rate","Growth per second","number",0,5,0.001),field("maximum_slope","Maximum slope (rise / run)","number",0,4,0.01),field("water_depth_range","Water depth range (m)","vector",-100,20,0.005),field("canopy_radius","Canopy radius (m)","number",0,10,0.05),field("trunk_radius","Trunk radius (m)","number",0.01,2,0.01),field("trunk_height","Trunk height (m)","number",0.1,10,0.1),field("harvest_resource","Harvest resource","resource"),field("harvest_amount","Harvest amount","number",1,10000,1),field("hits_required","Tree hits required","number",1,100,1),field("ground_material","Ground material ID (-1 any)","number",-1,4,1)])
+		"Eggs":
+			result.append_array([field("creature_id","Creature species","creature"),field("model","Breakable egg scene","PackedScene"),field("incubation_seconds","Incubation (s)","number",1,3600,1)])
+		"Glossary":
+			result.append_array([field("keywords","Keywords · one per line","words"),field("icon","Icon","Texture2D")])
 		"Resources":
 			result.append_array([field("kind","Numeric ID","number",0,100000,1),field("icon","Icon","Texture2D"),field("starting_amount","Starting amount","number",0,1000000,0.1)])
 		"Deposits":
 			result.append_array([field("variants","Mesh variants · one path per line","meshes"),field("material","Material","Material"),field("density","Deposits per m²","number",0,0.1,0.001),field("spacing","Spacing (m)","number",0.1,8,0.1),field("minimum_scale","Minimum scale","number",0.1,4,0.05),field("maximum_scale","Maximum scale","number",0.1,4,0.05),field("harvest_resource","Harvest resource","resource"),field("hits_required","Hits required","number",1,100,1),field("harvest_amount","Base harvest amount","number",1,10000,1)])
 		"Construction":
 			result.append_array([field("material_kind","Geometry","enum",0,1,1,["Wood","Stone"]),field("ui_icon","Icon","Texture2D"),field("max_span_length","Maximum span (terrain px)","number",24,160,1),field("height","Height (terrain px)","number",16,100,1),field("post_width","Post width (terrain px)","number",6,32,1),field("thickness","Thickness (terrain px)","number",3,24,1),field("body_color","Body color","color"),field("highlight_color","Highlight color","color"),field("outline_color","Outline color","color"),field("max_health","Span health","number",1,100000,1),field("post_max_health","Post health","number",1,100000,1),field("post_priority","Junction post priority","number",0,100,1),field("construction_resource","Construction resource","resource"),field("material_per_meter","Material per meter","number",0,1000,0.1),field("material_per_post","Material per post","number",0,1000,1)])
+		"Buildings":
+			result.append_array([field("scene","Building scene","PackedScene"),field("icon","Icon","Texture2D"),field("wood_cost","Wood cost","number",0,10000,1),field("stone_cost","Stone cost","number",0,10000,1),field("fiber_cost","Plant Fiber cost","number",0,10000,1),field("footprint_radius","Footprint radius (m)","number",0.25,8,0.05),field("maximum_height_difference","Maximum ground height difference (m)","number",0,1,0.01),field("required_discovery","Required discovery","discovery"),field("kit_item","Construction kit item ID"),field("storage_capacity","Food storage capacity (feeder)","number",1,1000,1)])
 		"World Balance":
-			result.append_array([field("water_level","Water level (m)","number",-4,6,0.05),field("starting_height_variation","Starting height variation (m)","number",0,4,0.1),field("terrain_wavelength","Terrain wavelength (m)","number",8,64,1),field("spawn_clearing_radius","Spawn clearing radius (m)","number",0,8,0.25),field("sculpt_speed","Sculpt speed (m/s)","number",0.1,4,0.1),field("maximum_sculpt_slope","Maximum sculpt slope (deg)","number",10,60,1),field("wetting_speed","Wetting per second","number",0.05,2,0.05),field("drying_speed","Drying per second","number",0.01,0.5,0.01),field("ground_change_speed","Ground change speed","number",0.05,1,0.05),field("gather_interval","Gather interval (s)","number",0.05,1,0.01)])
+			result.append_array([field("generate_nature_on_start","Generate natural terrain and resources at start","boolean"),field("water_level","Water level (m)","number",-4,6,0.05),field("starting_height_variation","Starting height variation (m)","number",0,4,0.1),field("terrain_wavelength","Terrain wavelength (m)","number",8,64,1),field("spawn_clearing_radius","Spawn clearing radius (m)","number",0,8,0.25),field("sculpt_speed","Sculpt speed (m/s)","number",0.1,4,0.1),field("maximum_sculpt_slope","Maximum sculpt slope (deg)","number",10,60,1),field("gather_interval","Gather interval (s)","number",0.05,1,0.01),field("starting_pond_radius","Starting pond radius (m)","number",0,5,0.1),field("starting_pond_offset","Starting pond offset","vector",-20,20,0.5)])
 	return result
 
 static func label_for(category: String, key: String) -> String:
@@ -59,7 +79,7 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 		if data == null:
 			continue
 		if data.kind < 0 or data.kind in ResourceInventory.RESERVED_KINDS or kinds.has(data.kind):
-			errors.append("Resources: numeric ID must be unique, nonnegative and outside reserved IDs 1, 7 and 8 (%s)." % data.id)
+			errors.append("Resources: numeric ID must be unique, nonnegative and outside reserved IDs 0, 1, 2, 3, 4, 7 and 8 (%s)." % data.id)
 		kinds[data.kind] = data
 	for category in CATEGORIES:
 		var ids: Dictionary = {}
@@ -78,7 +98,7 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 				var value: Variant = entry.get(data.key)
 				if data.type == "number" and (not is_finite(float(value)) or float(value) < data.min or float(value) > data.max):
 					errors.append(title+": "+data.label+" is outside its allowed range.")
-				if data.type == "vector" and (not value.is_finite() or value.x >= value.y):
+				if data.type == "vector" and (not value.is_finite() or (data.key != "starting_pond_offset" and value.x >= value.y)):
 					errors.append(title+": "+data.label+" requires minimum < maximum.")
 				if data.type == "resource" and not kinds.has(value):
 					errors.append(title+": unknown "+data.label.to_lower()+".")
@@ -87,6 +107,8 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 					errors.append(title+": at least one valid mesh is required.")
 				if entry.minimum_scale > entry.maximum_scale:
 					errors.append(title+": minimum scale exceeds maximum scale.")
+			if entry is BuildingDefinition and entry.scene == null:
+				errors.append(title+": building scene is required.")
 			if entry is CreatureSpecies:
 				if entry.scene == null:
 					errors.append(title+": creature scene is required.")
@@ -94,6 +116,59 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 					var root_type: StringName = entry.scene.get_state().get_node_type(0)
 					if not root_type.is_empty() and not ClassDB.is_parent_class(root_type,&"Node3D"):
 						errors.append(title+": creature scene must have a 3D root.")
+			if entry is EggDefinition:
+				if database.creature(entry.creature_id) == null:
+					errors.append(title+": unknown creature species.")
+				if entry.model == null:
+					errors.append(title+": breakable egg scene is required.")
+				else:
+					var state: SceneState = entry.model.get_state()
+					var controller: Script
+					var fragments := 0
+					for index in state.get_node_property_count(0):
+						if state.get_node_property_name(0,index) == &"script":
+							controller = state.get_node_property_value(0,index) as Script
+					for index in state.get_node_count():
+						if state.get_node_type(index) == &"RigidBody3D":
+							fragments += 1
+					var valid_controller := false
+					while controller != null:
+						if controller.get_global_name() == &"EggShell":
+							valid_controller = true
+							break
+						controller = controller.get_base_script()
+					if not valid_controller or fragments < 3:
+						errors.append(title+": egg scene requires an EggShell controller and at least three rigid shell fragments.")
+			if entry is FloraSpecies and entry.ground_material not in [-1,0,1,3,4]:
+				errors.append(title+": unsupported ground material.")
+	var pairs := {}
+	for recipe: DiscoveryRecipe in database.recipes:
+		for id in [recipe.first,recipe.second,recipe.result]:
+			if database.discovery(id) == null:
+				errors.append("Recipes / %s: unknown discovery %s." % [recipe.display_name,id])
+		var parts := [str(recipe.first),str(recipe.second)]
+		parts.sort()
+		var pair := "|".join(parts)
+		if pairs.has(pair):
+			errors.append("Recipes: duplicate ingredient pair "+pair)
+		pairs[pair] = true
+	for entry: DiscoveryDefinition in database.discoveries:
+		if entry.reward_count > 0:
+			var valid_item := database.egg(entry.reward_item) != null
+			for building: BuildingDefinition in database.buildings:
+				valid_item = valid_item or (not building.kit_item.is_empty() and building.kit_item == entry.reward_item)
+			if not valid_item:
+				errors.append("Discoveries / %s: unknown reward item." % entry.display_name)
+	for building: BuildingDefinition in database.buildings:
+		if not building.required_discovery.is_empty() and database.discovery(building.required_discovery) == null:
+			errors.append("Buildings / %s: unknown required discovery." % building.display_name)
+	if database.buildings.is_empty():
+		errors.append("Buildings: at least one building is required.")
+	if database.eggs.is_empty():
+		errors.append("Eggs: at least one egg is required.")
+	for term in ["soil","water","grass","fiber"]:
+		if database.term(term) == null:
+			errors.append("Glossary: missing built-in term "+term+".")
 	for kind in ResourceInventory.KIND.values():
 		if not kinds.has(kind):
 			errors.append("Resources: missing built-in numeric ID %d." % kind)
@@ -101,8 +176,8 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 		errors.append("Construction: at least one fence definition is required.")
 	if database.world == null:
 		errors.append("World Balance: missing world settings.")
-	if database.creature(&"mossling") == null:
-		errors.append("Creatures: the existing Mossling requires stable ID mossling.")
+	if database.creature(&"tuftling") == null:
+		errors.append("Creatures: the existing Tuftling requires stable ID tuftling.")
 	return errors
 
 static func summary(entry: Resource) -> String:
@@ -112,10 +187,7 @@ static func summary(entry: Resource) -> String:
 		if entry.kind == FloraSpecies.KIND.TREE:
 			return "%.2f base resources / hit
 Trees are removed permanently after harvesting." % (float(entry.harvest_amount)/entry.hits_required)
-		var cycle: float = entry.regrowth_delay+0.6/maxf(entry.growth_rate,0.000001)
-		return "%.1f s until harvestable again
-≈ %.2f resources / minute per plant
-Assumes suitable habitat; gathering starts at 60%% growth." % [cycle,60.0*entry.harvest_amount/cycle] if entry.growth_rate > 0 else "Growth is disabled. Harvested plants will not regrow."
+		return "Harvest: %d resources\nPlants do not regrow after gathering. Creatures sow new patches.\nGrowth rate applies only to newly sown plants." % entry.harvest_amount
 	if entry is DepositDefinition:
 		return "%.2f base resources / hit
 Yield scales with deposit size. Depleted deposits are removed." % (float(entry.harvest_amount)/entry.hits_required)
@@ -127,10 +199,45 @@ Assumes 32 terrain pixels / meter and no reused posts." % [ceili(10.0*entry.mate
 	if entry is ResourceDefinition:
 		return "Unit: %s
 Starting stock: %.1f
-Built-in numeric IDs keep their gameplay roles." % ["m²" if entry.kind in ResourceInventory.GROUND_TYPES else "items",entry.starting_amount]
+Built-in numeric IDs keep their gameplay roles." % ["items",entry.starting_amount]
+
 	if entry is CreatureSpecies:
-		return "Hold height: %.1f m
-Scene instances select this definition through Species ID.
-Needs and production can be added when those systems exist." % entry.hold_height
-	return "Changes apply when starting a new game.
-Initial terrain generation and environment simulation use these values."
+		return "Food per meal: %d\nFull satiety lasts %.0f s. At 0%%, only seeking food remains active.\nGrass tufts per cycle: %d" % [entry.food_per_feeding,entry.satiety_seconds,entry.grass_per_cycle]
+	if entry is BuildingDefinition:
+		return "Build cost: %d Wood, %d Stone, %d Plant Fiber\nPlace on dry, level ground." % [entry.wood_cost,entry.stone_cost,entry.fiber_cost]
+	if entry is EggDefinition:
+		return "Incubation: %.0f s\nConsumes one owned egg when started.\nCreature species: %s" % [entry.incubation_seconds,entry.creature_id]
+	if entry is DiscoveryDefinition:
+		return "First discovery reward: %d item(s).\nRecipes for this discovery are listed below." % entry.reward_count if entry.reward_count > 0 else "A reusable concept. Recipes for this discovery are listed below."
+	if entry is DiscoveryRecipe:
+		return "Choose Ingredient A, Ingredient B and Result in the recipe editor."
+	if entry is GlossaryEntry:
+		return "Hover descriptions are shared by creature cards and inspection."
+	return "Changes apply when starting a new game. No moisture simulation or spontaneous plant regrowth."
+
+static func value_text(database: GameDatabase, entry: Resource, key: String) -> String:
+	var value: Variant = entry.get(key)
+	if (entry is DiscoveryRecipe and key in ["first","second","result"]) or (entry is BuildingDefinition and key == "required_discovery"):
+		var discovery := database.discovery(StringName(value))
+		return discovery.display_name if discovery != null else ("None" if str(value).is_empty() else str(value)+" (missing)")
+	if entry is DiscoveryDefinition and key == "reward_item":
+		if str(value).is_empty():
+			return "None"
+		var egg := database.egg(StringName(value))
+		if egg != null:
+			return egg.display_name
+		for building: BuildingDefinition in database.buildings:
+			if building.kit_item == value:
+				return building.display_name+" kit"
+	return str(value)
+
+static func recipe_error(database: GameDatabase, first: StringName, second: StringName, result: StringName, except: DiscoveryRecipe = null) -> String:
+	if first.is_empty() or second.is_empty() or result.is_empty():
+		return "Choose both ingredients and a result."
+	for id in [first,second,result]:
+		if database.discovery(id) == null:
+			return "Unknown discovery: "+str(id)
+	for recipe: DiscoveryRecipe in database.recipes:
+		if recipe != except and recipe.matches(first,second):
+			return "This ingredient pair already belongs to: "+recipe.display_name
+	return ""

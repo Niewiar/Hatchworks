@@ -10,12 +10,13 @@ func show_entry(entry: Resource) -> void:
 		child.queue_free()
 	$Icon.hide()
 	$Icon.texture = null
-	if entry is ResourceDefinition or entry is FanceData:
-		$Icon.texture = entry.icon if entry is ResourceDefinition else entry.ui_icon
+	if entry is ResourceDefinition or entry is DiscoveryDefinition or entry is FanceData:
+		$Icon.texture = entry.ui_icon if entry is FanceData else entry.icon
 		$Icon.show()
 	var bounds := AABB()
-	if entry is CreatureSpecies and entry.scene != null:
-		var model: Node = entry.scene.instantiate()
+	if ((entry is CreatureSpecies or entry is BuildingDefinition) and entry.scene != null) or (entry is EggDefinition and entry.model != null):
+		var scene: PackedScene = entry.model if entry is EggDefinition else entry.scene
+		var model: Node = scene.instantiate()
 		if not model is Node3D:
 			model.free()
 			return

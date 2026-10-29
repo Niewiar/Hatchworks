@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="BuildingDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/BuildingDefinition.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/constructions/feeder.tscn" id="scene"]
+[ext_resource type="Texture2D" path="res://assets/ui/feeder.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"feeder"
+display_name = "Feeder"
+description = "A wooden food trough with a brass supply inlet. Fill it with Plant Fiber for hungry Tuftlings."
+scene = ExtResource("scene")
+icon = ExtResource("icon")
+wood_cost = 3
+stone_cost = 0
+fiber_cost = 2
+required_discovery = &"feeder"
+kit_item = &"feeder_kit"
+footprint_radius = 1.35
+storage_capacity = 20

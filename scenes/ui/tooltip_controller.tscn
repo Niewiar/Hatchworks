@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 [ext_resource type="Script" path="res://code/ui/TooltipController.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/region_tooltip.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/button_tooltip.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hint_tooltip.tscn" id="hint"]
 [node name="TooltipController" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -11,5 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1")
+z_index = 200
 [node name="ButtonTooltip" parent="." instance=ExtResource("3")]
-[node name="RegionTooltip" parent="." instance=ExtResource("2")]
+
+[node name="HintTooltip" parent="." instance=ExtResource("hint")]

@@ -3,10 +3,15 @@ extends CharacterBody3D
 
 @export var terrain_controller: TerrainController
 @export var animation_player: AnimationPlayer
-@export var species_id: StringName = &"mossling"
+@export var species_id: StringName = &"tuftling"
 
+var satiety := 100.0
 var hold_height := 1.8
 var _species: CreatureSpecies
+
+enum SEX { MALE, FEMALE }
+
+var sex: SEX = SEX.MALE
 
 enum STATE { GROUNDED, HELD, FALLING, LANDING }
 
@@ -27,6 +32,7 @@ func _ready() -> void:
 	if _species == null:
 		_species = CreatureSpecies.new()
 	hold_height = _species.hold_height
+	add_to_group("creatures")
 	_rest_rotation = rotation
 	if terrain_controller != null:
 		_ground_offset = global_position.y - terrain_controller.surface_position(global_position).y
@@ -133,3 +139,16 @@ func _finish_landing() -> void:
 func _reset_model_scale() -> void:
 	if _model != null:
 		_model.scale = _model_scale
+
+func species_data() -> CreatureSpecies:
+	return _species
+
+func inspection_bounds() -> AABB:
+	return AABB(Vector3(-0.55,-0.55,-0.55),Vector3(1.1,1.5,1.1))
+
+func _process(delta: float) -> void:
+	if _species != null:
+		satiety = maxf(0.0,satiety-100.0/maxf(_species.satiety_seconds,1.0)*delta)
+
+func restore_satiety(amount: float) -> void:
+	satiety = clampf(satiety+maxf(0.0,amount),0.0,100.0)

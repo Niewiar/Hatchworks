@@ -1,11 +1,11 @@
 class_name HarvestController
 extends Node
 
-enum TOOL { GROUND, PLANTS, AXE, MINING }
+enum TOOL { PLANTS = 1, AXE = 2, MINING = 3 }
 
 @export var tool_view: HarvestTool
 
-var selected_tool: TOOL = TOOL.GROUND
+var selected_tool: TOOL = TOOL.PLANTS
 var _terrain: TerrainController
 var _vegetation: VegetationController
 var _rocks: RockController
@@ -24,7 +24,7 @@ func initialize(terrain: TerrainController, vegetation: VegetationController, ro
 	set_process(false)
 
 func uses_brush() -> bool:
-	return selected_tool == TOOL.GROUND or selected_tool == TOOL.PLANTS
+	return selected_tool == TOOL.PLANTS
 
 func activate(active: bool) -> void:
 	_active = active
@@ -68,11 +68,7 @@ func end_stroke() -> void:
 func collect(point: Vector3, radius: float) -> void:
 	if not _active:
 		return
-	if selected_tool == TOOL.GROUND:
-		var collected := _terrain.harvest_ground(point,radius)
-		for kind in ResourceInventory.GROUND_TYPES:
-			_inventory.add(kind,collected[kind])
-	elif selected_tool == TOOL.PLANTS:
+	if selected_tool == TOOL.PLANTS:
 		var world_radius := radius/_terrain.pixels_per_unit
 		var steps := maxi(1,ceili(_last_collect_point.distance_to(point)/maxf(0.05,world_radius*0.5))) if _has_collect_point else 1
 		if not _has_collect_point:

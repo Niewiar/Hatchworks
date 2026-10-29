@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3]
 [ext_resource type="Script" path="res://addons/hatchworks_database/database_panel.gd" id="1"]
 [ext_resource type="PackedScene" path="res://addons/hatchworks_database/database_preview.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_database/recipe_editor.tscn" id="recipe_editor"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_database/discovery_recipes.tscn" id="discovery_recipes"]
 [sub_resource type="StyleBoxFlat" id="Background"]
 bg_color = Color(0, 0, 0, 1)
 content_margin_left = 16.0
@@ -123,6 +125,7 @@ layout_mode = 2
 size_flags_vertical = 3
 fixed_icon_size = Vector2i(18, 18)
 [node name="Hint" type="Label" parent="Layout/Body/Sidebar"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Double-click a table cell to edit.
 Ctrl / Shift: multi-select.
@@ -238,7 +241,19 @@ selection_enabled = true
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
-[node name="Fields" type="VBoxContainer" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll"]
+[node name="DetailContent" type="VBoxContainer" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+[node name="RecipeEditor" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll/DetailContent" instance=ExtResource("recipe_editor")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+[node name="DiscoveryRecipes" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll/DetailContent" instance=ExtResource("discovery_recipes")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+[node name="Fields" type="VBoxContainer" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll/DetailContent"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -265,3 +280,13 @@ dialog_text = "Reload all definitions from disk? Unsaved changes in this panel w
 [node name="RemoveDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true
 title = "Remove database entries"
+
+[node name="RecipeDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+title = "Create combination recipe"
+size = Vector2i(620,500)
+min_size = Vector2i(560,480)
+ok_button_text = "Create recipe"
+[node name="RecipeDraft" parent="RecipeDialog" instance=ExtResource("recipe_editor")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(520,390)

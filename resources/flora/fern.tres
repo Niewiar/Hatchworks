@@ -11,15 +11,11 @@ variants = Array[Mesh]([ExtResource("2"), ExtResource("3")])
 density = 0.24
 spacing = 0.7
 growth_rate = 0.16
-decay_rate = 0.22
 canopy_radius = 0
 harvest_resource = 6
 harvest_amount = 1
-regrowth_delay = 25.0
 
 id = &"fern"
 display_name = "Fern"
-moisture_range = Vector2(0.35, 1.01)
-shade_range = Vector2(0.15, 1.01)
 maximum_slope = 0.45
 water_depth_range = Vector2(-100, -0.02)

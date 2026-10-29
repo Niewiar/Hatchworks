@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GlossaryEntry" format=3 uid="uid://bagt2frgq1833"]
+
+[ext_resource type="Script" uid="uid://bki0w5epgofuo" path="res://code/database/GlossaryEntry.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+keywords = PackedStringArray("water")
+id = &"water"
+display_name = "Water access"
+description = "Tuftlings need a reachable pool deep enough to bathe in. Fences and obstacles can block the route."

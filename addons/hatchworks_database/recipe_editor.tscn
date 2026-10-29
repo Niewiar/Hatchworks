@@ -1,0 +1,76 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://addons/hatchworks_database/recipe_editor.gd" id="script"]
+[node name="RecipeEditor" type="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+script = ExtResource("script")
+[node name="Heading" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Combination recipe"
+[node name="FirstRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="FirstIcon" type="TextureRect" parent="FirstRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(38,38)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="First" type="OptionButton" parent="FirstRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/icon_max_width = 20
+fit_to_longest_item = false
+[node name="Plus" type="Label" parent="."]
+layout_mode = 2
+text = "+"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+[node name="SecondRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="SecondIcon" type="TextureRect" parent="SecondRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(38,38)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="Second" type="OptionButton" parent="SecondRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/icon_max_width = 20
+fit_to_longest_item = false
+[node name="Arrow" type="Label" parent="."]
+layout_mode = 2
+text = "↓"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+[node name="ResultRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="ResultIcon" type="TextureRect" parent="ResultRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(38,38)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="Result" type="OptionButton" parent="ResultRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/icon_max_width = 20
+fit_to_longest_item = false
+[node name="Equation" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.9,0.83,0.53,1)
+[node name="Feedback" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 13

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/gather_plants.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"grass"
+display_name = "Grass"
+description = "Tuftlings create grassy ground and grass tufts. Gather the tufts for Plant Fiber."
+icon = ExtResource("icon")
+reward_item = &""
+reward_count = 0

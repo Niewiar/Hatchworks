@@ -1,0 +1,27 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://addons/hatchworks_database/discovery_recipes.gd" id="script"]
+[node name="DiscoveryRecipes" type="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+script = ExtResource("script")
+[node name="Heading" type="HBoxContainer" parent="."]
+layout_mode = 2
+[node name="Title" type="Label" parent="Heading"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Recipes for this discovery"
+[node name="Add" type="Button" parent="Heading"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "+ Recipe"
+[node name="Links" type="Tree" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,170)
+layout_mode = 2
+hide_root = true
+[node name="Hint" type="Label" parent="."]
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 12
+text = "Double-click a combination to edit it."

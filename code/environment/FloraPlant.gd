@@ -10,4 +10,3 @@ var growth := 0.0
 var batch_key := ""
 var tree_view: HarvestableDeposit
 var removed := false
-var regrow_at := 0.0

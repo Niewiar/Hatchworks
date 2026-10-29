@@ -19,7 +19,7 @@ func configure(entry: Resource, data: Dictionary, database: GameDatabase) -> voi
 	match data.type:
 		"text":
 			$Editors/Text.show()
-			$Editors/Text.editable = not (entry is CreatureSpecies and entry.id == &"mossling" and data.key == "id")
+			$Editors/Text.editable = not (entry is CreatureSpecies and entry.id == &"tuftling" and data.key == "id")
 			$Editors/Text.text_submitted.connect(func(_text): _submit())
 			$Editors/Text.focus_exited.connect(_submit)
 		"multiline":
@@ -30,9 +30,29 @@ func configure(entry: Resource, data: Dictionary, database: GameDatabase) -> voi
 			_setup_number($Editors/Number)
 			$Editors/Number.editable = not (entry is ResourceDefinition and data.key == "kind" and entry.kind in ResourceInventory.KIND.values())
 			$Editors/Number.value_changed.connect(func(_value): _submit())
-		"enum", "resource":
+		"enum", "resource", "creature", "discovery", "item":
 			$Editors/Choice.show()
-			if data.type == "resource":
+			if data.type == "discovery":
+				$Editors/Choice.add_item("None")
+				$Editors/Choice.set_item_metadata(0,&"")
+				for discovery in database.discoveries:
+					$Editors/Choice.add_icon_item(discovery.icon,discovery.display_name)
+					$Editors/Choice.set_item_metadata($Editors/Choice.item_count-1,discovery.id)
+			elif data.type == "item":
+				$Editors/Choice.add_item("None")
+				$Editors/Choice.set_item_metadata(0,&"")
+				for egg in database.eggs:
+					$Editors/Choice.add_item(egg.display_name)
+					$Editors/Choice.set_item_metadata($Editors/Choice.item_count-1,egg.id)
+				for building in database.buildings:
+					if not building.kit_item.is_empty():
+						$Editors/Choice.add_item(building.display_name+" kit")
+						$Editors/Choice.set_item_metadata($Editors/Choice.item_count-1,building.kit_item)
+			elif data.type == "creature":
+				for creature in database.creatures:
+					$Editors/Choice.add_item(creature.display_name)
+					$Editors/Choice.set_item_metadata($Editors/Choice.item_count-1,creature.id)
+			elif data.type == "resource":
 				for resource in database.resources:
 					$Editors/Choice.add_item(resource.display_name,resource.kind)
 			else:
@@ -47,6 +67,13 @@ func configure(entry: Resource, data: Dictionary, database: GameDatabase) -> voi
 		"color":
 			$Editors/Color.show()
 			$Editors/Color.color_changed.connect(func(_value): _submit())
+		"boolean":
+			$Editors/Toggle.show()
+			$Editors/Toggle.toggled.connect(func(_value): _submit())
+		"words":
+			$Editors/Paths.show()
+			$Editors/Paths/Browse.hide()
+			$Editors/Paths/Text.focus_exited.connect(_submit)
 		"meshes":
 			$Editors/Paths.show()
 			$Editors/Paths/Text.focus_exited.connect(_submit)
@@ -79,6 +106,12 @@ func sync() -> void:
 			$Editors/Vector/Maximum.value = value.y
 		"color": $Editors/Color.color = value
 		"enum", "resource": $Editors/Choice.select($Editors/Choice.get_item_index(value))
+		"creature", "discovery", "item":
+			for index in $Editors/Choice.item_count:
+				if $Editors/Choice.get_item_metadata(index) == value:
+					$Editors/Choice.select(index)
+		"boolean": $Editors/Toggle.button_pressed = value
+		"words": $Editors/Paths/Text.text = "\n".join(value)
 		"meshes":
 			var paths := PackedStringArray()
 			for mesh: Mesh in value:
@@ -108,12 +141,15 @@ func _submit() -> void:
 		return
 	var value: Variant
 	match _data.type:
-		"text": value = StringName($Editors/Text.text.strip_edges()) if _data.key == "id" else $Editors/Text.text
+		"text": value = StringName($Editors/Text.text.strip_edges()) if typeof(_entry.get(_data.key)) == TYPE_STRING_NAME else $Editors/Text.text
 		"multiline": value = $Editors/Multiline.text
 		"number": value = int($Editors/Number.value) if typeof(_entry.get(_data.key)) == TYPE_INT else $Editors/Number.value
 		"vector": value = Vector2($Editors/Vector/Minimum.value,$Editors/Vector/Maximum.value)
 		"color": value = $Editors/Color.color
 		"enum", "resource": value = $Editors/Choice.get_selected_id()
+		"creature", "discovery", "item": value = StringName($Editors/Choice.get_item_metadata($Editors/Choice.selected))
+		"boolean": value = $Editors/Toggle.button_pressed
+		"words": value = $Editors/Paths/Text.text.replace(",","\n").split("\n",false)
 		"meshes":
 			var meshes: Array[Mesh] = []
 			for path in $Editors/Paths/Text.text.split("

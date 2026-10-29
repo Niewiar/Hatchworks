@@ -44,6 +44,11 @@ func _ready() -> void:
 	%BulkApply.pressed.connect(_apply_bulk)
 	%AssetDialog.file_selected.connect(func(path): _accept_assets(PackedStringArray([path])))
 	%AssetDialog.files_selected.connect(_accept_assets)
+	%RecipeEditor.edited.connect(_request_edit)
+	%DiscoveryRecipes.recipe_selected.connect(_navigate_recipe)
+	%DiscoveryRecipes.add_requested.connect(_open_recipe_dialog)
+	%RecipeDraft.validity_changed.connect(_on_recipe_validity_changed)
+	%RecipeDialog.confirmed.connect(_create_recipe_from_dialog)
 
 func configure(history: EditorUndoRedoManager) -> void:
 	_history = history
@@ -99,7 +104,9 @@ func _set_category(category: String) -> void:
 	_selected = null
 	_sort_column = 0
 	_sort_ascending = true
+	_categories.select(SCHEMA.CATEGORIES.find(category))
 	%SectionTitle.text = category
+	%Hint.text = "Select a recipe and choose its ingredients and result on the right.\n+ New opens the recipe composer." if category == "Recipes" else "Double-click a table cell to edit.\nCtrl / Shift: multi-select.\nCtrl+Z: undo."
 	%New.disabled = category == "World Balance"
 	%Duplicate.disabled = category == "World Balance"
 	%Remove.disabled = category == "World Balance"
@@ -142,9 +149,12 @@ func _refresh_table() -> void:
 			first_item = row
 		row.set_metadata(0,entry)
 		for index in columns.size():
-			var value: Variant = entry.get(columns[index])
-			row.set_text(index,str(value)+( " *" if index == 0 and _dirty(entry) else ""))
-			row.set_editable(index,not (entry is ResourceDefinition and columns[index] == "kind" and entry.kind in ResourceInventory.KIND.values()))
+			row.set_text(index,SCHEMA.value_text(_database,entry,columns[index])+( " *" if index == 0 and _dirty(entry) else ""))
+			var editable: bool = not (entry is ResourceDefinition and columns[index] == "kind" and entry.kind in ResourceInventory.KIND.values())
+			for data in SCHEMA.fields(_category):
+				if data.key == columns[index] and data.type in ["discovery","item","creature"]:
+					editable = false
+			row.set_editable(index,editable)
 		if entry in selected or entry == _selected:
 			row.select(0)
 		shown += 1
@@ -181,10 +191,21 @@ func _select_entry(entry: Resource) -> void:
 	%EntryPath.text = entry.resource_path if entry != null else ""
 	%Metrics.text = SCHEMA.summary(entry) if entry != null else ""
 	%Usage.text = _usage_text(entry) if entry != null else ""
+	%RecipeEditor.visible = entry is DiscoveryRecipe
+	%DiscoveryRecipes.visible = entry is DiscoveryDefinition
+	_preview.visible = not entry is DiscoveryRecipe
+	%Metrics.visible = not entry is DiscoveryRecipe
+	_preview.custom_minimum_size = Vector2(0,80 if entry is DiscoveryDefinition else 200)
 	_preview.show_entry(entry)
+	if entry is DiscoveryRecipe:
+		%RecipeEditor.configure(_database,entry)
+	if entry is DiscoveryDefinition:
+		%DiscoveryRecipes.configure(_database,entry)
 	if entry == null:
 		return
 	for data in SCHEMA.fields(_category):
+		if entry is DiscoveryRecipe and data.key in ["first","second","result"]:
+			continue
 		var field := FIELD.instantiate()
 		_fields.add_child(field)
 		field.configure(entry,data,_database)
@@ -196,8 +217,8 @@ func _request_edit(entry: Resource, property: String, value: Variant) -> void:
 		_status("Built-in resource numeric IDs are fixed gameplay roles.",true)
 		entry.emit_changed()
 		return
-	if entry is CreatureSpecies and entry.id == &"mossling" and property == "id" and value != &"mossling":
-		_status("The existing Mossling scene uses stable ID mossling.",true)
+	if entry is CreatureSpecies and entry.id == &"tuftling" and property == "id" and value != &"tuftling":
+		_status("The existing Tuftling scene uses stable ID tuftling.",true)
 		entry.emit_changed()
 		return
 	var previous: Variant = entry.get(property)
@@ -214,10 +235,13 @@ func _apply_property(entry: Resource, property: String, value: Variant) -> void:
 	if _selected == entry:
 		%DetailsTitle.text = entry.display_name
 		%Metrics.text = SCHEMA.summary(entry)
-		if property in ["variants","scene","material"]:
+		if property in ["variants","scene","model","material","icon","ui_icon"]:
 			_preview.show_entry(entry)
 	_refresh_table()
 	_show_validation()
+	if entry is DiscoveryRecipe:
+		var reason := SCHEMA.recipe_error(_database,entry.first,entry.second,entry.result,entry)
+		_status(reason if not reason.is_empty() else ("Recipe updated. Save All to apply it to the game." if _dirty(entry) else "Recipe restored."),not reason.is_empty())
 
 func _on_cell_edited() -> void:
 	var row := _table.get_edited()
@@ -233,7 +257,7 @@ func _on_cell_edited() -> void:
 			return
 		_request_edit(entry,key,roundi(text.to_float()) if typeof(old) == TYPE_INT else text.to_float())
 	else:
-		_request_edit(entry,key,text)
+		_request_edit(entry,key,StringName(text) if typeof(old) == TYPE_STRING_NAME else text)
 
 func _on_sort(column: int, _mouse_button: int) -> void:
 	_sort_ascending = not _sort_ascending if _sort_column == column else true
@@ -241,6 +265,9 @@ func _on_sort(column: int, _mouse_button: int) -> void:
 	_refresh_table()
 
 func _create_entry() -> void:
+	if _category == "Recipes":
+		_open_recipe_dialog(null)
+		return
 	if not SCHEMA.SCRIPTS.has(_category):
 		return
 	var entry: Resource = SCHEMA.SCRIPTS[_category].new()
@@ -272,6 +299,8 @@ func _register_new(entry: Resource, base_id: String) -> void:
 		path = folder+"/"+id+".tres"
 	entry.id = StringName(id)
 	entry.display_name = (_selected.display_name+" copy") if base_id.ends_with("_copy") and _selected != null else "New "+_category.to_lower().trim_suffix("s")
+	if entry is DiscoveryRecipe and _database.discovery(entry.first) != null and _database.discovery(entry.second) != null and _database.discovery(entry.result) != null:
+		entry.display_name = "%s + %s → %s" % [_database.discovery(entry.first).display_name,_database.discovery(entry.second).display_name,_database.discovery(entry.result).display_name]
 	entry.take_over_path(path)
 	_known[entry] = _category
 	_disk_hashes[path] = ""
@@ -304,12 +333,32 @@ func _usages(entry: Resource) -> PackedStringArray:
 	if entry is ResourceDefinition:
 		if entry.kind in ResourceInventory.KIND.values():
 			result.append("Built-in gameplay resource")
-		for category in ["Flora","Deposits","Construction"]:
+		for building: BuildingDefinition in _database.buildings:
+			if building.costs().get(entry.kind,0) > 0:
+				result.append("Buildings / "+building.display_name)
+		for category in ["Flora","Deposits","Construction","Creatures"]:
 			for other: Resource in _database.entries(category):
-				if other.get("construction_resource" if category == "Construction" else "harvest_resource") == entry.kind:
+				if other.get({"Construction":"construction_resource","Creatures":"food_resource"}.get(category,"harvest_resource")) == entry.kind:
 					result.append(category+" / "+other.display_name)
-	if entry is CreatureSpecies and entry.id == &"mossling":
-		result.append("Mossling scene Species ID")
+	if entry is DiscoveryDefinition:
+		for recipe in _database.recipes:
+			if entry.id in [recipe.first,recipe.second,recipe.result]:
+				result.append("Recipes / "+recipe.display_name)
+		for building in _database.buildings:
+			if building.required_discovery == entry.id:
+				result.append("Buildings / "+building.display_name)
+	if entry is EggDefinition:
+		for discovery in _database.discoveries:
+			if discovery.reward_item == entry.id:
+				result.append("Discoveries / "+discovery.display_name)
+	if entry is BuildingDefinition:
+		result.append("Building mode")
+	if entry is FloraSpecies and entry.kind == FloraSpecies.KIND.GRASS:
+		result.append("Tuftling sowing")
+	if entry is GlossaryEntry and str(entry.id) in ["soil","water","grass","fiber"]:
+		result.append("Shared gameplay tooltips")
+	if entry is CreatureSpecies and entry.id == &"tuftling":
+		result.append("Tuftling scene Species ID")
 	for path in _data_files("res://"):
 		if path in [entry.resource_path,_database.resource_path,_database.construction.resource_path]:
 			continue
@@ -458,3 +507,30 @@ func _redo() -> void:
 	var history := _history.get_history_undo_redo(_history.get_object_history_id(_database))
 	if history.has_redo():
 		history.redo()
+
+func _open_recipe_dialog(discovery: DiscoveryDefinition) -> void:
+	%RecipeDraft.configure(_database,null,discovery.id if discovery != null else &"")
+	%RecipeDialog.get_ok_button().disabled = not %RecipeDraft.valid_selection
+	%RecipeDialog.popup_centered()
+
+func _on_recipe_validity_changed(valid: bool) -> void:
+	%RecipeDialog.get_ok_button().disabled = not valid
+
+func _create_recipe_from_dialog() -> void:
+	if not %RecipeDraft.valid_selection:
+		return
+	var values: Array[StringName] = %RecipeDraft.values()
+	var recipe := DiscoveryRecipe.new()
+	recipe.first = values[0]
+	recipe.second = values[1]
+	recipe.result = values[2]
+	_set_category("Recipes")
+	_categories.select(SCHEMA.CATEGORIES.find("Recipes"))
+	_register_new(recipe,str(recipe.result)+"_from_"+str(recipe.first)+"_and_"+str(recipe.second))
+
+func _navigate_recipe(recipe: DiscoveryRecipe) -> void:
+	_set_category("Recipes")
+	_categories.select(SCHEMA.CATEGORIES.find("Recipes"))
+	_table.deselect_all()
+	_select_entry(recipe)
+	_refresh_table()

@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="Hatchworks"
-run/main_scene="uid://dmkdsdb2fxvsp"
+run/main_scene="res://scenes/gameplay/gameplay.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 InputManager="*res://code/core/InputManager.gd"
-GameManager="*uid://3riagmrsjpye"
+GameManager="*res://code/core/GameManager.gd"
 
 [display]
 

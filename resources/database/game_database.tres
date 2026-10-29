@@ -4,30 +4,63 @@
 [ext_resource type="Script" uid="uid://pn4fm0mdi4h8" path="res://code/database/DepositDefinition.gd" id="4_wi5ox"]
 [ext_resource type="Script" uid="uid://bvsckk5ula0hu" path="res://code/environment/FloraSpecies.gd" id="6_0ds8o"]
 [ext_resource type="Script" uid="uid://bvpcguh38i5u8" path="res://code/database/ResourceDefinition.gd" id="12_yeha7"]
+[ext_resource type="Script" uid="uid://cvvthxk2sdryp" path="res://code/database/EggDefinition.gd" id="24_ifqic"]
+[ext_resource type="Script" uid="uid://bki0w5epgofuo" path="res://code/database/GlossaryEntry.gd" id="32_5c1lf"]
+[ext_resource type="Resource" path="res://resources/database/buildings/feeder.tres" id="building_feeder"]
+[ext_resource type="Resource" path="res://resources/database/buildings/incubator.tres" id="building_incubator"]
+[ext_resource type="Script" uid="uid://gyceseei65a0" path="res://code/database/BuildingDefinition.gd" id="building_type"]
 [ext_resource type="Resource" uid="uid://7pwecegift6e" path="res://code/contructions/fances/FancesDatabase.tres" id="construction"]
-[ext_resource type="Resource" path="res://resources/database/creatures/mossling.tres" id="creature"]
+[ext_resource type="Resource" path="res://resources/database/creatures/tuftling.tres" id="creature"]
 [ext_resource type="Resource" path="res://resources/database/deposits/stone.tres" id="deposit"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/feeder.tres" id="discovery_feeder"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/fiber.tres" id="discovery_fiber"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/grass.tres" id="discovery_grass"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/herbs.tres" id="discovery_herbs"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/life.tres" id="discovery_life"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/mud.tres" id="discovery_mud"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/seed.tres" id="discovery_seed"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/soil.tres" id="discovery_soil"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/stone.tres" id="discovery_stone"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/tuftling_egg.tres" id="discovery_tuftling_egg"]
+[ext_resource type="Script" uid="uid://btt4tn8jtjgi2" path="res://code/database/DiscoveryDefinition.gd" id="discovery_type"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/water.tres" id="discovery_water"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/wood.tres" id="discovery_wood"]
+[ext_resource type="Resource" path="res://resources/database/eggs/tuftling.tres" id="egg_mossling"]
 [ext_resource type="Resource" path="res://resources/flora/fern.tres" id="flora_fern"]
 [ext_resource type="Resource" path="res://resources/flora/grass.tres" id="flora_grass"]
 [ext_resource type="Resource" uid="uid://dpib0du0d8ehs" path="res://resources/flora/oak.tres" id="flora_oak"]
 [ext_resource type="Resource" path="res://resources/flora/reeds.tres" id="flora_reeds"]
 [ext_resource type="Resource" path="res://resources/flora/shrub.tres" id="flora_shrub"]
-[ext_resource type="Resource" path="res://resources/database/resources/fiber.tres" id="resource_fiber"]
-[ext_resource type="Resource" path="res://resources/database/resources/grass.tres" id="resource_grass"]
-[ext_resource type="Resource" path="res://resources/database/resources/ground_rock.tres" id="resource_ground_rock"]
+[ext_resource type="Resource" path="res://resources/database/recipes/egg.tres" id="recipe_egg"]
+[ext_resource type="Resource" path="res://resources/database/recipes/feeder.tres" id="recipe_feeder"]
+[ext_resource type="Resource" path="res://resources/database/recipes/fiber.tres" id="recipe_fiber"]
+[ext_resource type="Resource" path="res://resources/database/recipes/grass.tres" id="recipe_grass"]
+[ext_resource type="Resource" path="res://resources/database/recipes/mud.tres" id="recipe_mud"]
+[ext_resource type="Resource" path="res://resources/database/recipes/seed.tres" id="recipe_seed"]
+[ext_resource type="Resource" path="res://resources/database/recipes/seed_life_egg.tres" id="recipe_seed_life_egg"]
+[ext_resource type="Resource" path="res://resources/database/recipes/soil_life_seed.tres" id="recipe_soil_life_seed"]
+[ext_resource type="Script" uid="uid://b2ma6xf73f6ms" path="res://code/database/DiscoveryRecipe.gd" id="recipe_type"]
+[ext_resource type="Resource" uid="uid://wluucfvycosi" path="res://resources/database/resources/fiber.tres" id="resource_fiber"]
 [ext_resource type="Resource" path="res://resources/database/resources/herbs.tres" id="resource_herbs"]
-[ext_resource type="Resource" path="res://resources/database/resources/moss.tres" id="resource_moss"]
-[ext_resource type="Resource" path="res://resources/database/resources/sand.tres" id="resource_sand"]
-[ext_resource type="Resource" path="res://resources/database/resources/stone.tres" id="resource_stone"]
-[ext_resource type="Resource" path="res://resources/database/resources/wood.tres" id="resource_wood"]
+[ext_resource type="Resource" uid="uid://dc4jm1wd8lxa" path="res://resources/database/resources/stone.tres" id="resource_stone"]
+[ext_resource type="Resource" uid="uid://dkevyh58densd" path="res://resources/database/resources/wood.tres" id="resource_wood"]
 [ext_resource type="Script" uid="uid://d1e5aexvmuq7c" path="res://code/database/GameDatabase.gd" id="script"]
+[ext_resource type="Resource" uid="uid://csn10da1tite1" path="res://resources/database/glossary/fiber.tres" id="term_fiber"]
+[ext_resource type="Resource" uid="uid://c42igad2yxd0o" path="res://resources/database/glossary/grass.tres" id="term_grass"]
+[ext_resource type="Resource" path="res://resources/database/glossary/soil.tres" id="term_soil"]
+[ext_resource type="Resource" uid="uid://bagt2frgq1833" path="res://resources/database/glossary/water.tres" id="term_water"]
 [ext_resource type="Resource" path="res://resources/database/world.tres" id="world"]
 
 [resource]
 script = ExtResource("script")
+discoveries = Array[ExtResource("discovery_type")]([ExtResource("discovery_soil"), ExtResource("discovery_water"), ExtResource("discovery_mud"), ExtResource("discovery_seed"), ExtResource("discovery_grass"), ExtResource("discovery_tuftling_egg"), ExtResource("discovery_fiber"), ExtResource("discovery_feeder"), ExtResource("discovery_life"), ExtResource("discovery_wood"), ExtResource("discovery_stone"), ExtResource("discovery_herbs")])
+recipes = Array[ExtResource("recipe_type")]([ExtResource("recipe_mud"), ExtResource("recipe_seed"), ExtResource("recipe_grass"), ExtResource("recipe_egg"), ExtResource("recipe_fiber"), ExtResource("recipe_feeder"), ExtResource("recipe_seed_life_egg"), ExtResource("recipe_soil_life_seed")])
+buildings = Array[ExtResource("building_type")]([ExtResource("building_incubator"), ExtResource("building_feeder")])
+eggs = Array[ExtResource("24_ifqic")]([ExtResource("egg_mossling")])
+glossary = Array[ExtResource("32_5c1lf")]([ExtResource("term_soil"), ExtResource("term_water"), ExtResource("term_grass"), ExtResource("term_fiber")])
 creatures = Array[ExtResource("2_20gof")]([ExtResource("creature")])
 flora = Array[ExtResource("6_0ds8o")]([ExtResource("flora_oak"), ExtResource("flora_shrub"), ExtResource("flora_fern"), ExtResource("flora_reeds"), ExtResource("flora_grass")])
-resources = Array[ExtResource("12_yeha7")]([ExtResource("resource_grass"), ExtResource("resource_moss"), ExtResource("resource_sand"), ExtResource("resource_ground_rock"), ExtResource("resource_fiber"), ExtResource("resource_herbs"), ExtResource("resource_wood"), ExtResource("resource_stone")])
+resources = Array[ExtResource("12_yeha7")]([ExtResource("resource_fiber"), ExtResource("resource_herbs"), ExtResource("resource_wood"), ExtResource("resource_stone")])
 deposits = Array[ExtResource("4_wi5ox")]([ExtResource("deposit")])
 construction = ExtResource("construction")
 world = ExtResource("world")

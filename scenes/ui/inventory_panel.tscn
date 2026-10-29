@@ -1,0 +1,78 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://code/ui/InventoryPanel.gd" id="script"]
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
+[sub_resource type="StyleBoxFlat" id="window"]
+bg_color = Color(0.035,0.06,0.05,0.99)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.34,0.44,0.28,1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_left = 16
+corner_radius_bottom_right = 16
+shadow_color = Color(0,0,0,0.35)
+shadow_size = 10
+[node name="Inventory" type="MarginContainer"]
+propagate_maximum_size = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
+z_index = 40
+script = ExtResource("script")
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_top = 104
+theme_override_constants/margin_bottom = 148
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+propagate_maximum_size = true
+[node name="Panel" type="PanelContainer" parent="Center"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(620,0)
+custom_maximum_size = Vector2(960,640)
+propagate_maximum_size = true
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("window")
+[node name="Margin" type="MarginContainer" parent="Center/Panel"]
+propagate_maximum_size = true
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_bottom = 18
+[node name="Content" type="VBoxContainer" parent="Center/Panel/Margin"]
+propagate_maximum_size = true
+layout_mode = 2
+theme_override_constants/separation = 16
+[node name="Title" type="Label" parent="Center/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Inventory"
+[node name="Info" type="Label" parent="Center/Panel/Margin/Content"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Materials, eggs and construction kits."
+[node name="Scroll" type="ScrollContainer" parent="Center/Panel/Margin/Content"]
+propagate_maximum_size = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 5
+custom_maximum_size = Vector2(-1,320)
+size_flags_vertical = 3
+[node name="Grid" type="HFlowContainer" parent="Center/Panel/Margin/Content/Scroll"]
+propagate_maximum_size = true
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12

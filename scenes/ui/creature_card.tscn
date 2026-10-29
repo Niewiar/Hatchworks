@@ -1,0 +1,78 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Script" path="res://code/ui/CreatureCard.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/water.png" id="water"]
+[ext_resource type="Texture2D" path="res://assets/ui/gather_ground.png" id="soil"]
+[node name="CreatureCard" type="VBoxContainer"]
+propagate_maximum_size = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+script = ExtResource("script")
+[node name="Name" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Tuftling"
+[node name="Sex" type="HBoxContainer" parent="."]
+propagate_maximum_size = true
+layout_mode = 2
+mouse_filter = 0
+theme_override_constants/separation = 10
+[node name="Icon" type="TextureRect" parent="Sex"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="Text" type="Label" parent="Sex"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 17
+text = "Female"
+[node name="Description" type="RichTextLabel" parent="."]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+autowrap_mode = 3
+scroll_active = false
+[node name="RequirementLabel" type="Label" parent="."]
+layout_mode = 2
+text = "HABITAT"
+theme_override_font_sizes/font_size = 13
+[node name="Requirements" type="HBoxContainer" parent="."]
+propagate_maximum_size = true
+layout_mode = 2
+theme_override_constants/separation = 12
+[node name="Water" type="TextureRect" parent="Requirements"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+texture = ExtResource("water")
+expand_mode = 1
+stretch_mode = 5
+[node name="WaterText" type="Label" parent="Requirements"]
+layout_mode = 2
+text = "Water"
+[node name="Soil" type="TextureRect" parent="Requirements"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+texture = ExtResource("soil")
+expand_mode = 1
+stretch_mode = 5
+[node name="SoilText" type="Label" parent="Requirements"]
+layout_mode = 2
+text = "Dry soil"
+[node name="FoodLabel" type="Label" parent="."]
+layout_mode = 2
+text = "FOOD"
+theme_override_font_sizes/font_size = 13
+[node name="Food" type="HBoxContainer" parent="."]
+propagate_maximum_size = true
+layout_mode = 2
+theme_override_constants/separation = 12
+[node name="Icon" type="TextureRect" parent="Food"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="Name" type="Label" parent="Food"]
+layout_mode = 2
+text = "Plant Fiber"

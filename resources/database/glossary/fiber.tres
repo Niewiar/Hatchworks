@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GlossaryEntry" format=3 uid="uid://csn10da1tite1"]
+
+[ext_resource type="Script" uid="uid://bki0w5epgofuo" path="res://code/database/GlossaryEntry.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+keywords = PackedStringArray("Plant Fiber")
+id = &"fiber"
+display_name = "Plant Fiber"
+description = "Food for Tuftlings. Gather it from grass tufts, shrubs and reeds."

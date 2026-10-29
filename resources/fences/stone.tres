@@ -1,16 +1,12 @@
 [gd_resource type="Resource" script_class="FanceData" format=3 uid="uid://wltwsg51guko"]
 
 [ext_resource type="Script" uid="uid://pa7841vgmt2" path="res://code/contructions/fances/FenceData.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://djt52flv14yhr" path="res://assets/ui/icons.png" id="2"]
-
-[sub_resource type="AtlasTexture" id="Icon"]
-atlas = ExtResource("2")
-region = Rect2(1024, 0, 256, 256)
+[ext_resource type="Texture2D" path="res://assets/ui/stone_fence.png" id="2"]
 
 [resource]
 script = ExtResource("1")
 material_kind = 1
-ui_icon = SubResource("Icon")
+ui_icon = ExtResource("2")
 max_span_length = 76.0
 height = 44.0
 post_width = 21.0

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ResourceDefinition" format=3 uid="uid://ch3syxti7gdhi"]
+[gd_resource type="Resource" script_class="ResourceDefinition" format=3 uid="uid://d07miwt8h43ch"]
 
 [ext_resource type="Script" uid="uid://bvpcguh38i5u8" path="res://code/database/ResourceDefinition.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://djt52flv14yhr" path="res://assets/ui/icons.png" id="2"]

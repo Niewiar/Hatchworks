@@ -1,6 +1,8 @@
 class_name RockController
 extends Node3D
 
+signal obstacles_changed
+
 const DEPOSIT_SCENE = preload("res://scenes/harvesting/deposit.tscn")
 
 var definitions: Array[DepositDefinition] = []
@@ -58,6 +60,7 @@ func _spawn_deposits(data: DepositDefinition, environment: EnvironmentController
 
 func _on_rock_depleted(rock: HarvestableDeposit) -> void:
 	_rocks.erase(rock)
+	obstacles_changed.emit()
 
 func _update_ground() -> void:
 	for rock in _rocks:
@@ -72,3 +75,11 @@ func rock_at_screen(screen: Vector2, camera: Camera3D) -> HarvestableDeposit:
 			distance = candidate
 			best = rock
 	return best
+
+func occupied(world_position: Vector3, radius: float) -> bool:
+	for rock in _rocks:
+		if is_instance_valid(rock) and not rock.exhausted:
+			var reach := maxf(rock.mesh.get_aabb().size.x,rock.mesh.get_aabb().size.z)*rock.scale.x*0.45+radius
+			if Vector2(rock.global_position.x,rock.global_position.z).distance_squared_to(Vector2(world_position.x,world_position.z)) < reach*reach:
+				return true
+	return false

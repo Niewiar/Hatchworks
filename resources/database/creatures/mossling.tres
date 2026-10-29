@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
-[ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/creatures/mossling.tscn" id="2"]
-[resource]
-script = ExtResource("1")
-id = &"mossling"
-display_name = "Mossling"
-scene = ExtResource("2")

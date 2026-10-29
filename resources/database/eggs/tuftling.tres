@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EggDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/EggDefinition.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/incubation/egg_model.tscn" id="model"]
+[resource]
+script = ExtResource("script")
+id = &"tuftling_egg"
+display_name = "Tuftling Egg"
+description = "Discovered by combining Seed and Life, or Grass and Life. One egg is consumed when incubation starts; a Tuftling hatches after 30 seconds."
+creature_id = &"tuftling"
+model = ExtResource("model")

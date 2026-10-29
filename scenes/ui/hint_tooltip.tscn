@@ -1,0 +1,18 @@
+[gd_scene format=3]
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
+[node name="HintTooltip" type="MarginContainer"]
+visible = false
+mouse_filter = 2
+theme = ExtResource("theme")
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+custom_maximum_size = Vector2(350,-1)
+propagate_maximum_size = true
+mouse_filter = 2
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 2
+mouse_filter = 2
+autowrap_mode = 3
+text = "Description"
