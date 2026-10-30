@@ -87,6 +87,11 @@ func strike() -> void:
 	if not _active or not is_instance_valid(_target) or _target.exhausted:
 		return
 	tool_view.swing()
+	var source := _target.global_position
+	var map := get_parent() as MapManager
+	if map != null:
+		map.noise.pulse(source,0.8 if selected_tool == TOOL.MINING else 0.65,7.0 if selected_tool == TOOL.MINING else 5.5,5.0)
+	SoundEffects.play_at(&"mining_hit" if selected_tool == TOOL.MINING else &"wood_hit",source,_target)
 	var resource := _target.resource_kind
 	var origin := _target.global_position+Vector3.UP*0.6
 	var quantity := _target.strike()

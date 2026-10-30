@@ -18,3 +18,7 @@ impact_time = 2.0
 production_radius = 5.0
 preferred_area = 24.0
 walk_speed = 1.0
+
+noise_sensitivity = 0.1
+crowding_sensitivity = 1.0
+species_aversions = Dictionary[StringName, float]({&"bloomlet": 0.3})

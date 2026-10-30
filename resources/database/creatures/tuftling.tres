@@ -1,12 +1,18 @@
 [gd_resource type="Resource" script_class="CreatureSpecies" format=3]
-[ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/creatures/tuftling.tscn" id="2"]
-[ext_resource type="Texture2D" path="res://assets/ui/tuftling.png" id="icon"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/tuftling.png" id="1_1no7r"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/tuftling.tscn" id="2_ca8yw"]
+[ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="3_1nyhx"]
+
 [resource]
-script = ExtResource("1")
+script = ExtResource("3_1nyhx")
+scene = ExtResource("2_ca8yw")
+icon = ExtResource("1_1no7r")
+noise_sensitivity = 0.75
+crowding_sensitivity = 0.65
+species_aversions = Dictionary[StringName, float]({
+&"pebblit": 0.65
+})
 id = &"tuftling"
 display_name = "Tuftling"
-scene = ExtResource("2")
-icon = ExtResource("icon")
-
 description = "A shake of its water-soaked coat brings grass to bare soil. Tuftlings leave little trails of green wherever they settle."

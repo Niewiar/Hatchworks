@@ -96,9 +96,12 @@ func refresh() -> void:
 	_syncing = false
 
 func select_entry(entry: Resource) -> void:
+	var was_syncing := _syncing
+	_syncing = true
 	_selected = entry
 	for candidate: Resource in _nodes:
 		_nodes[candidate].selected = candidate == entry
+	_syncing = was_syncing
 
 func _discovery_name(id: StringName) -> String:
 	var entry := _database.discovery(id)

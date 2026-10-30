@@ -9,6 +9,9 @@ var focused := false
 var _elapsed := 0.0
 var _egg_ids: Array[StringName] = []
 var _egg_signature := ""
+var _aversion_signature := ""
+
+const AVERSION_ICON := preload("res://scenes/ui/creature_aversion_icon.tscn")
 
 func _ready() -> void:
 	%Panel.hide()
@@ -17,11 +20,17 @@ func _ready() -> void:
 	%Repair.pressed.connect(_repair_target)
 	%EggChoice.item_selected.connect(_select_egg)
 	%Close.pressed.connect(close_focus)
+	%CreatureClose.pressed.connect(close_focus)
+	%CreatureClose.mouse_entered.connect(func(): tooltip_controller.show_text(tr("Close focus - RMB"),%CreatureClose))
+	%CreatureClose.mouse_exited.connect(tooltip_controller.hide_text.bind(%CreatureClose))
 	%Description.meta_hover_started.connect(_show_term)
 	%Description.meta_hover_ended.connect(func(_meta): tooltip_controller.hide_text(%Description))
 	for stat in [%Satiety,%Happiness]:
 		stat.mouse_entered.connect(_show_stat_hint.bind(stat))
 		stat.mouse_exited.connect(tooltip_controller.hide_text.bind(stat))
+	for control in [%CreatureState,%Space,%Company,%CarriedWater,%NoiseSensitivity,%CrowdingSensitivity,%NeighboursSensitivity]:
+		control.mouse_entered.connect(_show_creature_hint.bind(control))
+		control.mouse_exited.connect(tooltip_controller.hide_text.bind(control))
 
 func inspect(chosen: Node3D) -> void:
 	if not is_instance_valid(chosen) or not (chosen is Creature or chosen is IncubatorController or chosen is FeederController or chosen is WorkshopController or chosen.has_method("structure_condition")):
@@ -32,9 +41,12 @@ func inspect(chosen: Node3D) -> void:
 	focused = true
 	_elapsed = 0.0
 	%Panel.show()
+	%CreatureClose.visible = chosen is Creature
+	%Close.visible = not chosen is Creature
 	%CreatureCard.visible = chosen is Creature
 	%Generic.visible = not chosen is Creature
 	_egg_signature = ""
+	_aversion_signature = ""
 	%Workshop.visible = chosen is WorkshopController
 	%Breeding.visible = chosen is Creature
 	if chosen is WorkshopController:
@@ -73,16 +85,9 @@ func _process(delta: float) -> void:
 		_refresh()
 
 func _refresh() -> void:
-	%Satiety.visible = target is Creature
-	%Happiness.visible = target is Creature
-	%HabitatNeeds.visible = target is Creature
+	%CreatureDetails.visible = target is Creature
 	if target is Creature:
-		%Breeding.refresh()
-		%SatietyBar.value = target.satiety
-		%SatietyValue.text = tr("%d%%") % ceili(target.satiety)
-		%HappinessBar.value = target.happiness
-		%HappinessValue.text = tr("%d%%") % ceili(target.happiness)
-		%HabitatNeeds.text = tr("Dry space per creature: %.1f m²\nPreferred space: %.1f m² · Nearby company: %d") % [target.space_per_creature,target.species_data().preferred_area,target.companions]
+		_refresh_creature()
 	_refresh_eggs()
 	var building: BuildingDefinition = map_manager.building_controller.building_definition(target)
 	%Durability.visible = building != null or target.has_method("structure_condition")
@@ -98,9 +103,7 @@ func _refresh() -> void:
 	var progress_visible := false
 	var progress := 0.0
 	if target is Creature:
-		status = target.activity_text() if target.has_method("activity_text") else tr("Resting")
-		if target is TuftlingController and target.species_id == &"tuftling":
-			status += tr("\nCarried water: %s") % [tr("Yes") if target.carrying_water else tr("No")]
+		status = ""
 	elif target is IncubatorController:
 		%Title.text = tr("Incubator")
 		%Description.text = tr("An incubator for discovered eggs. Your creature will appear beside it after hatching.")
@@ -214,3 +217,107 @@ func _notification(what: int) -> void:
 		if is_instance_valid(target) and not target.is_queued_for_deletion():
 			_egg_signature = ""
 			_refresh()
+
+func _refresh_creature() -> void:
+	%Breeding.refresh()
+	%SatietyBar.value = target.satiety
+	%SatietyValue.text = tr("%d%%") % ceili(target.satiety)
+	%HappinessBar.value = target.happiness
+	%HappinessValue.text = tr("%d%%") % ceili(target.happiness)
+	var species: CreatureSpecies = target.species_data()
+	%SpaceValue.text = tr("%.1f / %.1f m²") % [target.space_per_creature,species.preferred_area]
+	%CompanyValue.text = tr("×%d") % target.companions
+	%CarriedWater.visible = target is TuftlingController and target.species_id == &"tuftling"
+	if %CarriedWater.visible:
+		%CarriedWater.modulate = Color.WHITE if target.carrying_water else Color(0.5,0.55,0.5,0.55)
+	var values := [species.noise_sensitivity,species.crowding_sensitivity,0.0]
+	for aversion in species.species_aversions.values():
+		values[2] = maxf(values[2],float(aversion))
+	var stresses := [target.noise_stress,target.crowding_stress,target.species_stress]
+	var labels := [%NoiseSensitivityValue,%CrowdingSensitivityValue,%NeighboursSensitivityValue]
+	var bars := [%NoiseStress,%CrowdingStress,%NeighboursStress]
+	for index in 3:
+		labels[index].text = tr("%d%%") % roundi(values[index]*100.0)
+		bars[index].value = stresses[index]*100.0
+		bars[index].modulate = Color(1,0.62,0.45) if stresses[index] >= 0.5 else Color(0.7,0.9,0.7)
+	var state := _creature_activity()
+	%ActivityName.text = tr(state[0])
+	%ActivityIcon.texture = load("res://assets/ui/"+state[1]+".png")
+	_refresh_aversions(species)
+
+func _creature_activity() -> Array[String]:
+	if map_manager.breeding.is_breeding(target):
+		return ["Courting","breeding_heart"]
+	if not target is TuftlingController:
+		return ["Resting","status_rest"]
+	match target.activity:
+		TuftlingController.ACTIVITY.SEEKING_WATER,TuftlingController.ACTIVITY.MOVING_TO_WATER:
+			return ["Seeking water","water"]
+		TuftlingController.ACTIVITY.BATHING,TuftlingController.ACTIVITY.SWIMMING:
+			return ["Swimming","water"]
+		TuftlingController.ACTIVITY.SEEKING_GROUND,TuftlingController.ACTIVITY.MOVING_TO_GROUND:
+			return ["On the move","status_walk"]
+		TuftlingController.ACTIVITY.SHAKING:
+			return ["Working","status_work"]
+		TuftlingController.ACTIVITY.HUNGRY:
+			return ["Hungry","status_satiety"]
+		TuftlingController.ACTIVITY.MOVING_TO_FOOD:
+			return ["Seeking food","status_satiety"]
+		TuftlingController.ACTIVITY.EATING:
+			return ["Eating","status_satiety"]
+		TuftlingController.ACTIVITY.NO_WATER:
+			return ["Needs water","water"]
+		TuftlingController.ACTIVITY.NO_GROUND:
+			return ["Needs space","status_space"]
+	return ["Resting","status_rest"]
+
+func _refresh_aversions(species: CreatureSpecies) -> void:
+	var signature := str(species.species_aversions)
+	for id in species.species_aversions:
+		signature += str(map_manager.discoveries.knows(id))
+	if _aversion_signature == signature:
+		return
+	_aversion_signature = signature
+	for child in %AversionIcons.get_children():
+		%AversionIcons.remove_child(child)
+		child.queue_free()
+	for id in species.species_aversions:
+		if float(species.species_aversions[id]) <= 0.0:
+			continue
+		var other: CreatureSpecies = map_manager.database.creature(id)
+		if other == null:
+			continue
+		var icon := AVERSION_ICON.instantiate() as VBoxContainer
+		icon.get_node("Icon").texture = other.icon if map_manager.discoveries.knows(id) else load("res://assets/ui/status_neighbours.png")
+		icon.get_node("Unknown").visible = not map_manager.discoveries.knows(id)
+		%AversionIcons.add_child(icon)
+		icon.mouse_entered.connect(_show_aversion.bind(id,icon))
+		icon.mouse_exited.connect(tooltip_controller.hide_text.bind(icon))
+	%AversionIcons.visible = %AversionIcons.get_child_count() > 0
+
+func _show_aversion(id: StringName, icon: Control) -> void:
+	if not target is Creature:
+		return
+	var other: CreatureSpecies = map_manager.database.creature(id)
+	var strength := roundi(float(target.species_data().species_aversions.get(id,0.0))*100.0)
+	tooltip_controller.show_hint(tr("Uneasy around %s · %d%%") % [other.display_name if map_manager.discoveries.knows(id) else "???",strength],icon)
+
+func _show_creature_hint(control: Control) -> void:
+	if not target is Creature:
+		return
+	var text := ""
+	if control == %CreatureState:
+		text = target.activity_text() if target.has_method("activity_text") else tr("Resting")
+	elif control == %Space:
+		text = tr("Room to roam\n%.1f / %.1f m² of dry ground") % [target.space_per_creature,target.species_data().preferred_area]
+	elif control == %Company:
+		text = tr("A familiar face nearby\nCompanions: %d") % target.companions
+	elif control == %CarriedWater:
+		text = tr("Carrying a little water") if target.carrying_water else tr("Ready for a dip")
+	elif control == %NoiseSensitivity:
+		text = tr("Noise\nPrefers a quiet corner.\nSensitivity: %d%% · Disturbed: %d%%") % [roundi(target.species_data().noise_sensitivity*100.0),roundi(target.noise_stress*100.0)]
+	elif control == %CrowdingSensitivity:
+		text = tr("Crowding\nNeeds room to feel at home.\nSensitivity: %d%% · Crowded: %d%%") % [roundi(target.species_data().crowding_sensitivity*100.0),roundi(target.crowding_stress*100.0)]
+	elif control == %NeighboursSensitivity:
+		text = tr("Neighbours\nSome company feels less welcome.\nDisturbed: %d%%") % roundi(target.species_stress*100.0)
+	tooltip_controller.show_hint(text,control)

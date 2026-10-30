@@ -46,8 +46,11 @@ func _physics_process(delta: float) -> void:
 		return
 	var depth: float = _map.water_controller.water_level-terrain_controller.surface_position(global_position).y
 	var threshold := _species.minimum_swim_depth-0.1 if _swimming else _species.minimum_swim_depth
+	var was_swimming := _swimming
 	_swimming = depth >= threshold and global_position.y <= _map.water_controller.global_position.y+0.8
 	var near_ground := global_position.y-terrain_controller.surface_position(global_position).y <= body_radius()+0.35
+	if _swimming and not was_swimming:
+		SoundEffects.play_at(&"water_splash",global_position,self)
 	if not _swimming and (_state == STATE.LANDING or (_state == STATE.FALLING and not near_ground)):
 		super._physics_process(delta)
 		return
@@ -146,6 +149,7 @@ func _tick_activity(delta: float) -> void:
 			if _elapsed >= _species.shaking_seconds:
 				var planted: int = _map.vegetation_controller.seed_grass(global_position,_species.grass_per_cycle,_species.grass_radius)
 				if planted > 0:
+					SoundEffects.play_at(&"grass_work",global_position,self)
 					carrying_water = false
 					_work_cycles += 1
 					_map.science.observe(species_id,&"create_grass",global_position)

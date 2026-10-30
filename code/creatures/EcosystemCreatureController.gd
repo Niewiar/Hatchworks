@@ -226,6 +226,8 @@ func _apply_effect() -> bool:
 		_aggression_wait = _species.aggression_cooldown
 		if not is_instance_valid(target) or target.is_queued_for_deletion() or not _can_hit(target):
 			return false
+		_map.noise.pulse(global_position,1.0,8.0,6.0,self)
+		SoundEffects.play_at(&"stone_impact",global_position,self)
 		return target.damage_structure(_species.impact_damage) if target.has_method("damage_structure") else _map.building_controller.damage_building(target,_species.impact_damage)
 	if _job.kind == "plant":
 		var point: Vector3 = _map.terrain_controller.surface_position(_job.point)
@@ -235,9 +237,12 @@ func _apply_effect() -> bool:
 			return false
 		var planted: bool = _map.vegetation_controller.plant_specimen(_job.plant,point)
 		if planted:
+			SoundEffects.play_at(&"plant_work" if _species.production == CreatureSpecies.PRODUCTION.GARDENER else &"herb_work",point,self)
 			_map.science.observe(species_id,&"plant_tree" if _species.production == CreatureSpecies.PRODUCTION.GARDENER else &"grow_herbs",point)
 		return planted
 	var point := global_position
+	_map.noise.pulse(point,1.0,8.0,6.0,self)
+	SoundEffects.play_at(&"stone_impact",point,self)
 	_map.vegetation_controller.flatten_ground_plants(point,_species.impact_radius)
 	_map.terrain_controller.rocky_impact(point,_species.impact_radius,_species.impact_strength)
 	for attempt in 12:

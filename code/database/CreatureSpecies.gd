@@ -45,6 +45,11 @@ extends DatabaseEntry
 @export_range(1.0,100.0,0.5) var preferred_area := 12.0
 @export_range(1.0,30.0,0.5) var company_radius := 6.0
 
+@export_group("Sensitivities")
+@export_range(0.0,1.0,0.05) var noise_sensitivity := 0.5
+@export_range(0.0,1.0,0.05) var crowding_sensitivity := 1.0
+@export var species_aversions: Dictionary[StringName,float] = {}
+
 @export_group("Courtship")
 @export_range(0.5,30.0,0.5) var breeding_call_seconds := 3.0
 

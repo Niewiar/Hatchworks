@@ -9,6 +9,10 @@ var satiety := 100.0
 var happiness := 75.0
 var space_per_creature := 0.0
 var companions := 0
+var noise_stress := 0.0
+var crowding_stress := 0.0
+var species_stress := 0.0
+var _voice_wait := 12.0
 var _wellbeing_elapsed := 1.0
 var _happiness_target := 75.0
 var breeding_cooldown := 0.0
@@ -68,6 +72,10 @@ func _ready() -> void:
 		animation_player.animation_finished.connect(_on_animation_finished)
 		_play_animation(&"Idle")
 	_apply_sex_appearance()
+	_voice_wait = randf_range(8.0,18.0)
+	if _navigation != null:
+		_navigation.get_parent().wellbeing.invalidate()
+		tree_exiting.connect(_navigation.get_parent().wellbeing.invalidate)
 
 func _physics_process(delta: float) -> void:
 	if _state == STATE.HELD:
@@ -116,6 +124,9 @@ func begin_hold() -> void:
 	_hold_target = global_position
 	_rest_rotation = Vector3(0.0, rotation.y, 0.0)
 	_state = STATE.HELD
+	if _navigation != null:
+		_navigation.get_parent().wellbeing.invalidate()
+	SoundEffects.play_at(StringName(str(species_id)+"_voice"),global_position,self,1.1)
 	_reset_model_scale()
 	_play_animation(&"HeldIdle")
 
@@ -137,6 +148,8 @@ func release() -> bool:
 	collision_layer = _normal_collision_layer
 	velocity = Vector3.ZERO
 	_state = STATE.FALLING
+	if _navigation != null:
+		_navigation.get_parent().wellbeing.invalidate()
 	_airborne_elapsed = 0.0
 	_play_animation(&"Fall")
 	return true
@@ -169,6 +182,8 @@ func _play_animation(name: StringName, blend: float = 0.12) -> bool:
 		return false
 	if animation_player.current_animation != name:
 		animation_player.play(name, blend)
+		if name == &"behaviour/Call":
+			SoundEffects.play_at(StringName(str(species_id)+"_voice"),global_position,self,0.9 if sex == SEX.MALE else 1.1)
 	return true
 
 func _on_animation_finished(name: StringName) -> void:
@@ -198,6 +213,10 @@ func _process(delta: float) -> void:
 	satiety = maxf(0.0,satiety-100.0/maxf(_species.satiety_seconds,1.0)*delta)
 	if _state == STATE.HELD:
 		return
+	_voice_wait -= delta
+	if _voice_wait <= 0.0:
+		_voice_wait = randf_range(14.0,28.0)
+		SoundEffects.play_at(StringName(str(species_id)+"_voice"),global_position,self,0.92 if sex == SEX.MALE else 1.08)
 	_wellbeing_elapsed += delta
 	if _wellbeing_elapsed >= 1.0:
 		_wellbeing_elapsed = 0.0
@@ -210,23 +229,17 @@ func _update_habitat_needs() -> void:
 	var map := _navigation.get_parent() as MapManager
 	if map == null:
 		return
-	var region := map.regions_controller.get_region_at(global_position)
-	if region == null:
+	var sample := map.wellbeing.sample(self)
+	if sample.is_empty():
 		return
-	var population := 1
-	companions = 0
-	for other: Node in get_tree().get_nodes_in_group("creatures"):
-		if not other is Creature or other == self or not other.blocks_space() or other.get_viewport() != get_viewport():
-			continue
-		if map.regions_controller.region_id_at(other.global_position) != region.id:
-			continue
-		population += 1
-		if other.species_id == species_id and Vector2(other.global_position.x-global_position.x,other.global_position.z-global_position.z).length() <= _species.company_radius:
-			companions += 1
-	space_per_creature = maxf(0.0,region.area-region.water_area)/population
+	space_per_creature = sample.space
+	companions = sample.companions
 	var space_score := clampf(space_per_creature/maxf(_species.preferred_area,0.1),0.0,1.0)
+	crowding_stress = (1.0-space_score)*_species.crowding_sensitivity
+	noise_stress = map.noise.level_at(global_position,self)*_species.noise_sensitivity
+	species_stress = sample.aversion
 	var company_score := 1.0 if companions > 0 else 0.0
-	_happiness_target = clampf(satiety*0.45+space_score*35.0+company_score*20.0,0.0,100.0)
+	_happiness_target = clampf(satiety*0.45+35.0+company_score*20.0-crowding_stress*35.0-noise_stress*25.0-species_stress*25.0,0.0,100.0)
 
 func work_efficiency() -> float:
 	return lerpf(0.7,1.1,clampf(happiness/100.0,0.0,1.0))

@@ -70,7 +70,7 @@ func configure(entry: Resource, data: Dictionary, database: GameDatabase) -> voi
 		"boolean":
 			$Editors/Toggle.show()
 			$Editors/Toggle.toggled.connect(func(_value): _submit())
-		"words":
+		"words", "aversions":
 			$Editors/Paths.show()
 			$Editors/Paths/Browse.hide()
 			$Editors/Paths/Text.focus_exited.connect(_submit)
@@ -111,6 +111,13 @@ func sync() -> void:
 				if $Editors/Choice.get_item_metadata(index) == value:
 					$Editors/Choice.select(index)
 		"boolean": $Editors/Toggle.button_pressed = value
+		"aversions":
+			var lines := PackedStringArray()
+			var ids: Array = value.keys()
+			ids.sort()
+			for id in ids:
+				lines.append("%s = %.2f" % [id,value[id]])
+			$Editors/Paths/Text.text = "\n".join(lines)
 		"words": $Editors/Paths/Text.text = "\n".join(value)
 		"meshes":
 			var paths := PackedStringArray()
@@ -149,6 +156,20 @@ func _submit() -> void:
 		"enum", "resource": value = $Editors/Choice.get_selected_id()
 		"creature", "discovery", "item": value = StringName($Editors/Choice.get_item_metadata($Editors/Choice.selected))
 		"boolean": value = $Editors/Toggle.button_pressed
+		"aversions":
+			var weights: Dictionary[StringName,float] = {}
+			for line: String in $Editors/Paths/Text.text.split("\n",false):
+				var parts: PackedStringArray = line.split("=",true,1)
+				if parts.size() != 2 or not parts[1].strip_edges().is_valid_float():
+					$Label.text = _data.label+" · use species_id = weight"
+					return
+				var id := StringName(parts[0].strip_edges())
+				var weight := float(parts[1])
+				if _database.creature(id) == null or id == _entry.id or weights.has(id) or not is_finite(weight) or weight < 0.0 or weight > 1.0:
+					$Label.text = _data.label+" · choose another species and a unique weight from 0 to 1"
+					return
+				weights[id] = weight
+			value = weights
 		"words": value = $Editors/Paths/Text.text.replace(",","\n").split("\n",false)
 		"meshes":
 			var meshes: Array[Mesh] = []

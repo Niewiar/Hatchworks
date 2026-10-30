@@ -214,6 +214,8 @@ func _capture(map: MapManager) -> Dictionary:
 	return result
 
 func _clear_world(map: MapManager) -> void:
+	map.noise.clear()
+	map.wellbeing.invalidate()
 	_reset_reward_presentation(map)
 	var presentation := map.hatch_presentation
 	if presentation != null and presentation.visible and is_instance_valid(presentation._incubator):

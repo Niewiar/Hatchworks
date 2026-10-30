@@ -4,6 +4,19 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/creature_card.tscn" id="creature"]
 [ext_resource type="PackedScene" path="res://scenes/ui/workshop_panel.tscn" id="workshop"]
 [ext_resource type="PackedScene" path="res://scenes/ui/breeding_panel.tscn" id="breeding"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_satiety.png" id="satiety"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_contentment.png" id="contentment"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_noise.png" id="noise"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_crowding.png" id="crowding"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_neighbours.png" id="neighbours"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_space.png" id="space"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_company.png" id="company"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_rest.png" id="rest"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_work.png" id="work"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_walk.png" id="walk"]
+[ext_resource type="Texture2D" path="res://assets/ui/water.png" id="water"]
+[ext_resource type="Texture2D" path="res://assets/ui/breeding_heart.png" id="heart"]
+[ext_resource type="Texture2D" path="res://assets/ui/status_close.png" id="close"]
 [sub_resource type="StyleBoxFlat" id="SatietyFill"]
 bg_color = Color(0.52,0.7,0.26,1)
 corner_radius_top_left = 5
@@ -68,14 +81,289 @@ custom_maximum_size = Vector2(-1,560)
 propagate_maximum_size = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 [node name="Close" type="Button" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Close focus - RMB"
+[node name="CreatureClose" type="Button" parent="Position/Panel/Scroll/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+custom_minimum_size = Vector2(32,32)
+icon = ExtResource("close")
+expand_icon = true
+theme_override_constants/icon_max_width = 18
 [node name="CreatureCard" parent="Position/Panel/Scroll/Content" instance=ExtResource("creature")]
 unique_name_in_owner = true
 layout_mode = 2
+compact = true
+[node name="CreatureDetails" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Satiety" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/Satiety"]
+custom_minimum_size = Vector2(26,26)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("satiety")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SatietyBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/Satiety"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,14)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+show_percentage = false
+theme_override_styles/fill = SubResource("SatietyFill")
+theme_override_styles/background = SubResource("SatietyBackground")
+
+[node name="SatietyValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/Satiety"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(46,0)
+layout_mode = 2
+mouse_filter = 2
+horizontal_alignment = 2
+text = "100%"
+
+[node name="Happiness" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/Happiness"]
+custom_minimum_size = Vector2(26,26)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("contentment")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HappinessBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/Happiness"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,14)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+show_percentage = false
+theme_override_styles/fill = SubResource("HappinessFill")
+theme_override_styles/background = SubResource("SatietyBackground")
+
+[node name="HappinessValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/Happiness"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(46,0)
+layout_mode = 2
+mouse_filter = 2
+horizontal_alignment = 2
+text = "100%"
+
+[node name="CreatureState" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ActivityIcon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/CreatureState"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(26,26)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("rest")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ActivityName" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/CreatureState"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "Resting"
+autowrap_mode = 3
+
+[node name="HabitatReadings" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Space" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings/Space"]
+custom_minimum_size = Vector2(24,24)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("space")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SpaceValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings/Space"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+text = "12 / 12 m²"
+theme_override_font_sizes/font_size = 15
+
+[node name="Company" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings/Company"]
+custom_minimum_size = Vector2(24,24)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("company")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CompanyValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings/Company"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+text = "×1"
+theme_override_font_sizes/font_size = 15
+
+[node name="CarriedWater" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24,24)
+layout_mode = 2
+texture = ExtResource("water")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Separator" type="HSeparator" parent="Position/Panel/Scroll/Content/CreatureDetails"]
+layout_mode = 2
+
+[node name="SensitivityTiles" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="NoiseSensitivity" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NoiseSensitivity"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NoiseSensitivity/Header"]
+custom_minimum_size = Vector2(27,27)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("noise")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NoiseSensitivityValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NoiseSensitivity/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+text = "0%"
+theme_override_font_sizes/font_size = 16
+
+[node name="NoiseStress" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NoiseSensitivity"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,6)
+layout_mode = 2
+mouse_filter = 2
+show_percentage = false
+theme_override_styles/fill = SubResource("DurabilityFill")
+theme_override_styles/background = SubResource("SatietyBackground")
+
+[node name="CrowdingSensitivity" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/CrowdingSensitivity"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/CrowdingSensitivity/Header"]
+custom_minimum_size = Vector2(27,27)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("crowding")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CrowdingSensitivityValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/CrowdingSensitivity/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+text = "0%"
+theme_override_font_sizes/font_size = 16
+
+[node name="CrowdingStress" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/CrowdingSensitivity"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,6)
+layout_mode = 2
+mouse_filter = 2
+show_percentage = false
+theme_override_styles/fill = SubResource("DurabilityFill")
+theme_override_styles/background = SubResource("SatietyBackground")
+
+[node name="NeighboursSensitivity" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NeighboursSensitivity"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NeighboursSensitivity/Header"]
+custom_minimum_size = Vector2(27,27)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("neighbours")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NeighboursSensitivityValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NeighboursSensitivity/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+text = "0%"
+theme_override_font_sizes/font_size = 16
+
+[node name="NeighboursStress" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NeighboursSensitivity"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,6)
+layout_mode = 2
+mouse_filter = 2
+show_percentage = false
+theme_override_styles/fill = SubResource("DurabilityFill")
+theme_override_styles/background = SubResource("SatietyBackground")
+
+[node name="AversionIcons" type="HFlowContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 6
+
 [node name="Generic" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
 propagate_maximum_size = true
 unique_name_in_owner = true
@@ -99,65 +387,6 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
-[node name="Satiety" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureCard" index="2"]
-propagate_maximum_size = true
-mouse_filter = 0
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureCard/Satiety"]
-propagate_maximum_size = true
-mouse_filter = 2
-layout_mode = 2
-[node name="Label" type="Label" parent="Position/Panel/Scroll/Content/CreatureCard/Satiety/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Satiety"
-[node name="SatietyValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureCard/Satiety/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "100%"
-[node name="SatietyBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureCard/Satiety"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0,16)
-layout_mode = 2
-mouse_filter = 2
-show_percentage = false
-theme_override_styles/fill = SubResource("SatietyFill")
-theme_override_styles/background = SubResource("SatietyBackground")
-[node name="Happiness" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureCard" index="3"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-mouse_filter = 0
-[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureCard/Happiness"]
-layout_mode = 2
-mouse_filter = 2
-[node name="Label" type="Label" parent="Position/Panel/Scroll/Content/CreatureCard/Happiness/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-text = "Contentment"
-[node name="HappinessValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureCard/Happiness/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-text = "100%"
-[node name="HappinessBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureCard/Happiness"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0,16)
-layout_mode = 2
-mouse_filter = 2
-show_percentage = false
-theme_override_styles/fill = SubResource("HappinessFill")
-theme_override_styles/background = SubResource("SatietyBackground")
-[node name="HabitatNeeds" type="RichTextLabel" parent="Position/Panel/Scroll/Content/CreatureCard" index="4"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-fit_content = true
-scroll_active = false
-mouse_filter = 2
 [node name="Durability" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 visible = false
@@ -204,4 +433,3 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[editable path="Position/Panel/Scroll/Content/CreatureCard"]

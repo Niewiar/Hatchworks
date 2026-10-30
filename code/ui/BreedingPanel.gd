@@ -4,9 +4,14 @@ extends VBoxContainer
 var _creature: Creature
 var _map: Node3D
 var _message := ""
+var _conditions := ""
+var _status := ""
 
 func _ready() -> void:
 	%Breed.pressed.connect(_on_action)
+	for control in [%BreedingHint,%Breed]:
+		control.mouse_entered.connect(_show_conditions.bind(control))
+		control.mouse_exited.connect(_hide_conditions.bind(control))
 
 func configure(creature: Creature, map: Node3D) -> void:
 	_creature = creature
@@ -17,7 +22,9 @@ func configure(creature: Creature, map: Node3D) -> void:
 func refresh() -> void:
 	var active: bool = _map.breeding.is_breeding(_creature)
 	var status: String = _map.breeding.status(_creature)
-	%BreedStatus.text = _message if not _message.is_empty() and status.begins_with(tr("Ready")) else status
+	_status = _message if not _message.is_empty() and status.begins_with(tr("Ready")) else status
+	%BreedStatus.visible = active or not _message.is_empty()
+	%BreedStatus.text = _message if not _message.is_empty() and status.begins_with(tr("Ready")) else (tr("Ready") if status.begins_with(tr("Ready")) else status)
 	%BreedProgress.visible = active
 	%BreedProgress.value = _map.breeding.progress(_creature)*100.0
 	%Breed.text = tr("Cancel breeding") if active else (tr("Call a mate") if _creature.sex == Creature.SEX.MALE else tr("Find a calling male"))
@@ -28,7 +35,7 @@ func refresh() -> void:
 		habitat = tr("rocky ground") if data.habitat_ground == 4 else (tr("grassy ground") if data.habitat_ground == 0 else tr("their preferred ground"))
 	if data.requires_water:
 		habitat += tr(" and accessible water")
-	%BreedConditions.text = tr("Both need %s and at least %d%% satiety.\nRecovery: %.0f s · Satiety cost: %d%% each.") % [habitat,ceili(maxf(data.breeding_min_satiety,data.breeding_satiety_cost)),data.breeding_cooldown,ceili(data.breeding_satiety_cost)]
+	_conditions = tr("Both need %s and at least %d%% satiety.\nRecovery: %.0f s · Satiety cost: %d%% each.") % [habitat,ceili(maxf(data.breeding_min_satiety,data.breeding_satiety_cost)),data.breeding_cooldown,ceili(data.breeding_satiety_cost)]
 
 func _on_action() -> void:
 	_message = ""
@@ -43,3 +50,11 @@ func _notification(what: int) -> void:
 		_message = ""
 		if is_instance_valid(_creature):
 			refresh()
+
+func _show_conditions(control: Control) -> void:
+	if _map != null:
+		_map.inspection_panel.tooltip_controller.show_hint(_status+"\n"+_conditions,control)
+
+func _hide_conditions(control: Control) -> void:
+	if _map != null:
+		_map.inspection_panel.tooltip_controller.hide_text(control)

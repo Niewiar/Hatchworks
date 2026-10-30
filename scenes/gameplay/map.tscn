@@ -40,6 +40,8 @@
 [ext_resource type="Script" path="res://code/environment/PlantingController.gd" id="planting"]
 
 [ext_resource type="Script" path="res://code/ui/NewContentTracker.gd" id="new_content"]
+[ext_resource type="Script" path="res://code/environment/NoiseController.gd" id="noise"]
+[ext_resource type="Script" path="res://code/creatures/CreatureWellbeingController.gd" id="wellbeing"]
 [node name="Map" type="Node3D"]
 script = ExtResource("1")
 database = ExtResource("database")
@@ -116,3 +118,9 @@ script = ExtResource("planting")
 
 [node name="NewContent" type="Node" parent="."]
 script = ExtResource("new_content")
+
+[node name="Noise" type="Node" parent="."]
+script = ExtResource("noise")
+
+[node name="Wellbeing" type="Node" parent="."]
+script = ExtResource("wellbeing")

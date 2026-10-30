@@ -8,6 +8,8 @@ extends Node3D
 @export var hatch_presentation: HatchPresentation
 @export var camera_controller: MapCameraController
 
+@onready var noise: NoiseController = $Noise
+@onready var wellbeing: CreatureWellbeingController = $Wellbeing
 @onready var new_content: NewContentTracker = $NewContent
 @onready var discoveries: DiscoveryController = $Discoveries
 @onready var items: ItemInventory = $Items
@@ -76,6 +78,7 @@ func _ready() -> void:
 	breeding.initialize(self)
 	discoveries.initialize(self)
 	building_controller.initialize(self)
+	wellbeing.initialize(self)
 	new_content.initialize(self)
 	navigation.initialize(self)
 	if camera_controller != null:

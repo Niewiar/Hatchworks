@@ -18,3 +18,7 @@ impact_time = 2.0
 production_radius = 5.0
 preferred_area = 12.0
 walk_speed = 1.4
+
+noise_sensitivity = 1.0
+crowding_sensitivity = 0.5
+species_aversions = Dictionary[StringName, float]({&"pebblit": 0.85})

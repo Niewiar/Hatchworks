@@ -441,3 +441,45 @@ stone,stone,kamień
 their preferred ground,their preferred ground,odpowiedniego podłoża
 water,water,woda
 wood,wood,drewno
+Sensitivities,Sensitivities,Wrażliwości
+Sound effects,Sound effects,Efekty dźwiękowe
+Seeking water,Seeking water,Szuka wody
+Swimming,Swimming,Pływa
+On the move,On the move,W drodze
+Working,Working,Pracuje
+Seeking food,Seeking food,Szuka jedzenia
+Needs water,Needs water,Potrzebuje wody
+Needs space,Needs space,Potrzebuje miejsca
+Courting,Courting,Zaloty
+Uneasy around %s · %d%%,Uneasy around %s · %d%%,Niepokój przy %s · %d%%
+"Room to roam
+%.1f / %.1f m² of dry ground","Room to roam
+%.1f / %.1f m² of dry ground","Miejsce do życia
+%.1f / %.1f m² suchego gruntu"
+"A familiar face nearby
+Companions: %d","A familiar face nearby
+Companions: %d","Znajoma mordka w pobliżu
+Towarzystwo: %d"
+Carrying a little water,Carrying a little water,Niesie trochę wody
+Ready for a dip,Ready for a dip,Pora na kąpiel
+"Noise
+Prefers a quiet corner.
+Sensitivity: %d%% · Disturbed: %d%%","Noise
+Prefers a quiet corner.
+Sensitivity: %d%% · Disturbed: %d%%","Hałas
+Woli zaciszny kąt.
+Wrażliwość: %d%% · Niepokój: %d%%"
+"Crowding
+Needs room to feel at home.
+Sensitivity: %d%% · Crowded: %d%%","Crowding
+Needs room to feel at home.
+Sensitivity: %d%% · Crowded: %d%%","Tłok
+Potrzebuje miejsca dla siebie.
+Wrażliwość: %d%% · Tłok: %d%%"
+"Neighbours
+Some company feels less welcome.
+Disturbed: %d%%","Neighbours
+Some company feels less welcome.
+Disturbed: %d%%","Sąsiedztwo
+Nie każde towarzystwo mu odpowiada.
+Niepokój: %d%%"

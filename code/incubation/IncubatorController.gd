@@ -43,6 +43,7 @@ func start_incubation() -> bool:
 	_sex_assigned = false
 	remaining = current_egg.incubation_seconds
 	state = STATE.INCUBATING
+	SoundEffects.play_at(&"machine_start",global_position,self)
 	$EggSocket.show()
 	changed.emit()
 	return true
@@ -96,7 +97,10 @@ func _process(delta: float) -> void:
 		$EggSocket.position.y = _socket_rest.y+sin(_phase*2.0)*0.012
 		if remaining <= 0:
 			state = STATE.READY
+			SoundEffects.play_at(&"machine_ready",global_position,self)
 			changed.emit()
+	_map.noise.set_source(self,0.3,4.0,state == STATE.INCUBATING)
+	SoundEffects.set_machine_loop(self,&"incubator_loop",state == STATE.INCUBATING)
 	_glow.emission_energy_multiplier = 1.5+sin(_phase*3.0)*0.7 if state == STATE.READY else 0.45+sin(_phase*2.0)*0.2
 
 func inspection_bounds() -> AABB:

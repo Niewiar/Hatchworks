@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 InputManager="*res://code/core/InputManager.gd"
 Localization="*res://code/core/Localization.gd"
 Music="*res://scenes/audio/world_music.tscn"
+SoundEffects="*res://code/audio/SoundEffects.gd"
 SaveGame="*res://code/core/SaveGameService.gd"
 GameManager="*res://code/core/GameManager.gd"
 

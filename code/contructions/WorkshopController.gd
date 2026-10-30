@@ -38,6 +38,7 @@ func start_crafting() -> bool:
 	if state != STATE.EMPTY or not crafting_error().is_empty():
 		return false
 	state = STATE.WORKING
+	SoundEffects.play_at(&"machine_start",global_position,self)
 	remaining = current_egg.crafting_seconds
 	_map.science.spend(current_egg.science_cost)
 	_map.inventory.spend_costs(current_egg.costs())
@@ -67,11 +68,14 @@ func _process(delta: float) -> void:
 		remaining = maxf(0.0,remaining-delta)
 		if remaining <= 0.0:
 			state = STATE.READY
+			SoundEffects.play_at(&"machine_ready",global_position,self)
 			_egg_visual = current_egg.model.instantiate() as Node3D
 			_egg_visual.process_mode = Node.PROCESS_MODE_DISABLED
 			_egg_visual.scale = Vector3.ONE*0.63
 			%Socket.add_child(_egg_visual)
 			changed.emit()
+	_map.noise.set_source(self,0.7,6.0,state == STATE.WORKING)
+	SoundEffects.set_machine_loop(self,&"workshop_loop",state == STATE.WORKING)
 	_update_visuals()
 
 func _update_visuals() -> void:

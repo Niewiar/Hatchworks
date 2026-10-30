@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3]
 [ext_resource type="Script" path="res://code/ui/CreatureCard.gd" id="script"]
 [ext_resource type="Texture2D" path="res://assets/ui/water.png" id="water"]
 [ext_resource type="Texture2D" path="res://assets/ui/gather_ground.png" id="soil"]
@@ -12,6 +12,7 @@ script = ExtResource("script")
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Tuftling"
+autowrap_mode = 3
 [node name="Sex" type="HBoxContainer" parent="."]
 propagate_maximum_size = true
 layout_mode = 2
@@ -76,3 +77,32 @@ stretch_mode = 5
 [node name="Name" type="Label" parent="Food"]
 layout_mode = 2
 text = "Plant Fiber"
+
+[node name="CompactTraits" type="HBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Sex" type="TextureRect" parent="CompactTraits"]
+custom_minimum_size = Vector2(30,30)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Water" type="TextureRect" parent="CompactTraits"]
+custom_minimum_size = Vector2(30,30)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Soil" type="TextureRect" parent="CompactTraits"]
+custom_minimum_size = Vector2(30,30)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Food" type="TextureRect" parent="CompactTraits"]
+custom_minimum_size = Vector2(30,30)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5

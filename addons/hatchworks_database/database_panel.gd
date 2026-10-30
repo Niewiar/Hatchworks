@@ -19,6 +19,7 @@ var _disk_hashes: Dictionary = {}
 var _known: Dictionary = {}
 var _membership := ""
 var _refreshing := false
+var _table_refresh_queued := false
 var _sort_column := 0
 var _sort_ascending := true
 var _asset_field: Control
@@ -129,7 +130,14 @@ func _set_category(category: String) -> void:
 	_refresh_table()
 
 func _refresh_table() -> void:
-	if _database == null:
+	if _table_refresh_queued:
+		return
+	_table_refresh_queued = true
+	_rebuild_table.call_deferred()
+
+func _rebuild_table() -> void:
+	_table_refresh_queued = false
+	if _database == null or not is_inside_tree():
 		return
 	var selected := _selected_entries()
 	_refreshing = true
@@ -366,6 +374,9 @@ func _usages(entry: Resource) -> PackedStringArray:
 	if entry is CreatureResearch:
 		result.append("ScienceController first species action rewards")
 	if entry is CreatureSpecies:
+		for other: CreatureSpecies in _database.creatures:
+			if other != entry and other.species_aversions.has(entry.id):
+				result.append("Creatures / "+other.display_name+" · species aversion")
 		for research in _database.research:
 			if research.creature_id == entry.id:
 				result.append("Creature Research / "+research.display_name)
