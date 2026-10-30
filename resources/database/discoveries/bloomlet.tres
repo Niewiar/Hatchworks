@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/bloomlet.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"bloomlet"
+display_name = "Bloomlet"
+description = "A winged woodland gardener that scatters herbs across grassy ground. New green shoots follow its fluttering wings."
+category = 5
+icon = ExtResource("icon")

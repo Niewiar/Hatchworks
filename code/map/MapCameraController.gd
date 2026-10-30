@@ -1,6 +1,10 @@
 class_name MapCameraController
 extends Camera3D
 
+signal moved(distance: float)
+signal rotated(angle: float)
+signal focus_changed(focused: bool)
+
 @export var minimum_zoom := 4.0
 @export var maximum_zoom := 90.0
 @export_range(0.001, 0.02, 0.001) var orbit_sensitivity := 0.005
@@ -20,13 +24,29 @@ func configure(world_size: Vector2) -> void:
 	size = clampf(size, minimum_zoom, maximum_zoom)
 
 func pan(previous: Vector2, current: Vector2, surface: Node3D) -> void:
+	if _focused:
+		return
 	var from = GroundPicker3D.from_screen(self, previous, surface)
 	var to = GroundPicker3D.from_screen(self, current, surface)
 	if from != null and to != null:
+		var previous_position := global_position
 		global_position += from - to
 		_clamp_position(surface)
+		moved.emit(global_position.distance_to(previous_position))
+
+func pan_direction(direction: Vector2, delta: float, surface: Node3D) -> void:
+	if _focused or direction.is_zero_approx():
+		return
+	var right := Vector3(global_basis.x.x,0,global_basis.x.z).normalized()
+	var down := Vector3(global_basis.z.x,0,global_basis.z.z).normalized()
+	var previous_position := global_position
+	global_position += (right*direction.x+down*direction.y)*maxf(size*0.65,3.0)*delta
+	_clamp_position(surface)
+	moved.emit(global_position.distance_to(previous_position))
 
 func begin_orbit(surface: Node3D) -> bool:
+	if _focused:
+		return false
 	var screen := get_viewport().get_visible_rect().size * 0.5
 	var focus = GroundPicker3D.from_screen(self, screen, surface)
 	if focus == null:
@@ -37,13 +57,15 @@ func begin_orbit(surface: Node3D) -> bool:
 	return true
 
 func orbit(horizontal_delta: float) -> void:
+	if _focused:
+		return
 	var turn := Basis(Vector3.UP, -horizontal_delta * orbit_sensitivity)
 	global_position = _orbit_center + turn * (global_position - _orbit_center)
 	global_basis = (turn * global_basis).orthonormalized()
+	rotated.emit(-horizontal_delta * orbit_sensitivity)
 
 func zoom(direction: int, screen_position: Vector2, surface: Node3D) -> void:
 	if _focused:
-		_focus_size = clampf(_focus_size*pow(0.9,direction),minimum_zoom,12.0)
 		return
 	var before = GroundPicker3D.from_screen(self, screen_position, surface)
 	size = clampf(size * pow(0.9, direction), minimum_zoom, maximum_zoom)
@@ -65,8 +87,9 @@ func focus_on(point: Vector3) -> void:
 	if not _focused:
 		_saved_transform = global_transform
 		_saved_size = size
-		_focus_size = clampf(minf(size,5.0),minimum_zoom,maximum_zoom)
+		_focus_size = clampf(minf(size,3.2),1.2,maximum_zoom)
 	_focused = true
+	focus_changed.emit(true)
 	_restoring = false
 	_focus_point = point
 	set_process(true)
@@ -78,6 +101,7 @@ func release_focus() -> void:
 	if not _focused:
 		return
 	_focused = false
+	focus_changed.emit(false)
 	_restoring = true
 	set_process(true)
 
@@ -101,3 +125,15 @@ func _process(delta: float) -> void:
 			set_process(false)
 	else:
 		set_process(false)
+
+func capture_view() -> Dictionary:
+	return {"transform":_saved_transform if _focused or _restoring else global_transform,"size":_saved_size if _focused or _restoring else size}
+
+func restore_view(value: Dictionary) -> void:
+	_focused = false
+	focus_changed.emit(false)
+	_restoring = false
+	if value.get("transform") is Transform3D:
+		global_transform = value.transform
+	size = clampf(float(value.get("size",size)),minimum_zoom,maximum_zoom)
+	set_process(false)

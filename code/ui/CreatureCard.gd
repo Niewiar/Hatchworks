@@ -13,7 +13,7 @@ func _ready() -> void:
 	$Food/Icon.mouse_entered.connect(_show_food)
 	$Food/Icon.mouse_exited.connect(func(): _tooltips.hide_text($Food/Icon))
 	$Sex.mouse_exited.connect(func(): _tooltips.hide_text($Sex))
-	for pair in [[$Requirements/Water,"water"],[$Requirements/Soil,"soil"]]:
+	for pair in [[$Requirements/Water,tr("water")],[$Requirements/Soil,tr("soil")]]:
 		var control := pair[0] as Control
 		control.mouse_entered.connect(_show_icon_term.bind(control,pair[1]))
 		control.mouse_exited.connect(func(): _tooltips.hide_text(control))
@@ -24,23 +24,31 @@ func configure(data: CreatureSpecies, sex: int, database: GameDatabase, tooltips
 	_database = database
 	_tooltips = tooltips
 	$Name.text = data.display_name
-	$Sex/Text.text = "Male" if sex == Creature.SEX.MALE else "Female"
+	$Sex/Text.text = tr("Male") if sex == Creature.SEX.MALE else tr("Female")
 	$Sex/Icon.texture = load("res://assets/ui/male.png" if sex == Creature.SEX.MALE else "res://assets/ui/female.png")
 	$Description.text = database.rich_description(data.description)
+	$Requirements/Water.visible = data.requires_water
+	$Requirements/WaterText.visible = data.requires_water
+	var ground_id := _habitat_id()
+	var ground := database.discovery(ground_id)
+	$Requirements/Soil.texture = ground.icon if ground != null else load("res://assets/ui/gather_ground.png")
+	$Requirements/SoilText.text = tr("Soil / rock") if data.production == CreatureSpecies.PRODUCTION.QUARRY else (tr("Grass") if ground_id == &"grass" else tr("Dry soil"))
 	var food: ResourceDefinition
 	for resource in database.resources:
 		if resource.kind == data.food_resource:
 			food = resource
 	$Food/Icon.texture = food.icon if food != null else null
-	$Food/Name.text = food.display_name if food != null else "Food"
+	$Food/Name.text = food.display_name if food != null else tr("Food")
 
 func _show_sex() -> void:
-	_tooltips.show_hint("Sex of this individual: "+("male" if _sex == Creature.SEX.MALE else "female"),$Sex)
+	_tooltips.show_hint(tr("Male") if _sex == Creature.SEX.MALE else tr("Female"),$Sex)
 
 func _show_term(meta: Variant) -> void:
 	_show_icon_term($Description,str(meta))
 
 func _show_icon_term(control: Control, key: String) -> void:
+	if control == $Requirements/Soil:
+		key = str(_habitat_id())
 	var term := _database.term(key)
 	if term != null:
 		_tooltips.show_hint(term.display_name+"\n"+term.description,control)
@@ -50,3 +58,13 @@ func _show_food() -> void:
 		if resource.kind == _species.food_resource:
 			var term := _database.term(str(resource.id))
 			_tooltips.show_hint(resource.display_name+"\n"+(term.description if term != null else resource.description),$Food/Icon)
+
+func _habitat_id() -> StringName:
+	if _species == null or _species.production == CreatureSpecies.PRODUCTION.NONE:
+		return &"soil"
+	return &"rock" if _species.production == CreatureSpecies.PRODUCTION.QUARRY else &"grass"
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		if _species != null:
+			configure(_species,_sex,_database,_tooltips)

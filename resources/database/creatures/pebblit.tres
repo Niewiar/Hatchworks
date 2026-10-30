@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
+[ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/pebblit.tscn" id="scene"]
+[ext_resource type="Texture2D" path="res://assets/ui/pebblit.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"pebblit"
+display_name = "Pebblit"
+description = "A stubborn, stone-armored creature whose stomps raise rocky ground and scatter stone. Give it room — a cornered Pebblit hits hard."
+scene = ExtResource("scene")
+icon = ExtResource("icon")
+production = 2
+requires_water = false
+habitat_ground = 4
+production_limit = 5
+production_seconds = 4.0
+impact_time = 2.0
+production_radius = 5.0
+preferred_area = 24.0
+walk_speed = 1.0

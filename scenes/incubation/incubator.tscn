@@ -33,12 +33,3 @@ omni_range = 2.2
 [node name="HeatInput" type="Marker3D" parent="."]
 position = Vector3(-1.24,0.385,-0.12)
 rotation_degrees = Vector3(0,90,0)
-[node name="Timer" type="Label3D" parent="."]
-position = Vector3(0,2.22,0)
-billboard = 1
-pixel_size = 0.005
-font_size = 30
-outline_size = 7
-modulate = Color(0.92,0.96,0.78,1)
-outline_modulate = Color(0.02,0.04,0.02,0.95)
-text = "Incubator"

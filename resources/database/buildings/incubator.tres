@@ -6,11 +6,11 @@
 script = ExtResource("script")
 id = &"incubator"
 display_name = "Incubator"
-description = "A stone incubator with a brass connection for future heating. Place it on dry, level ground."
+description = "A sheltered stone nest where new life waits to hatch."
 scene = ExtResource("scene")
 icon = ExtResource("icon")
-wood_cost = 5
-stone_cost = 10
-fiber_cost = 5
+wood_cost = 0
+stone_cost = 0
+fiber_cost = 0
 footprint_radius = 1.35
 maximum_height_difference = 0.18

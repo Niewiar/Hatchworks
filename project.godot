@@ -18,6 +18,9 @@ config/icon="res://icon.svg"
 [autoload]
 
 InputManager="*res://code/core/InputManager.gd"
+Localization="*res://code/core/Localization.gd"
+Music="*res://scenes/audio/world_music.tscn"
+SaveGame="*res://code/core/SaveGameService.gd"
 GameManager="*res://code/core/GameManager.gd"
 
 [display]
@@ -33,6 +36,10 @@ window/stretch/aspect="expand"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/hatchworks_database/plugin.cfg")
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://localization/game.en.translation", "res://localization/game.pl.translation")
 
 [physics]
 

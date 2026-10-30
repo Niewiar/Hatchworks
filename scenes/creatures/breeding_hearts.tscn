@@ -1,0 +1,33 @@
+[gd_scene format=3]
+[ext_resource type="Texture2D" path="res://assets/ui/breeding_heart.png" id="heart"]
+[ext_resource type="Curve" path="res://resources/incubation/heart_scale.tres" id="scale"]
+[sub_resource type="StandardMaterial3D" id="material"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1,0.66,0.73,1)
+albedo_texture = ExtResource("heart")
+billboard_mode = 3
+vertex_color_use_as_albedo = false
+cull_mode = 2
+[sub_resource type="QuadMesh" id="mesh"]
+size = Vector2(0.3,0.3)
+material = SubResource("material")
+[node name="Hearts" type="CPUParticles3D"]
+position = Vector3(0,0.95,0)
+emitting = false
+amount = 6
+lifetime = 1.8
+preprocess = 0.0
+mesh = SubResource("mesh")
+local_coords = true
+emission_shape = 1
+emission_sphere_radius = 0.25
+direction = Vector3(0,1,0)
+spread = 18.0
+gravity = Vector3(0,0.12,0)
+initial_velocity_min = 0.3
+initial_velocity_max = 0.55
+scale_amount_min = 0.7
+scale_amount_max = 1.15
+scale_amount_curve = ExtResource("scale")
+cast_shadow = 0

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EggDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/EggDefinition.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/incubation/bloomlet_egg.tscn" id="model"]
+[resource]
+script = ExtResource("script")
+id = &"bloomlet_egg"
+display_name = "Bloomlet Egg"
+description = "A petal-speckled shell, light as a woodland breeze."
+creature_id = &"bloomlet"
+model = ExtResource("model")
+incubation_seconds = 30.0
+crafting_seconds = 15.0
+science_cost = 3
+fiber_cost = 5

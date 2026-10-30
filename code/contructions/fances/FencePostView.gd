@@ -50,3 +50,20 @@ func _update_collision() -> void:
 	var height := state.data.height + 4
 	(_shape.shape as BoxShape3D).size = Vector3(state.data.post_width + 4, height, state.data.thickness * 1.15 + 3) / _pixels_per_unit
 	_shape.position = Vector3(0, height * 0.5 / _pixels_per_unit, 0)
+
+func inspection_bounds() -> AABB:
+	return mesh.get_aabb().grow(0.1) if mesh != null else AABB(Vector3.ZERO,Vector3.ONE)
+
+func structure_condition() -> float:
+	return state.integrity() if state != null else 0.0
+
+func structure_title() -> String:
+	return tr("%s post") % state.data.display_name if state != null else tr("Fence")
+
+func damage_structure(amount: float) -> bool:
+	var network := get_parent().get_parent() as FenceController
+	return network.damage_post(state.id,amount) if network != null and state != null and not preview_mode else false
+
+func repair_structure() -> bool:
+	var network := get_parent().get_parent() as FenceController
+	return network.repair_post(state.id) if network != null and state != null and not preview_mode else false

@@ -30,18 +30,19 @@ theme_override_constants/margin_left = 36
 theme_override_constants/margin_right = 36
 theme_override_constants/margin_top = 104
 theme_override_constants/margin_bottom = 148
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="VBoxContainer" parent="."]
 layout_mode = 2
 mouse_filter = 2
 propagate_maximum_size = true
+alignment = 1
 [node name="Panel" type="PanelContainer" parent="Center"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(620,0)
-custom_maximum_size = Vector2(960,640)
+custom_minimum_size = Vector2(980,360)
+custom_maximum_size = Vector2(1160,800)
 propagate_maximum_size = true
 size_flags_horizontal = 4
-size_flags_vertical = 4
+size_flags_vertical = 3
 theme_override_styles/panel = SubResource("window")
 [node name="Margin" type="MarginContainer" parent="Center/Panel"]
 propagate_maximum_size = true
@@ -57,17 +58,17 @@ theme_override_constants/separation = 16
 [node name="Title" type="Label" parent="Center/Panel/Margin/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "Inventory"
+text = "Backpack"
 [node name="Info" type="Label" parent="Center/Panel/Margin/Content"]
 layout_mode = 2
 autowrap_mode = 3
-text = "Materials, eggs and construction kits."
+text = "Eggs, saplings and other items."
 [node name="Scroll" type="ScrollContainer" parent="Center/Panel/Margin/Content"]
+unique_name_in_owner = true
 propagate_maximum_size = false
 layout_mode = 2
 horizontal_scroll_mode = 0
-vertical_scroll_mode = 5
-custom_maximum_size = Vector2(-1,320)
+vertical_scroll_mode = 1
 size_flags_vertical = 3
 [node name="Grid" type="HFlowContainer" parent="Center/Panel/Margin/Content/Scroll"]
 propagate_maximum_size = true
@@ -76,3 +77,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 12
 theme_override_constants/v_separation = 12
+
+[node name="Empty" type="Label" parent="Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+size_flags_vertical = 3
+vertical_alignment = 1
+text = "Your backpack is empty."
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.65,0.72,0.56,1)

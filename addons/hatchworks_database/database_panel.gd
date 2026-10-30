@@ -49,6 +49,13 @@ func _ready() -> void:
 	%DiscoveryRecipes.add_requested.connect(_open_recipe_dialog)
 	%RecipeDraft.validity_changed.connect(_on_recipe_validity_changed)
 	%RecipeDialog.confirmed.connect(_create_recipe_from_dialog)
+	%GraphMode.toggled.connect(_set_graph_mode)
+	%DiscoveryGraph.entry_selected.connect(_graph_selection)
+	%DiscoveryGraph.property_requested.connect(_request_edit)
+	%DiscoveryGraph.discovery_requested.connect(_create_graph_discovery)
+	%DiscoveryGraph.recipe_requested.connect(_create_graph_recipe)
+	%DiscoveryGraph.removal_requested.connect(_ask_graph_remove)
+	%DiscoveryGraph.message_requested.connect(_status)
 
 func configure(history: EditorUndoRedoManager) -> void:
 	_history = history
@@ -73,6 +80,7 @@ func _load_database() -> void:
 	if _database.construction != null:
 		_watch_path(_database.construction.resource_path)
 	_membership = _membership_key()
+	%DiscoveryGraph.configure(_database,_history)
 	_categories.clear()
 	for category in SCHEMA.CATEGORIES:
 		_categories.add_item(category)
@@ -97,6 +105,8 @@ func _dirty(entry: Resource) -> bool:
 	return not _baseline.has(entry) or _baseline[entry] != SCHEMA.fingerprint(entry)
 
 func _on_category_selected(index: int) -> void:
+	if SCHEMA.CATEGORIES[index] not in ["Discoveries","Recipes"]:
+		%GraphMode.button_pressed = false
 	_set_category(SCHEMA.CATEGORIES[index])
 
 func _set_category(category: String) -> void:
@@ -164,6 +174,7 @@ func _refresh_table() -> void:
 	_refreshing = false
 	_on_selection_changed()
 	_refresh_dirty()
+	%DiscoveryGraph.refresh()
 
 func _selected_entries() -> Array:
 	var result: Array = []
@@ -184,6 +195,7 @@ func _on_selection_changed() -> void:
 
 func _select_entry(entry: Resource) -> void:
 	_selected = entry
+	%DiscoveryGraph.select_entry(entry)
 	for child in _fields.get_children():
 		_fields.remove_child(child)
 		child.queue_free()
@@ -195,7 +207,6 @@ func _select_entry(entry: Resource) -> void:
 	%DiscoveryRecipes.visible = entry is DiscoveryDefinition
 	_preview.visible = not entry is DiscoveryRecipe
 	%Metrics.visible = not entry is DiscoveryRecipe
-	_preview.custom_minimum_size = Vector2(0,80 if entry is DiscoveryDefinition else 200)
 	_preview.show_entry(entry)
 	if entry is DiscoveryRecipe:
 		%RecipeEditor.configure(_database,entry)
@@ -348,9 +359,16 @@ func _usages(entry: Resource) -> PackedStringArray:
 			if building.required_discovery == entry.id:
 				result.append("Buildings / "+building.display_name)
 	if entry is EggDefinition:
+		result.append("Life Workshop crafting and creature breeding")
 		for discovery in _database.discoveries:
 			if discovery.reward_item == entry.id:
 				result.append("Discoveries / "+discovery.display_name)
+	if entry is CreatureResearch:
+		result.append("ScienceController first species action rewards")
+	if entry is CreatureSpecies:
+		for research in _database.research:
+			if research.creature_id == entry.id:
+				result.append("Creature Research / "+research.display_name)
 	if entry is BuildingDefinition:
 		result.append("Building mode")
 	if entry is FloraSpecies and entry.kind == FloraSpecies.KIND.GRASS:
@@ -534,3 +552,53 @@ func _navigate_recipe(recipe: DiscoveryRecipe) -> void:
 	_table.deselect_all()
 	_select_entry(recipe)
 	_refresh_table()
+
+func open_discovery_graph() -> void:
+	%GraphMode.button_pressed = true
+	_set_graph_mode(true)
+
+func _set_graph_mode(active: bool) -> void:
+	if active and _database != null and not (_selected is DiscoveryDefinition or _selected is DiscoveryRecipe) and not _database.discoveries.is_empty():
+		_graph_selection(_database.discoveries[0])
+	%Sidebar.visible = not active
+	%DiscoveryGraph.visible = active
+	%TablePanel.visible = not active
+	%DiscoveryGraph.refresh()
+	if active:
+		%DiscoveryGraph._fit.call_deferred()
+
+func _graph_selection(entry: Resource) -> void:
+	if entry == null:
+		return
+	var category := "Recipes" if entry is DiscoveryRecipe else "Discoveries"
+	if _category != category:
+		_set_category(category)
+	_table.deselect_all()
+	_select_entry(entry)
+	_refresh_table()
+
+func _create_graph_discovery() -> void:
+	_set_category("Discoveries")
+	_create_entry()
+
+func _create_graph_recipe() -> void:
+	_set_category("Recipes")
+	_register_new(DiscoveryRecipe.new(),"new_combination")
+	_status("Connect two discoveries to A / B, then connect the recipe result to a discovery. Save All when the recipe is complete.")
+
+func _ask_graph_remove(entries: Array) -> void:
+	if entries.is_empty():
+		return
+	var category := "Recipes" if entries[0] is DiscoveryRecipe else "Discoveries"
+	for entry: Resource in entries:
+		if (entry is DiscoveryRecipe) != (category == "Recipes"):
+			_status("Remove recipes and discoveries separately. Remove a discovery's recipes first.",true)
+			return
+		var uses := _usages(entry)
+		if not uses.is_empty():
+			_status("Cannot remove "+entry.display_name+": "+"; ".join(uses),true)
+			return
+	_set_category(category)
+	_pending_remove = entries
+	%RemoveDialog.dialog_text = "Remove %d entries from the catalog? Their files will be deleted when you save. This action supports Undo." % entries.size()
+	%RemoveDialog.popup_centered()

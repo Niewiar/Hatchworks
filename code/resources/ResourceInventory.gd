@@ -2,6 +2,7 @@ class_name ResourceInventory
 extends Node
 
 signal added(kind: KIND, quantity: float)
+signal gained(kind: KIND, quantity: float, origin: Variant)
 signal changed(kind: KIND, amount: float)
 
 enum KIND { FIBER = 5, HERBS = 6, WOOD = 9, STONE = 10 }
@@ -30,7 +31,7 @@ func definition(kind: int) -> ResourceDefinition:
 
 func resource_name(kind: int) -> String:
 	var data := definition(kind)
-	return data.display_name if data != null else "Unknown resource"
+	return data.display_name if data != null else tr("Unknown resource")
 
 func amount(kind: int) -> float:
 	return _amounts.get(kind,0.0)
@@ -62,10 +63,11 @@ func spend_costs(costs: Dictionary[int, int]) -> bool:
 			changed.emit(kind,_amounts[kind])
 	return true
 
-func add(kind: int, quantity: float) -> void:
+func add(kind: int, quantity: float, origin: Variant = null) -> void:
 	if not _amounts.has(kind) or not is_finite(quantity) or quantity <= 0.0:
 		return
 	_amounts[kind] += quantity
+	gained.emit(kind,quantity,origin)
 	changed.emit(kind,_amounts[kind])
 	added.emit(kind,quantity)
 

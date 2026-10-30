@@ -7,4 +7,4 @@ script = ExtResource("script")
 keywords = PackedStringArray("grass")
 id = &"grass"
 display_name = "Grassy ground"
-description = "Tuftlings create grassy ground and grass tufts on dry soil. Gathering the tufts yields Plant Fiber and leaves the grassy ground intact."
+description = "Soft green ground where woodland creatures feel at home."

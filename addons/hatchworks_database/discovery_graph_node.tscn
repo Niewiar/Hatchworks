@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[node name="Discovery" type="GraphNode"]
+custom_minimum_size = Vector2(220, 0)
+title = "Discovery"
+slot/0/left_enabled = true
+slot/0/left_type = 2
+slot/0/left_color = Color(0.93, 0.73, 0.35, 1)
+slot/0/right_enabled = true
+slot/0/right_type = 1
+slot/0/right_color = Color(0.55, 0.82, 0.55, 1)
+
+[node name="Summary" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Summary"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ID" type="Label" parent="Summary"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2

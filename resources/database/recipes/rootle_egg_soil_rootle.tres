@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="script"]
+[resource]
+script = ExtResource("script")
+id = &"rootle_egg_soil_rootle"
+display_name = "Rootle Egg + Soil"
+first = &"rootle_egg"
+second = &"soil"
+result = &"rootle"
+science_reward = 1

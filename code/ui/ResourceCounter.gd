@@ -7,10 +7,10 @@ extends HBoxContainer
 @onready var _value: Label = $Text/Value
 
 var _inventory: ResourceInventory
+var _pending_gain := 0.0
 
 func _ready() -> void:
 	$Icon.texture = icon
-
 
 func initialize(inventory: ResourceInventory) -> void:
 	_inventory = inventory
@@ -19,8 +19,30 @@ func initialize(inventory: ResourceInventory) -> void:
 	if data != null:
 		$Icon.texture = data.icon
 	inventory.changed.connect(_on_changed)
-	_on_changed(resource_kind,inventory.amount(resource_kind))
+	reset_presentation()
+
+func begin_gain(quantity: float) -> void:
+	_pending_gain += quantity
+
+func finish_gain(quantity: float) -> void:
+	_pending_gain = maxf(0.0,_pending_gain-quantity)
+	_refresh_value()
+
+func reset_presentation() -> void:
+	_pending_gain = 0.0
+	_refresh_value()
+
+func reward_anchor() -> Control:
+	return $Icon
 
 func _on_changed(kind: int, _amount: float) -> void:
 	if kind == resource_kind:
-		_value.text = _inventory.quantity_text(resource_kind)
+		_refresh_value()
+
+func _refresh_value() -> void:
+	if _inventory != null:
+		_value.text = str(floori(maxf(0.0,_inventory.amount(resource_kind)-_pending_gain)+0.000001))
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and _inventory != null:
+		$Text/Name.text = _inventory.resource_name(resource_kind)

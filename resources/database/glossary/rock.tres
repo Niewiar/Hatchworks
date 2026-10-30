@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GlossaryEntry" format=3]
+[ext_resource type="Script" path="res://code/database/GlossaryEntry.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/rock.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"rock"
+display_name = "Rocky ground"
+description = "Hard ground that makes Pebblits feel at home."
+keywords = PackedStringArray("rocky ground")
+icon = ExtResource("icon")

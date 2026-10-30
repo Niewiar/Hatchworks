@@ -34,6 +34,12 @@
 
 [ext_resource type="PackedScene" path="res://scenes/incubation/incubator.tscn" id="starting_incubator"]
 
+[ext_resource type="Script" path="res://code/discovery/ScienceController.gd" id="science"]
+[ext_resource type="Script" path="res://code/creatures/BreedingController.gd" id="breeding"]
+
+[ext_resource type="Script" path="res://code/environment/PlantingController.gd" id="planting"]
+
+[ext_resource type="Script" path="res://code/ui/NewContentTracker.gd" id="new_content"]
 [node name="Map" type="Node3D"]
 script = ExtResource("1")
 database = ExtResource("database")
@@ -98,3 +104,15 @@ script = ExtResource("items")
 script = ExtResource("discoveries")
 
 [node name="Incubator" parent="Buildings" instance=ExtResource("starting_incubator")]
+
+[node name="Science" type="Node" parent="."]
+script = ExtResource("science")
+[node name="Breeding" type="Node" parent="."]
+script = ExtResource("breeding")
+
+[node name="Planting" type="MeshInstance3D" parent="."]
+visible = false
+script = ExtResource("planting")
+
+[node name="NewContent" type="Node" parent="."]
+script = ExtResource("new_content")

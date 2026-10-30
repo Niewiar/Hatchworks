@@ -3,8 +3,7 @@
 [ext_resource type="Script" uid="uid://5hd17r4ag1lv" path="res://code/contructions/fances/FancesDatabase.gd" id="1"]
 [ext_resource type="Script" uid="uid://pa7841vgmt2" path="res://code/contructions/fances/FenceData.gd" id="2"]
 [ext_resource type="Resource" uid="uid://g2oij465idsk" path="res://resources/fences/wood.tres" id="3"]
-[ext_resource type="Resource" uid="uid://wltwsg51guko" path="res://resources/fences/stone.tres" id="4"]
 
 [resource]
 script = ExtResource("1")
-fances = Array[ExtResource("2")]([ExtResource("3"), ExtResource("4")])
+fances = Array[ExtResource("2")]([ExtResource("3")])

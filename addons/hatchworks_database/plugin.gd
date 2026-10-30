@@ -10,9 +10,11 @@ func _enter_tree() -> void:
 	_panel.configure(get_undo_redo())
 	_panel.hide()
 	add_tool_menu_item("Hatchworks Database",_open_database)
+	add_tool_menu_item("Discovery Graph",_open_graph)
 
 func _exit_tree() -> void:
 	remove_tool_menu_item("Hatchworks Database")
+	remove_tool_menu_item("Discovery Graph")
 	if is_instance_valid(_panel):
 		_panel.queue_free()
 
@@ -35,3 +37,7 @@ func _open_database() -> void:
 func _save_external_data() -> void:
 	if is_instance_valid(_panel):
 		_panel.save_all()
+
+func _open_graph() -> void:
+	_open_database()
+	_panel.open_discovery_graph()

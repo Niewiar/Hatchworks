@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/wood_fence.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"wood_fence"
+display_name = "Wooden fence"
+description = "A wooden barrier for shaping creature habitats."
+category = 6
+icon = ExtResource("icon")

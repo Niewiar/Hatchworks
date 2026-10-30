@@ -35,6 +35,14 @@ layout_mode = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+[node name="New" type="Label" parent="Content/Header"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+text = "!"
+theme_override_colors/font_color = Color(0.95,0.79,0.29,1)
+theme_override_font_sizes/font_size = 22
+
 [node name="Quantity" type="Label" parent="Content/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -48,3 +56,8 @@ mouse_filter = 2
 autowrap_mode = 3
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.87,0.92,0.75,1)
+
+[node name="Use" type="Button" parent="Content"]
+visible = false
+layout_mode = 2
+text = "Plant"

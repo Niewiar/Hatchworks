@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
-[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
-[ext_resource type="Texture2D" path="res://assets/ui/gather_ground.png" id="icon"]
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3 uid="uid://cmb4l3j0k3fjq"]
+
+[ext_resource type="Texture2D" uid="uid://dx13olk3jjvam" path="res://assets/ui/gather_ground.png" id="icon"]
+[ext_resource type="Script" uid="uid://btt4tn8jtjgi2" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+
 [resource]
 script = ExtResource("script")
+icon = ExtResource("icon")
 id = &"soil"
 display_name = "Soil"
 description = "The bare ground beneath your ecosystem."
-icon = ExtResource("icon")
-reward_item = &""
-reward_count = 0

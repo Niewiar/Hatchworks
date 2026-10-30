@@ -13,6 +13,9 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/discovery_panel.tscn" id="discoveries"]
 [ext_resource type="PackedScene" path="res://scenes/ui/inventory_panel.tscn" id="inventory_ui"]
 [ext_resource type="PackedScene" path="res://scenes/ui/notification_controller.tscn" id="notifications"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_menu.tscn" id="game_menu"]
+[ext_resource type="PackedScene" path="res://scenes/ui/camera_tutorial.tscn" id="camera_tutorial"]
+[ext_resource type="PackedScene" path="res://scenes/ui/reward_flight_controller.tscn" id="rewards"]
 [sub_resource type="Environment" id="Environment"]
 background_mode = 1
 background_color = Color(0.15, 0.2, 0.18, 1)
@@ -61,8 +64,10 @@ tooltip_controller = NodePath("../TooltipController")
 
 [node name="TooltipController" parent="CanvasLayer" unique_id=306451366 instance=ExtResource("5_tooltips")]
 
-[node name="ResourcePanel" parent="CanvasLayer" node_paths=PackedStringArray("inventory") instance=ExtResource("resource_panel")]
+[node name="ResourcePanel" parent="CanvasLayer" node_paths=PackedStringArray("inventory","science","tooltip_controller") instance=ExtResource("resource_panel")]
 inventory = NodePath("../../Map/Inventory")
+science = NodePath("../../Map/Science")
+tooltip_controller = NodePath("../TooltipController")
 
 [node name="InspectionPanel" parent="CanvasLayer" node_paths=PackedStringArray("map_manager", "tooltip_controller") instance=ExtResource("inspection")]
 map_manager = NodePath("../../Map")
@@ -82,3 +87,14 @@ tooltip_controller = NodePath("../TooltipController")
 [node name="Notifications" parent="CanvasLayer" node_paths=PackedStringArray("map_manager","tooltip_controller") instance=ExtResource("notifications")]
 map_manager = NodePath("../../Map")
 tooltip_controller = NodePath("../TooltipController")
+
+[node name="CameraTutorial" parent="CanvasLayer" node_paths=PackedStringArray("map_manager") instance=ExtResource("camera_tutorial")]
+map_manager = NodePath("../../Map")
+
+[node name="GameMenu" parent="CanvasLayer" node_paths=PackedStringArray("map_manager") instance=ExtResource("game_menu")]
+map_manager = NodePath("../../Map")
+
+[node name="Rewards" parent="CanvasLayer" node_paths=PackedStringArray("map_manager","resource_panel","game_toolbar") instance=ExtResource("rewards")]
+map_manager = NodePath("../../Map")
+resource_panel = NodePath("../ResourcePanel")
+game_toolbar = NodePath("../GameToolbar")

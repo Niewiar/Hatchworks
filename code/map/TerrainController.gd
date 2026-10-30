@@ -509,3 +509,44 @@ func has_submerged_ground(water_level: float) -> bool:
 		if global_position.y+height*global_basis.y.y < water_level-0.02:
 			return true
 	return false
+
+func rocky_impact(world_position: Vector3, radius: float, strength: float) -> float:
+	if radius <= 0.0 or strength <= 0.0 or not contains_world_point(world_position):
+		return 0.0
+	var local := to_local(world_position)
+	var point := Vector2(local.x,local.z)
+	var center := (point+world_size*0.5)/_height_cell
+	var padding := Vector2.ONE*radius/_height_cell
+	var first := Vector2i((center-padding).floor()).max(Vector2i.ZERO)
+	var last := Vector2i((center+padding).ceil()).min(_height_size-Vector2i.ONE)
+	for y in range(first.y,last.y+1):
+		for x in range(first.x,last.x+1):
+			var distance := (Vector2(x,y)*_height_cell-world_size*0.5).distance_to(point)/radius
+			if distance >= 1.0:
+				continue
+			var ripple := sin(distance*TAU-PI*0.5)*(1.0-smoothstep(0.45,1.0,distance))
+			var index := y*_height_size.x+x
+			_heights[index] = clampf(_heights[index]+ripple*strength,minimum_height,maximum_height)
+			_collision_heights[index] = _heights[index]/_height_cell.x
+	var changed := Rect2i(first,last-first+Vector2i.ONE)
+	_height_dirty = _height_dirty.merge(changed) if _height_dirty.has_area() else changed
+	if not _height_upload_pending:
+		_height_upload_pending = true
+		_upload_height_surface.call_deferred()
+	var mask_center := _world_to_mask(world_position)
+	var mask_radius := radius*pixels_per_unit
+	var mask_first := Vector2i((mask_center-Vector2.ONE*mask_radius).floor()).max(Vector2i.ZERO)
+	var mask_last := Vector2i((mask_center+Vector2.ONE*mask_radius).ceil()).min(_map_size-Vector2i.ONE)
+	var area := 0.0
+	for y in range(mask_first.y,mask_last.y+1):
+		for x in range(mask_first.x,mask_last.x+1):
+			var distance := (Vector2(x,y)+Vector2(0.5,0.5)).distance_to(mask_center)/mask_radius
+			if distance >= 1.0:
+				continue
+			var amount := 1.0-smoothstep(0.5,1.0,distance)
+			var before := _ground_weight(_coverage_at_pixel(x,y),GROUND_TYPE.ROCK)
+			_ground_image.set_pixel(x,y,_ground_image.get_pixel(x,y).lerp(TARGET_WEIGHTS[GROUND_TYPE.ROCK],amount))
+			_ground_influence.set_pixel(x,y,Color(1,0,0,1))
+			area += maxf(0.0,_ground_weight(_coverage_at_pixel(x,y),GROUND_TYPE.ROCK)-before)/(pixels_per_unit*pixels_per_unit)
+	_queue_upload()
+	return area

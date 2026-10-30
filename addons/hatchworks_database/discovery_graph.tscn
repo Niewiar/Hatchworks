@@ -1,0 +1,69 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_database/discovery_graph.gd" id="1"]
+
+[node name="DiscoveryGraph" type="VBoxContainer"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+script = ExtResource("1")
+
+[node name="Actions" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="NewDiscovery" type="Button" parent="Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "+ Discovery"
+
+[node name="NewRecipe" type="Button" parent="Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "+ Recipe"
+
+[node name="ShowAll" type="Button" parent="Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Show all"
+
+[node name="FocusSelected" type="Button" parent="Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Focus selected"
+
+[node name="Arrange" type="Button" parent="Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Arrange"
+
+[node name="Fit" type="Button" parent="Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Fit"
+
+[node name="Find" type="LineEdit" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Find a discovery and its connections…"
+
+[node name="Graph" type="GraphEdit" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+right_disconnects = true
+show_arrange_button = false
+zoom = 0.7
+connection_lines_thickness = 2.0
+minimap_enabled = false
+
+[node name="Help" type="Label" parent="."]
+layout_mode = 2
+autowrap_mode = 3
+text = "Discovery → recipe A / B. Recipe result → discovery. Drag a connected input to replace it. Delete removes selected entries; incomplete recipes cannot be saved."
+theme_override_font_sizes/font_size = 12
+
+[node name="GraphCount" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2

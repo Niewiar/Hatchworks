@@ -66,3 +66,7 @@ func _position_tooltip() -> void:
 			target.x = mouse.x-cursor_offset.x-extent.x
 	var maximum := (viewport_size-extent-Vector2.ONE*screen_margin).max(Vector2.ONE*screen_margin)
 	_active_tooltip.position = target.clamp(Vector2.ONE*screen_margin,maximum)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		hide_tooltip()

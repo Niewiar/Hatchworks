@@ -6,13 +6,12 @@
 script = ExtResource("script")
 id = &"feeder"
 display_name = "Feeder"
-description = "A wooden food trough with a brass supply inlet. Fill it with Plant Fiber for hungry Tuftlings."
+description = "A wooden trough to keep hungry creatures well fed."
 scene = ExtResource("scene")
 icon = ExtResource("icon")
-wood_cost = 3
+wood_cost = 0
 stone_cost = 0
-fiber_cost = 2
+fiber_cost = 0
 required_discovery = &"feeder"
-kit_item = &"feeder_kit"
 footprint_radius = 1.35
 storage_capacity = 20

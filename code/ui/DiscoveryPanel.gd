@@ -5,6 +5,8 @@ extends Control
 @export var tooltip_controller: TooltipController
 
 const TOKEN = preload("res://scenes/ui/discovery_token.tscn")
+const RECIPE_ROW = preload("res://scenes/ui/discovery_recipe_row.tscn")
+var _selected_id: StringName
 var _drag_source: DiscoveryToken
 var _drag_entry: DiscoveryDefinition
 var _drag_offset := Vector2.ZERO
@@ -12,14 +14,18 @@ var _drag_offset := Vector2.ZERO
 func _ready() -> void:
 	hide()
 	%Clear.pressed.connect(_clear_workspace)
+	for picker: OptionButton in [%Category,%ArchiveCategory,%Sort,%ArchiveSort]:
+		picker.item_selected.connect(func(_index): _refresh_catalog())
 	%Tabs.tab_changed.connect(func(_index): _cancel_drag())
 	map_manager.discoveries.seen.connect(_on_seen)
 	%Search.text_changed.connect(func(_text): _refresh_catalog())
 	%ArchiveSearch.text_changed.connect(func(_text): _refresh_catalog())
 	map_manager.mode_changed.connect(_mode_changed)
 	map_manager.discoveries.discovered.connect(func(_entry): _refresh_catalog.call_deferred())
+	map_manager.discoveries.combined.connect(func(_a,_b,_c,_new): _refresh_catalog.call_deferred())
 	%Workspace.resized.connect(_clamp_tokens)
 	get_window().focus_exited.connect(_cancel_drag)
+	get_node("/root/GameManager").connect("pause_changed",_on_pause_changed)
 
 func _clamp_tokens() -> void:
 	for token: DiscoveryToken in %Workspace.get_children():
@@ -38,24 +44,39 @@ func _refresh_catalog() -> void:
 		for child in catalog.get_children():
 			catalog.remove_child(child)
 			child.queue_free()
-	var count := 0
-	for entry: DiscoveryDefinition in map_manager.database.discoveries:
-		if not map_manager.discoveries.knows(entry.id):
+	for entry: DiscoveryDefinition in _filtered_entries(%Search,%Category,%Sort):
+		%Catalog.add_child(_make_token(entry,false))
+	for entry: DiscoveryDefinition in _filtered_entries(%ArchiveSearch,%ArchiveCategory,%ArchiveSort):
+		var archived := _make_token(entry,false)
+		archived.draggable = false
+		archived.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		archived.selected.connect(_select_archive)
+		archived.set_selected(entry.id == _selected_id)
+		%Archive.add_child(archived)
+	var count := map_manager.discoveries.known_entries().size()
+	%Count.text = tr("Discoveries: %d") % count
+	var entries := _filtered_entries(%ArchiveSearch,%ArchiveCategory,%ArchiveSort)
+	if not entries.any(func(entry): return entry.id == _selected_id):
+		_selected_id = entries[0].id if not entries.is_empty() else &""
+	_refresh_recipe_details()
+
+func _filtered_entries(search: LineEdit, category: OptionButton, sorting: OptionButton) -> Array[DiscoveryDefinition]:
+	var result: Array[DiscoveryDefinition] = []
+	var query := search.text.strip_edges().to_lower()
+	for entry: DiscoveryDefinition in map_manager.discoveries.known_entries():
+		if category.selected > 0 and entry.category != category.selected-1:
 			continue
-		count += 1
-		if %Search.text.is_empty() or entry.display_name.to_lower().contains(%Search.text.to_lower()):
-			%Catalog.add_child(_make_token(entry,false))
-		if %ArchiveSearch.text.is_empty() or entry.display_name.to_lower().contains(%ArchiveSearch.text.to_lower()):
-			var archived := _make_token(entry,false)
-			archived.draggable = false
-			archived.mouse_default_cursor_shape = Control.CURSOR_ARROW
-			%Archive.add_child(archived)
-	%Count.text = "%d %s" % [count,"discovery" if count == 1 else "discoveries"]
-	var lines := PackedStringArray()
-	for recipe: DiscoveryRecipe in map_manager.database.recipes:
-		if map_manager.discoveries.recipe_known(recipe.id):
-			lines.append("%s + %s → %s" % [map_manager.database.discovery(recipe.first).display_name,map_manager.database.discovery(recipe.second).display_name,map_manager.database.discovery(recipe.result).display_name])
-	%Recipes.text = "\n\n".join(lines) if not lines.is_empty() else "Known combinations appear here."
+		if not query.is_empty() and not entry.display_name.to_lower().contains(query):
+			continue
+		result.append(entry)
+	if sorting.selected == 2:
+		result.reverse()
+	else:
+		result.sort_custom(func(first: DiscoveryDefinition, second: DiscoveryDefinition):
+			if sorting.selected == 1 and first.category != second.category:
+				return first.category < second.category
+			return first.display_name.naturalnocasecmp_to(second.display_name) < 0)
+	return result
 
 func _make_token(entry: DiscoveryDefinition, on_board: bool) -> DiscoveryToken:
 	var token := TOKEN.instantiate() as DiscoveryToken
@@ -108,21 +129,30 @@ func _update_drag(viewport_position: Vector2) -> void:
 	%DragPreview.global_position = point-_drag_offset
 
 func _finish_drag(viewport_position: Vector2) -> void:
+	_update_drag(viewport_position)
 	var entry := _drag_entry
 	var source: DiscoveryToken = _drag_source if is_instance_valid(_drag_source) else null
-	var offset := _drag_offset
+	var drag_rect: Rect2 = %DragPreview.get_global_rect()
 	_cancel_drag()
-	var pointer := get_canvas_transform().affine_inverse()*viewport_position
-	if entry == null or not visible or not %Workspace.get_global_rect().has_point(pointer):
+	var board_rect: Rect2 = %Workspace.get_global_rect()
+	if entry == null or not visible or not board_rect.intersects(drag_rect):
 		return
-	var point: Vector2 = %Workspace.get_global_transform().affine_inverse()*pointer
+	var best: DiscoveryToken
+	var best_area := 0.0
 	var tokens := %Workspace.get_children()
 	tokens.reverse()
 	for token: DiscoveryToken in tokens:
-		if token != source and token.get_rect().has_point(point):
-			_combine_tokens({"discovery":entry.id,"source":source},token)
-			return
-	_drop_token(entry.id,source,point-%Workspace.get_global_transform().basis_xform_inv(offset))
+		if token == source:
+			continue
+		var overlap := drag_rect.intersection(token.get_global_rect()).intersection(board_rect)
+		var area := overlap.get_area()
+		if area > best_area:
+			best_area = area
+			best = token
+	if best != null:
+		_combine_tokens({"discovery":entry.id,"source":source},best)
+		return
+	_drop_token(entry.id,source,%Workspace.get_global_transform().affine_inverse()*drag_rect.position)
 
 func _cancel_drag() -> void:
 	if is_instance_valid(_drag_source):
@@ -146,14 +176,8 @@ func _clamp_position(point: Vector2, token_size: Vector2) -> Vector2:
 	return point.clamp(Vector2(8,8),(%Workspace.size-token_size-Vector2(8,8)).max(Vector2(8,8)))
 
 func _combine_tokens(data: Dictionary, target: DiscoveryToken) -> void:
-	var first: StringName = data.discovery
-	var second := target.entry.id
-	var known_before: Dictionary[StringName, bool] = {}
-	for entry in map_manager.database.discoveries:
-		known_before[entry.id] = map_manager.discoveries.knows(entry.id)
-	var result := map_manager.discoveries.combine(first,second)
+	var result := map_manager.discoveries.combine(data.discovery,target.entry.id,target.get_global_rect().get_center())
 	if result.is_empty():
-		%Outcome.text = "Nothing discovered. Try a different combination."
 		return
 	var point := target.position
 	var source: Control = data.get("source")
@@ -164,14 +188,6 @@ func _combine_tokens(data: Dictionary, target: DiscoveryToken) -> void:
 		%Workspace.remove_child(source)
 		source.queue_free()
 	_drop_token(result,null,point)
-	%Outcome.text = "%s + %s → %s" % [map_manager.database.discovery(first).display_name,map_manager.database.discovery(second).display_name,map_manager.database.discovery(result).display_name]
-	var entry := map_manager.database.discovery(result)
-	if not known_before.get(result,false):
-		%Outcome.text = "New discovery! "+%Outcome.text
-		if entry.reward_count > 0:
-			%Outcome.text += " · +%d %s added to inventory" % [entry.reward_count,"egg" if map_manager.database.egg(entry.reward_item) != null else "construction kit"]
-	elif entry.reward_count > 0:
-		%Outcome.text += " · Already known; no extra item reward"
 	_refresh_catalog.call_deferred()
 
 func _clear_workspace() -> void:
@@ -190,3 +206,72 @@ func _remove_token(token: DiscoveryToken) -> void:
 	tooltip_controller.hide_tooltip()
 	%Workspace.remove_child(token)
 	token.queue_free()
+
+func _select_archive(token: DiscoveryToken) -> void:
+	_selected_id = token.entry.id
+	_refresh_recipe_details()
+
+func _refresh_recipe_details() -> void:
+	for child in %Recipes.get_children():
+		%Recipes.remove_child(child)
+		child.queue_free()
+	for token: DiscoveryToken in %Archive.get_children():
+		token.set_selected(token.entry.id == _selected_id)
+	var entry := map_manager.database.discovery(_selected_id)
+	%DetailContent.visible = entry != null
+	%DetailEmpty.visible = entry == null
+	if entry == null:
+		return
+	%DetailName.text = tr(entry.display_name)
+	%DetailIcon.texture = entry.icon
+	var matching: Array[DiscoveryRecipe] = []
+	for recipe: DiscoveryRecipe in map_manager.database.recipes:
+		if entry.id in [recipe.first,recipe.second,recipe.result]:
+			matching.append(recipe)
+	var known := 0
+	for discovered in [false,true]:
+		for recipe in matching:
+			if map_manager.discoveries.recipe_known(recipe.id) != discovered:
+				continue
+			if discovered:
+				known += 1
+			var row := RECIPE_ROW.instantiate()
+			%Recipes.add_child(row)
+			var visible_part := 2 if recipe.result == entry.id else (0 if recipe.first == entry.id else 1)
+			row.configure(map_manager.database,recipe,discovered,visible_part)
+	%DetailCount.text = tr("%d / %d combinations discovered") % [known,matching.size()]
+
+func owns_secondary_action() -> bool:
+	if not visible:
+		return false
+	if _drag_entry != null:
+		return true
+	var control := get_viewport().gui_get_hovered_control()
+	while control != null:
+		if control is DiscoveryToken and control.in_workspace and %Workspace.is_ancestor_of(control):
+			return true
+		control = control.get_parent() as Control
+	return false
+
+func capture_workspace() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for token: DiscoveryToken in %Workspace.get_children():
+		result.append({"id":token.entry.id,"position":token.position})
+	return result
+
+func restore_workspace(values: Array) -> void:
+	_clear_workspace()
+	for value in values:
+		if value is Dictionary and value.get("id") is StringName and value.get("position") is Vector2:
+			_drop_token(value.id,null,value.position)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_cancel_drag()
+		_refresh_catalog.call_deferred()
+		for token: DiscoveryToken in %Workspace.get_children():
+			token.configure(token.entry,map_manager.discoveries.is_unread(token.entry.id))
+
+func _on_pause_changed(paused: bool) -> void:
+	if paused:
+		_cancel_drag()

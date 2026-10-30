@@ -16,6 +16,7 @@ var map_bounds := Rect2(-1048, -1048, 2096, 2096)
 var _preview_material: ShaderMaterial
 var _terrain: TerrainController
 var _inventory: ResourceInventory
+var _discoveries: DiscoveryController
 
 @export_range(4.0, 32.0, 1.0) var snap_radius := 14.0
 @export_range(2.0, 32.0, 1.0) var minimum_length := 8.0
@@ -199,7 +200,7 @@ func _update_preview_at(mouse: Vector2) -> void:
 	_preview_valid = _drawing and _pending_points.size() > 1 and not _is_path_blocked(_pending_points[0], _pending_points[-1])
 	var cost := _path_cost(_pending_points,data) if _drawing else 0
 	var affordable := _inventory != null and _inventory.can_afford(data.construction_resource,cost)
-	_preview_valid = _preview_valid and affordable
+	_preview_valid = _preview_valid and affordable and unlocked(selected_fance)
 	preview_cost_changed.emit(data.construction_resource,cost,affordable)
 	_preview_material.set_shader_parameter("valid", not _drawing or _preview_valid)
 	_update_preview_views(data)
@@ -457,7 +458,10 @@ func _cursor_map_position() -> Variant:
 	var local := world_to_map(point)
 	return local if map_bounds.has_point(local) else null
 
-func configure_inventory(inventory: ResourceInventory) -> void:
+func configure_inventory(inventory: ResourceInventory, discoveries: DiscoveryController = null) -> void:
+	_discoveries = discoveries
+	if discoveries != null:
+		discoveries.discovered.connect(func(_entry): _preview_dirty = true)
 	_inventory = inventory
 	inventory.changed.connect(_on_inventory_changed)
 
@@ -487,3 +491,31 @@ func _update_ground() -> void:
 	for view: Node3D in _span_views.values():
 		view.refresh()
 	_preview_dirty = true
+
+func unlocked(index: int) -> bool:
+	var data: FanceData = FANCES_DATABASE.fances[index]
+	return data.required_discovery.is_empty() or _discoveries == null or _discoveries.knows(data.required_discovery)
+
+func get_damageable_views() -> Array[Node3D]:
+	var result: Array[Node3D] = []
+	for view in _span_views.values():
+		if is_instance_valid(view) and not view.is_queued_for_deletion():
+			result.append(view)
+	for view in _post_views.values():
+		if is_instance_valid(view) and not view.is_queued_for_deletion():
+			result.append(view)
+	return result
+
+func repair_span(span_id: int) -> bool:
+	if not _spans.has(span_id):
+		return false
+	_spans[span_id].health = _spans[span_id].data.max_health
+	_span_views[span_id].refresh()
+	return true
+
+func repair_post(post_id: int) -> bool:
+	if not _posts.has(post_id):
+		return false
+	_posts[post_id].health = _posts[post_id].data.post_max_health
+	_post_views[post_id].refresh()
+	return true

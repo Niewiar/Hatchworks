@@ -1,7 +1,7 @@
 class_name VegetationController
 extends Node3D
 
-signal plant_sown(species: FloraSpecies)
+signal plant_sown(species: FloraSpecies, world_position: Vector3)
 signal obstacles_changed
 
 const TREE_SCENE = preload("res://scenes/harvesting/deposit.tscn")
@@ -222,7 +222,7 @@ func occupied(point: Vector2, radius: float) -> bool:
 	for y in range(bucket.y-reach,bucket.y+reach+1):
 		for x in range(bucket.x-reach,bucket.x+reach+1):
 			for plant: FloraPlant in _buckets.get(Vector2i(x,y),[]):
-				if not plant.removed and plant.growth > 0.5 and plant.species.kind <= FloraSpecies.KIND.SHRUB and point.distance_squared_to(plant.point) < radius*radius:
+				if not plant.removed and plant.growth > 0.025 and plant.species.kind <= FloraSpecies.KIND.SHRUB and point.distance_squared_to(plant.point) < radius*radius:
 					return true
 	return false
 
@@ -258,7 +258,8 @@ func _process(delta: float) -> void:
 	for index in range(_growing.size()-1,-1,-1):
 		var plant := _growing[index]
 		plant.growth = minf(1.0,plant.growth+plant.species.growth_rate*delta)
-		_dirty_batches[plant.batch_key] = true
+		if plant.species.kind != FloraSpecies.KIND.TREE:
+			_dirty_batches[plant.batch_key] = true
 		if plant.growth >= 1.0:
 			_growing.remove_at(index)
 	if _elapsed >= 0.1:
@@ -266,6 +267,7 @@ func _process(delta: float) -> void:
 		for key in _dirty_batches:
 			_upload_batch(key)
 		_dirty_batches.clear()
+		_update_tree_views()
 	if _growing.is_empty() and _dirty_batches.is_empty():
 		set_process(false)
 
@@ -295,7 +297,7 @@ func seed_grass(world_position: Vector3, count: int, radius: float = 1.0) -> int
 	for plant in _plants:
 		if planted >= count:
 			break
-		if plant.species == data and plant.removed and plant.point.distance_to(center) <= radius*0.72 and _can_grow_at(data,plant.point) and _has_space(plant.point,data,plant.scale):
+		if plant.species == data and plant.removed and plant.point.distance_to(center) <= radius*0.72 and can_seed_grass(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y))):
 			plant.removed = false
 			plant.growth = 0.05
 			_growing.append(plant)
@@ -331,7 +333,83 @@ func seed_grass(world_position: Vector3, count: int, radius: float = 1.0) -> int
 		_dirty_batches[plant.batch_key] = true
 		planted += 1
 	if planted > 0:
-		plant_sown.emit(data)
+		plant_sown.emit(data,world_position)
 		_terrain.grow_grass(world_position,radius)
 		set_process(true)
 	return planted
+
+func present_species() -> Array[FloraSpecies]:
+	var result: Array[FloraSpecies] = []
+	for plant: FloraPlant in _plants:
+		if not plant.removed and not result.has(plant.species):
+			result.append(plant.species)
+	return result
+
+func can_plant(data: FloraSpecies, world_position: Vector3) -> bool:
+	if data == null or data.variants.is_empty() or not _terrain.contains_world_point(world_position):
+		return false
+	var local := _terrain.to_local(world_position)
+	var point := Vector2(local.x,local.z)
+	return _can_grow_at(data,point) and _has_space(point,data,1.0)
+
+func plant_specimen(data: FloraSpecies, world_position: Vector3) -> bool:
+	if not can_plant(data,world_position):
+		return false
+	var local := _terrain.to_local(world_position)
+	var point := Vector2(local.x,local.z)
+	var plant := FloraPlant.new()
+	plant.species = data
+	plant.point = point
+	plant.variant = randi_range(0,data.variants.size()-1)
+	plant.scale = 1.0
+	plant.yaw = randf()*TAU
+	plant.growth = 0.25
+	var chunk := Vector2i(((point+_terrain.world_size*0.5)/chunk_size).floor())
+	plant.batch_key = "%d:%d:%d:%d" % [species.find(data),plant.variant,chunk.x,chunk.y]
+	_plants.append(plant)
+	var bucket := Vector2i((point/2.0).floor())
+	if not _buckets.has(bucket):
+		_buckets[bucket] = []
+	_buckets[bucket].append(plant)
+	if data.kind == FloraSpecies.KIND.TREE:
+		_trees.append(plant)
+		_update_tree_views()
+	else:
+		if not _batch_plants.has(plant.batch_key):
+			_batch_plants[plant.batch_key] = []
+		_batch_plants[plant.batch_key].append(plant)
+		if not _batches.has(plant.batch_key):
+			_create_batch(plant.batch_key)
+		_dirty_batches[plant.batch_key] = true
+	_growing.append(plant)
+	if data.kind == FloraSpecies.KIND.GRASS:
+		_terrain.grow_grass(world_position,0.65)
+	set_process(true)
+	plant_sown.emit(data,world_position)
+	obstacles_changed.emit()
+	return true
+
+func count_near(world_position: Vector3, radius: float, ids: Array[StringName]) -> int:
+	var local := _terrain.to_local(world_position)
+	var center := Vector2(local.x,local.z)
+	var count := 0
+	for plant in _plants:
+		if not plant.removed and plant.species.id in ids and plant.point.distance_to(center) < radius:
+			count += 1
+	return count
+
+func flatten_ground_plants(world_position: Vector3, radius: float) -> int:
+	var local := _terrain.to_local(world_position)
+	var center := Vector2(local.x,local.z)
+	var removed := 0
+	for plant in _plants:
+		if plant.removed or plant.species.kind in [FloraSpecies.KIND.TREE,FloraSpecies.KIND.SHRUB] or plant.point.distance_to(center) > radius:
+			continue
+		plant.removed = true
+		plant.growth = 0.0
+		_growing.erase(plant)
+		_dirty_batches[plant.batch_key] = true
+		removed += 1
+	if removed > 0:
+		set_process(true)
+	return removed

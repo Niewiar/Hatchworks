@@ -13,11 +13,11 @@ var _rocks: Array[HarvestableDeposit] = []
 func initialize(terrain: TerrainController, environment: EnvironmentController, vegetation: VegetationController) -> void:
 	_terrain = terrain
 	global_transform = terrain.global_transform
+	terrain.height_changed.connect(_update_ground)
 	if definitions.is_empty() or not environment.enabled:
 		return
 	for definition in definitions:
 		_spawn_deposits(definition,environment,vegetation)
-	terrain.height_changed.connect(_update_ground)
 
 func _spawn_deposits(data: DepositDefinition, environment: EnvironmentController, vegetation: VegetationController) -> void:
 	if data.variants.is_empty() or data.density <= 0.0:
@@ -83,3 +83,32 @@ func occupied(world_position: Vector3, radius: float) -> bool:
 			if Vector2(rock.global_position.x,rock.global_position.z).distance_squared_to(Vector2(world_position.x,world_position.z)) < reach*reach:
 				return true
 	return false
+
+func count_near(world_position: Vector3, radius: float) -> int:
+	var count := 0
+	for rock in _rocks:
+		if is_instance_valid(rock) and not rock.exhausted and Vector2(rock.global_position.x-world_position.x,rock.global_position.z-world_position.z).length() < radius:
+			count += 1
+	return count
+
+func create_deposit(world_position: Vector3) -> bool:
+	if definitions.is_empty() or not _terrain.contains_world_point(world_position) or occupied(world_position,0.65):
+		return false
+	var data := definitions[0]
+	if data.variants.is_empty():
+		return false
+	var rock := DEPOSIT_SCENE.instantiate() as HarvestableDeposit
+	rock.kind = HarvestableDeposit.KIND.ROCK
+	rock.resource_kind = data.harvest_resource
+	rock.hits_required = data.hits_required
+	rock.yield_amount = data.harvest_amount
+	add_child(rock)
+	var source := data.variants[randi_range(0,data.variants.size()-1)]
+	var bounds := source.get_aabb()
+	rock.configure(source,data.material,randf_range(-PI,PI),maxf(bounds.size.x,bounds.size.z)*0.42,bounds.size.y*0.9)
+	rock.scale = Vector3.ONE*randf_range(data.minimum_scale,data.maximum_scale)
+	rock.global_position = _terrain.surface_position(world_position)
+	rock.depleted.connect(_on_rock_depleted)
+	_rocks.append(rock)
+	obstacles_changed.emit()
+	return true

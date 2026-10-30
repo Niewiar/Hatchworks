@@ -1,0 +1,8 @@
+[gd_scene format=3]
+[ext_resource type="AudioStream" path="res://assets/audio/first_sprouts.res" id="music"]
+[ext_resource type="Script" path="res://code/audio/WorldMusic.gd" id="script"]
+[node name="Music" type="AudioStreamPlayer"]
+process_mode = 3
+stream = ExtResource("music")
+volume_db = -80.0
+script = ExtResource("script")

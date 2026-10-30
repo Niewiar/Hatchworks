@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EggDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/EggDefinition.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/incubation/pebblit_egg.tscn" id="model"]
+[resource]
+script = ExtResource("script")
+id = &"pebblit_egg"
+display_name = "Pebblit Egg"
+description = "A heavy, craggy shell. Something stubborn stirs inside."
+creature_id = &"pebblit"
+model = ExtResource("model")
+incubation_seconds = 30.0
+crafting_seconds = 15.0
+science_cost = 3
+fiber_cost = 5

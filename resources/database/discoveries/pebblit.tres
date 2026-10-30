@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/pebblit.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"pebblit"
+display_name = "Pebblit"
+description = "A stubborn, stone-armored creature whose stomps raise rocky ground and scatter stone. Give it room — a cornered Pebblit hits hard."
+category = 5
+icon = ExtResource("icon")

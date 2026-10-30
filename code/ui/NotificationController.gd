@@ -14,40 +14,25 @@ func _ready() -> void:
 	_sync_visibility()
 	map_manager.mode_changed.connect(_on_mode_changed)
 	map_manager.discoveries.discovered.connect(_on_discovered)
-	map_manager.items.item_added.connect(_on_item_added)
-	map_manager.inventory.added.connect(_on_resource_added)
 	for entry: DiscoveryDefinition in map_manager.database.discoveries:
-		if map_manager.discoveries.knows(entry.id):
+		if map_manager.discoveries.knows(entry.id) and map_manager.discoveries.is_unread(entry.id):
 			_on_discovered(entry)
 
 func _on_discovered(entry: DiscoveryDefinition) -> void:
 	if map_manager.current_mode() != MapManager.MODE.DISCOVERIES:
-		_add("New discovery",entry.display_name,entry.icon,MapManager.MODE.DISCOVERIES)
+		_add(tr("New discovery"),entry.display_name,entry.icon,MapManager.MODE.DISCOVERIES,func(): return {"title":tr("New discovery"),"message":entry.display_name})
 
-func _on_item_added(id: StringName, count: int) -> void:
-	if map_manager.current_mode() == MapManager.MODE.INVENTORY:
-		return
-	var info := map_manager.database.item_info(id)
-	_add("New item","%s ×%d" % [info.name,count],info.icon,MapManager.MODE.INVENTORY)
-
-func _on_resource_added(kind: int, quantity: float) -> void:
-	if map_manager.current_mode() == MapManager.MODE.INVENTORY:
-		return
-	var data := map_manager.inventory.definition(kind)
-	if data != null:
-		_add("Resources collected","%s +%s" % [data.display_name,str(int(quantity)) if is_equal_approx(quantity,roundf(quantity)) else String.num(quantity,1)],data.icon,MapManager.MODE.INVENTORY)
-
-func _add(title: String, message: String, icon: Texture2D, mode: MapManager.MODE) -> void:
+func _add(title: String, message: String, icon: Texture2D, mode: MapManager.MODE, render_content: Callable = Callable()) -> void:
 	while _cards.size() >= maximum_notifications:
 		_dismiss(_cards[0])
 	var card := CARD.instantiate() as GameNotification
-	card.configure(title,message,icon,mode)
+	card.configure(title,message,icon,mode,render_content)
 	card.activated.connect(_activate)
 	card.dismissed.connect(_dismiss)
 	%Stack.add_child(card)
 	_cards.append(card)
 	var close: Button = card.get_node("%Close")
-	close.mouse_entered.connect(func(): tooltip_controller.show_text("Dismiss notification",close))
+	close.mouse_entered.connect(func(): tooltip_controller.show_text(tr("Dismiss notification"),close))
 	close.mouse_exited.connect(tooltip_controller.hide_text.bind(close))
 	_sync_visibility()
 
@@ -66,7 +51,7 @@ func _dismiss(card: GameNotification) -> void:
 	_sync_visibility()
 
 func _process(_delta: float) -> void:
-	visible = not map_manager.modal_active or map_manager.current_mode() in [MapManager.MODE.DISCOVERIES,MapManager.MODE.INVENTORY]
+	visible = _can_show()
 
 func _scroll_to_latest() -> void:
 	if not _cards.is_empty():
@@ -75,10 +60,13 @@ func _scroll_to_latest() -> void:
 func _sync_visibility() -> void:
 	var pending := not _cards.is_empty()
 	%Scroll.visible = pending
-	visible = pending and (not map_manager.modal_active or map_manager.current_mode() in [MapManager.MODE.DISCOVERIES,MapManager.MODE.INVENTORY])
+	visible = pending and _can_show()
 	set_process(pending)
 
 func _on_mode_changed(mode: MapManager.MODE) -> void:
 	for card in _cards.duplicate():
 		if card.target_mode == mode:
 			_dismiss(card)
+
+func _can_show() -> bool:
+	return not map_manager.inspection_panel.focused and (not map_manager.modal_active or map_manager.current_mode() in [MapManager.MODE.DISCOVERIES,MapManager.MODE.BACKPACK])

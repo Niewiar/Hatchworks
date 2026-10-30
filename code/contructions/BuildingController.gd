@@ -9,10 +9,11 @@ signal preview_changed(valid: bool, reason: String)
 const PREVIEW_SHADER = preload("res://code/contructions/fances/fence_preview.gdshader")
 
 var selected_building := 0
-var preview_error := "Choose a position on the map"
+var preview_error := tr("Choose a position on the map")
 var _map: Node3D
 var _definitions: Array[BuildingDefinition] = []
 var _placed: Dictionary[Node3D, BuildingDefinition] = {}
+var _health: Dictionary[Node3D,float] = {}
 var _preview: Node3D
 var _preview_material: ShaderMaterial
 var _active := false
@@ -25,7 +26,6 @@ func initialize(map: Node3D) -> void:
 	_preview_material = ShaderMaterial.new()
 	_preview_material.shader = PREVIEW_SHADER
 	map.inventory.changed.connect(_on_inventory_changed)
-	map.items.changed.connect(_refresh_preview)
 	map.discoveries.discovered.connect(func(_entry): _refresh_preview())
 	map.terrain_controller.height_changed.connect(_on_height_changed)
 	map.water_controller.water_level_changed.connect(_refresh_preview)
@@ -48,7 +48,7 @@ func get_buildings() -> Array[Node3D]:
 	return result
 
 func select_building(index: int) -> void:
-	if index < 0 or index >= _definitions.size():
+	if index < 0 or index >= _definitions.size() or not unlocked(_definitions[index]):
 		return
 	selected_building = index
 	if is_instance_valid(_preview):
@@ -93,11 +93,11 @@ func preview_at(point: Variant) -> void:
 	_refresh_preview()
 
 func _refresh_preview() -> void:
-	var has_target: bool = _active and _target is Vector3 and is_instance_valid(_preview)
+	var has_target: bool = _active and _target is Vector3 and is_instance_valid(_preview) and _preview.is_inside_tree()
 	if is_instance_valid(_preview):
 		_preview.visible = has_target
 	if not has_target:
-		_set_status(false,"Choose a position on the map")
+		_set_status(false,tr("Choose a position on the map"))
 		return
 	var terrain: TerrainController = _map.terrain_controller
 	_preview.global_position = terrain.surface_position(_target)
@@ -115,12 +115,12 @@ func _set_status(valid: bool, reason: String) -> void:
 func _placement_error(point: Vector3) -> String:
 	var data := definition()
 	if data == null or data.scene == null:
-		return "No building selected"
+		return tr("No building selected")
 	var inventory: ResourceInventory = _map.inventory
 	if not unlocked(data):
-		return "Discover %s to unlock this building" % data.display_name
-	if not has_kit(data) and not inventory.can_afford_costs(data.costs()):
-		return "Not enough resources"
+		return tr("Discover %s to unlock this building") % data.display_name
+	if not inventory.can_afford_costs(data.costs()):
+		return tr("Not enough resources")
 	var terrain: TerrainController = _map.terrain_controller
 	var water: WaterController = _map.water_controller
 	var center := terrain.surface_position(point)
@@ -134,19 +134,19 @@ func _placement_error(point: Vector3) -> String:
 			offset = Vector3(cos(angle),0,sin(angle))*radius
 		var sample := center+offset
 		if not terrain.contains_world_point(sample):
-			return "The whole building must fit inside the map"
+			return tr("The whole building must fit inside the map")
 		var height := terrain.surface_position(sample).y
 		if height <= water.global_position.y+0.04:
-			return "Choose dry ground"
+			return tr("Choose dry ground")
 		minimum = minf(minimum,height)
 		maximum = maxf(maximum,height)
 	if maximum-minimum > data.maximum_height_difference:
-		return "Flatten the ground before building"
+		return tr("Flatten the ground before building")
 	if occupied(center,data.footprint_radius):
-		return "Buildings need more space"
+		return tr("Buildings need more space")
 	var local := terrain.to_local(center)
 	if _map.vegetation_controller.occupied(Vector2(local.x,local.z),data.footprint_radius) or _map.rock_controller.occupied(center,data.footprint_radius):
-		return "Clear the site before building"
+		return tr("Clear the site before building")
 	var shape := CylinderShape3D.new()
 	shape.radius = data.footprint_radius
 	shape.height = 2.0
@@ -155,7 +155,7 @@ func _placement_error(point: Vector3) -> String:
 	query.transform = Transform3D(Basis.IDENTITY,center+Vector3.UP)
 	query.collision_mask = 6
 	if not get_world_3d().direct_space_state.intersect_shape(query,1).is_empty():
-		return "The site is obstructed"
+		return tr("The site is obstructed")
 	return ""
 
 func occupied(point: Vector3, radius: float) -> bool:
@@ -174,7 +174,7 @@ func place_at(point: Vector3) -> Node3D:
 		model.free()
 		return null
 	var inventory: ResourceInventory = _map.inventory
-	var paid: bool = _map.items.spend(data.kit_item) if has_kit(data) else inventory.spend_costs(data.costs())
+	var paid := inventory.spend_costs(data.costs())
 	if not paid:
 		model.free()
 		return null
@@ -188,6 +188,7 @@ func place_at(point: Vector3) -> Node3D:
 
 func _on_building_removed(building: Node3D) -> void:
 	_placed.erase(building)
+	_health.erase(building)
 	if is_inside_tree():
 		obstacles_changed.emit()
 		_refresh_preview()
@@ -200,9 +201,6 @@ func _on_height_changed() -> void:
 func _on_inventory_changed(_kind: int, _amount: float) -> void:
 	_refresh_preview()
 
-func has_kit(data: BuildingDefinition) -> bool:
-	return not data.kit_item.is_empty() and _map.items.amount(data.kit_item) > 0
-
 func unlocked(data: BuildingDefinition) -> bool:
 	return data.required_discovery.is_empty() or _map.discoveries.knows(data.required_discovery)
 
@@ -210,6 +208,31 @@ func _register_building(building: Node3D, data: BuildingDefinition) -> void:
 	if _placed.has(building):
 		return
 	_placed[building] = data
+	_health[building] = data.max_health
 	building.tree_exiting.connect(_on_building_removed.bind(building))
 	building_placed.emit(building,data)
 	obstacles_changed.emit()
+
+func building_definition(building: Node3D) -> BuildingDefinition:
+	return _placed.get(building) as BuildingDefinition
+
+func condition(building: Node3D) -> float:
+	var data := building_definition(building)
+	return clampf(_health.get(building,0.0)/maxf(data.max_health,0.001),0.0,1.0) if data != null else 0.0
+
+func damage_building(building: Node3D, amount: float) -> bool:
+	if not is_instance_valid(building) or building.is_queued_for_deletion() or not _placed.has(building) or amount <= 0.0:
+		return false
+	_health[building] = maxf(0.0,_health[building]-amount)
+	if _health[building] <= 0.0:
+		if building is IncubatorController and _map.hatch_presentation != null:
+			_map.hatch_presentation.cancel_for(building)
+		building.queue_free()
+	return true
+
+func repair_building(building: Node3D) -> bool:
+	var data := building_definition(building)
+	if data == null or not is_instance_valid(building) or building.is_queued_for_deletion():
+		return false
+	_health[building] = data.max_health
+	return true

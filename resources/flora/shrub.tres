@@ -4,6 +4,8 @@
 [ext_resource type="ArrayMesh" path="res://assets/flora/meshes/shrub_01.res" id="2"]
 [ext_resource type="ArrayMesh" path="res://assets/flora/meshes/shrub_02.res" id="3"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/shrub.png" id="sapling_icon"]
+
 [resource]
 script = ExtResource("1")
 kind = 1
@@ -19,3 +21,6 @@ id = &"shrub"
 display_name = "Shrub"
 maximum_slope = 0.5
 water_depth_range = Vector2(-100, -0.04)
+
+icon = ExtResource("sapling_icon")
+sapling_item = &"shrub_sapling"

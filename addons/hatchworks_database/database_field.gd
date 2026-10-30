@@ -44,10 +44,10 @@ func configure(entry: Resource, data: Dictionary, database: GameDatabase) -> voi
 				for egg in database.eggs:
 					$Editors/Choice.add_item(egg.display_name)
 					$Editors/Choice.set_item_metadata($Editors/Choice.item_count-1,egg.id)
-				for building in database.buildings:
-					if not building.kit_item.is_empty():
-						$Editors/Choice.add_item(building.display_name+" kit")
-						$Editors/Choice.set_item_metadata($Editors/Choice.item_count-1,building.kit_item)
+				for flora in database.flora:
+					if not flora.sapling_item.is_empty():
+						$Editors/Choice.add_item(flora.display_name+" sapling")
+						$Editors/Choice.set_item_metadata($Editors/Choice.item_count-1,flora.sapling_item)
 			elif data.type == "creature":
 				for creature in database.creatures:
 					$Editors/Choice.add_item(creature.display_name)

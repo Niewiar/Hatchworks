@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" format=3]
+[ext_resource type="Shader" path="res://code/incubation/egg_shell.gdshader" id="shader"]
+[ext_resource type="Texture2D" path="res://assets/creatures/pebblit/pebblit_egg_albedo.png" id="texture"]
+[resource]
+shader = ExtResource("shader")
+shader_parameter/shell_texture = ExtResource("texture")
+shader_parameter/inner_color = Color(0.67,0.64,0.55,1)

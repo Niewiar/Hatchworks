@@ -44,7 +44,6 @@ func feeding_positions() -> PackedVector3Array:
 func _refresh() -> void:
 	$Food.visible = stock > 0
 	$Food.scale.y = 0.25+0.75*float(stock)/capacity
-	$Timer.text = "Feeder · %d / %d" % [stock,capacity]
 
 func inspection_bounds() -> AABB:
 	return AABB(Vector3(-1.35,0,-0.6),Vector3(2.9,1.2,1.2))

@@ -5,6 +5,6 @@
 script = ExtResource("script")
 id = &"soil"
 display_name = "Dry soil"
-description = "Bare soil above the waterline gives Tuftlings room to sow grass. Grassy ground with space for new tufts is also suitable."
+description = "Bare earth, waiting for the first green shoots."
 keywords = PackedStringArray("soil")
 icon = ExtResource("icon")

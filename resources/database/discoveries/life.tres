@@ -1,9 +1,12 @@
-[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
-[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
-[ext_resource type="Texture2D" path="res://assets/ui/life.png" id="icon"]
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3 uid="uid://b4bd6mk8fc4c0"]
+
+[ext_resource type="Texture2D" uid="uid://b0xfhbgd5gvnw" path="res://assets/ui/life.png" id="icon"]
+[ext_resource type="Script" uid="uid://btt4tn8jtjgi2" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+
 [resource]
 script = ExtResource("script")
+category = 3
+icon = ExtResource("icon")
 id = &"life"
 display_name = "Life"
-description = "The spark of life, discovered by building an Incubator. Combine it with Soil to discover Seed, then with Seed to discover a Tuftling Egg."
-icon = ExtResource("icon")
+description = "A tiny spark with endless possibilities."

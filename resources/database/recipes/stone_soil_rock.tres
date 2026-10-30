@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="script"]
+[resource]
+script = ExtResource("script")
+id = &"stone_soil_rock"
+display_name = "Stone + Soil -> Rock"
+first = &"stone"
+second = &"soil"
+result = &"rock"

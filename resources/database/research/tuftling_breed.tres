@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CreatureResearch" format=3]
+[ext_resource type="Script" path="res://code/database/CreatureResearch.gd" id="script"]
+[resource]
+script = ExtResource("script")
+id = &"tuftling_breed"
+display_name = "First Tuftling breeding"
+creature_id = &"tuftling"
+action_id = &"breed"
+science_reward = 3

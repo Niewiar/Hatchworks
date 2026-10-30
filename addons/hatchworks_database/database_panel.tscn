@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://addons/hatchworks_database/database_preview.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://addons/hatchworks_database/recipe_editor.tscn" id="recipe_editor"]
 [ext_resource type="PackedScene" path="res://addons/hatchworks_database/discovery_recipes.tscn" id="discovery_recipes"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_database/discovery_graph.tscn" id="discovery_graph"]
 [sub_resource type="StyleBoxFlat" id="Background"]
 bg_color = Color(0, 0, 0, 1)
 content_margin_left = 16.0
@@ -88,6 +89,11 @@ modulate = Color(0.53, 0.73, 0.57, 1)
 unique_name_in_owner = true
 layout_mode = 2
 text = "All changes saved"
+[node name="GraphMode" type="Button" parent="Layout/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "Discovery Graph"
 [node name="Undo" type="Button" parent="Layout/Header"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -113,6 +119,7 @@ layout_mode = 2
 size_flags_vertical = 3
 split_offset = 165
 [node name="Sidebar" type="VBoxContainer" parent="Layout/Body"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(145, 0)
 layout_mode = 2
 [node name="Label" type="Label" parent="Layout/Body/Sidebar"]
@@ -136,7 +143,12 @@ theme_override_font_sizes/font_size = 12
 layout_mode = 2
 size_flags_horizontal = 3
 split_offset = 0
+[node name="DiscoveryGraph" parent="Layout/Body/Workspace" instance=ExtResource("discovery_graph")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
 [node name="TablePanel" type="VBoxContainer" parent="Layout/Body/Workspace"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 size_flags_horizontal = 3

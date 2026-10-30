@@ -1,0 +1,24 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://code/ui/RewardFlight.gd" id="script"]
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
+[node name="RewardFlight" type="MarginContainer"]
+mouse_filter = 2
+theme = ExtResource("theme")
+script = ExtResource("script")
+[node name="Content" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+[node name="Icon" type="TextureRect" parent="Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(28,28)
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="Quantity" type="Label" parent="Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.93,0.96,0.72,1)
+theme_override_colors/font_outline_color = Color(0.02,0.035,0.015,0.95)
+theme_override_constants/outline_size = 5

@@ -1,4 +1,10 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3]
-[ext_resource type="Shader" path="res://code/incubation/egg_shell.gdshader" id="1"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://cdar3sig7wowk"]
+
+[ext_resource type="Shader" uid="uid://dsejuxx6pdc7q" path="res://code/incubation/egg_shell.gdshader" id="shader"]
+[ext_resource type="Texture2D" uid="uid://ckufwj8o75xq7" path="res://assets/incubation/textures/tuftling_egg_albedo.png" id="texture"]
+
 [resource]
-shader = ExtResource("1")
+render_priority = 0
+shader = ExtResource("shader")
+shader_parameter/shell_texture = ExtResource("texture")
+shader_parameter/inner_color = Color(0.86, 0.89, 0.72, 1)

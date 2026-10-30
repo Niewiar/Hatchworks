@@ -5,6 +5,8 @@
 [ext_resource type="ArrayMesh" path="res://assets/flora/meshes/oak_02.res" id="3"]
 [ext_resource type="ArrayMesh" path="res://assets/flora/meshes/oak_03.res" id="4"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/oak.png" id="sapling_icon"]
+
 [resource]
 script = ExtResource("1")
 kind = 0
@@ -19,3 +21,6 @@ maximum_slope = 0.46
 water_depth_range = Vector2(-100, -0.12)
 id = &"oak"
 display_name = "Oak"
+
+icon = ExtResource("sapling_icon")
+sapling_item = &"oak_sapling"

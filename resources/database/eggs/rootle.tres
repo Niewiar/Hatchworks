@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EggDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/EggDefinition.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/incubation/rootle_egg.tscn" id="model"]
+[resource]
+script = ExtResource("script")
+id = &"rootle_egg"
+display_name = "Rootle Egg"
+description = "A wood-grained shell with the quiet promise of a forest."
+creature_id = &"rootle"
+model = ExtResource("model")
+incubation_seconds = 30.0
+crafting_seconds = 15.0
+science_cost = 3
+fiber_cost = 5

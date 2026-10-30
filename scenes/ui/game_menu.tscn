@@ -1,0 +1,184 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://code/ui/GameMenu.gd" id="script"]
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
+[sub_resource type="StyleBoxFlat" id="panel"]
+bg_color = Color(0.025,0.045,0.033,0.99)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.42,0.53,0.30,1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_left = 18
+corner_radius_bottom_right = 18
+shadow_color = Color(0,0,0,0.5)
+shadow_size = 18
+
+[node name="GameMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+z_index = 120
+theme = ExtResource("theme")
+script = ExtResource("script")
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0,0,0,0.65)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Center" type="CenterContainer" parent="Margin"]
+layout_mode = 2
+
+[node name="Panel" type="PanelContainer" parent="Margin/Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(480,0)
+custom_maximum_size = Vector2(580,900)
+propagate_maximum_size = true
+theme_override_styles/panel = SubResource("panel")
+
+[node name="Padding" type="MarginContainer" parent="Margin/Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 26
+
+[node name="Content" type="VBoxContainer" parent="Margin/Center/Panel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Margin/Center/Panel/Padding/Content"]
+layout_mode = 2
+text = "Game paused"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 28
+
+[node name="Main" type="VBoxContainer" parent="Margin/Center/Panel/Padding/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Resume" type="Button" parent="Margin/Center/Panel/Padding/Content/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,44)
+text = "Resume"
+
+[node name="Save" type="Button" parent="Margin/Center/Panel/Padding/Content/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,44)
+text = "Save game"
+
+[node name="Reset" type="Button" parent="Margin/Center/Panel/Padding/Content/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,44)
+text = "Reset game"
+
+[node name="Separator" type="HSeparator" parent="Margin/Center/Panel/Padding/Content/Main"]
+layout_mode = 2
+
+[node name="LanguageRow" type="HBoxContainer" parent="Margin/Center/Panel/Padding/Content/Main"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="LanguageTitle" type="Label" parent="Margin/Center/Panel/Padding/Content/Main/LanguageRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Language"
+
+[node name="Language" type="OptionButton" parent="Margin/Center/Panel/Padding/Content/Main/LanguageRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(190,40)
+item_count = 2
+selected = 0
+popup/item_0/text = "English"
+popup/item_0/id = 0
+popup/item_1/text = "Polski"
+popup/item_1/id = 1
+
+[node name="MusicTitle" type="Label" parent="Margin/Center/Panel/Padding/Content/Main"]
+layout_mode = 2
+text = "Music"
+
+[node name="Music" type="HSlider" parent="Margin/Center/Panel/Padding/Content/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,28)
+max_value = 1.0
+step = 0.01
+value = 0.65
+
+[node name="Quit" type="Button" parent="Margin/Center/Panel/Padding/Content/Main"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,44)
+text = "Quit game"
+
+[node name="Confirmation" type="VBoxContainer" parent="Margin/Center/Panel/Padding/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ConfirmTitle" type="Label" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 22
+
+[node name="ConfirmDescription" type="Label" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 16
+
+[node name="ConfirmReset" type="Button" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,44)
+text = "Reset"
+
+[node name="SaveQuit" type="Button" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,44)
+text = "Save and quit"
+
+[node name="QuitWithoutSaving" type="Button" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,44)
+text = "Quit without saving"
+
+[node name="Cancel" type="Button" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,44)
+text = "Cancel"
+
+[node name="Status" type="Label" parent="Margin/Center/Panel/Padding/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+autowrap_mode = 3

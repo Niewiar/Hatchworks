@@ -12,19 +12,21 @@
 [ext_resource type="Resource" uid="uid://7pwecegift6e" path="res://code/contructions/fances/FancesDatabase.tres" id="construction"]
 [ext_resource type="Resource" path="res://resources/database/creatures/tuftling.tres" id="creature"]
 [ext_resource type="Resource" path="res://resources/database/deposits/stone.tres" id="deposit"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/feeder.tres" id="discovery_feeder"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/fiber.tres" id="discovery_fiber"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/grass.tres" id="discovery_grass"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/herbs.tres" id="discovery_herbs"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/life.tres" id="discovery_life"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/mud.tres" id="discovery_mud"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/seed.tres" id="discovery_seed"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/soil.tres" id="discovery_soil"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/stone.tres" id="discovery_stone"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/tuftling_egg.tres" id="discovery_tuftling_egg"]
+[ext_resource type="Resource" uid="uid://dlm1m784lmbm0" path="res://resources/database/discoveries/feeder.tres" id="discovery_feeder"]
+[ext_resource type="Resource" uid="uid://b771o3ufarseq" path="res://resources/database/discoveries/fiber.tres" id="discovery_fiber"]
+[ext_resource type="Resource" uid="uid://cwhh1n1pwujcj" path="res://resources/database/discoveries/grass.tres" id="discovery_grass"]
+[ext_resource type="Resource" uid="uid://1outgulb50c8" path="res://resources/database/discoveries/herbs.tres" id="discovery_herbs"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/incubator.tres" id="discovery_incubator"]
+[ext_resource type="Resource" uid="uid://b4bd6mk8fc4c0" path="res://resources/database/discoveries/life.tres" id="discovery_life"]
+[ext_resource type="Resource" uid="uid://dk1oxk4xarh1d" path="res://resources/database/discoveries/mud.tres" id="discovery_mud"]
+[ext_resource type="Resource" uid="uid://y74t5ptaqt6l" path="res://resources/database/discoveries/seed.tres" id="discovery_seed"]
+[ext_resource type="Resource" uid="uid://cmb4l3j0k3fjq" path="res://resources/database/discoveries/soil.tres" id="discovery_soil"]
+[ext_resource type="Resource" uid="uid://dfoq02p8paea5" path="res://resources/database/discoveries/stone.tres" id="discovery_stone"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/tuftling.tres" id="discovery_tuftling"]
+[ext_resource type="Resource" uid="uid://cd77pg3mmqo6r" path="res://resources/database/discoveries/tuftling_egg.tres" id="discovery_tuftling_egg"]
 [ext_resource type="Script" uid="uid://btt4tn8jtjgi2" path="res://code/database/DiscoveryDefinition.gd" id="discovery_type"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/water.tres" id="discovery_water"]
-[ext_resource type="Resource" path="res://resources/database/discoveries/wood.tres" id="discovery_wood"]
+[ext_resource type="Resource" uid="uid://uux84obs8d3c" path="res://resources/database/discoveries/water.tres" id="discovery_water"]
+[ext_resource type="Resource" uid="uid://p7ttivu8xeqn" path="res://resources/database/discoveries/wood.tres" id="discovery_wood"]
 [ext_resource type="Resource" path="res://resources/database/eggs/tuftling.tres" id="egg_mossling"]
 [ext_resource type="Resource" path="res://resources/flora/fern.tres" id="flora_fern"]
 [ext_resource type="Resource" path="res://resources/flora/grass.tres" id="flora_grass"]
@@ -39,6 +41,7 @@
 [ext_resource type="Resource" path="res://resources/database/recipes/seed.tres" id="recipe_seed"]
 [ext_resource type="Resource" path="res://resources/database/recipes/seed_life_egg.tres" id="recipe_seed_life_egg"]
 [ext_resource type="Resource" path="res://resources/database/recipes/soil_life_seed.tres" id="recipe_soil_life_seed"]
+[ext_resource type="Resource" path="res://resources/database/recipes/tuftling_fiber_feeder.tres" id="recipe_tuftling_feeder"]
 [ext_resource type="Script" uid="uid://b2ma6xf73f6ms" path="res://code/database/DiscoveryRecipe.gd" id="recipe_type"]
 [ext_resource type="Resource" uid="uid://wluucfvycosi" path="res://resources/database/resources/fiber.tres" id="resource_fiber"]
 [ext_resource type="Resource" path="res://resources/database/resources/herbs.tres" id="resource_herbs"]
@@ -51,16 +54,82 @@
 [ext_resource type="Resource" uid="uid://bagt2frgq1833" path="res://resources/database/glossary/water.tres" id="term_water"]
 [ext_resource type="Resource" path="res://resources/database/world.tres" id="world"]
 
+[ext_resource type="Script" path="res://code/database/CreatureResearch.gd" id="research_type"]
+[ext_resource type="Resource" path="res://resources/database/buildings/life_workshop.tres" id="building_workshop"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/life_workshop.tres" id="discovery_workshop"]
+[ext_resource type="Resource" path="res://resources/database/recipes/life_egg_workshop.tres" id="recipe_workshop"]
+[ext_resource type="Resource" path="res://resources/database/research/tuftling_hatch.tres" id="research_hatch"]
+[ext_resource type="Resource" path="res://resources/database/research/tuftling_create_grass.tres" id="research_create_grass"]
+[ext_resource type="Resource" path="res://resources/database/research/tuftling_breed.tres" id="research_breed"]
+
+[ext_resource type="Resource" path="res://resources/database/discoveries/oak.tres" id="new_discovery_oak"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/shrub.tres" id="new_discovery_shrub"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/fern.tres" id="new_discovery_fern"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/reeds.tres" id="new_discovery_reeds"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/sand.tres" id="new_discovery_sand"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/rock.tres" id="new_discovery_rock"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/wood_fence.tres" id="new_discovery_wood_fence"]
+[ext_resource type="Resource" path="res://resources/database/recipes/soil_soil_stone.tres" id="new_recipe_soil_soil_stone"]
+[ext_resource type="Resource" path="res://resources/database/recipes/seed_soil_oak.tres" id="new_recipe_seed_soil_oak"]
+[ext_resource type="Resource" path="res://resources/database/recipes/oak_soil_wood.tres" id="new_recipe_oak_soil_wood"]
+[ext_resource type="Resource" path="res://resources/database/recipes/grass_soil_shrub.tres" id="new_recipe_grass_soil_shrub"]
+[ext_resource type="Resource" path="res://resources/database/recipes/grass_water_fern.tres" id="new_recipe_grass_water_fern"]
+[ext_resource type="Resource" path="res://resources/database/recipes/seed_mud_reeds.tres" id="new_recipe_seed_mud_reeds"]
+[ext_resource type="Resource" path="res://resources/database/recipes/fern_seed_herbs.tres" id="new_recipe_fern_seed_herbs"]
+[ext_resource type="Resource" path="res://resources/database/recipes/stone_water_sand.tres" id="new_recipe_stone_water_sand"]
+[ext_resource type="Resource" path="res://resources/database/recipes/stone_soil_rock.tres" id="new_recipe_stone_soil_rock"]
+[ext_resource type="Resource" path="res://resources/database/recipes/wood_wood_wood_fence.tres" id="new_recipe_wood_wood_wood_fence"]
+[ext_resource type="Resource" path="res://resources/database/recipes/stone_life_incubator.tres" id="new_recipe_stone_life_incubator"]
+[ext_resource type="Resource" path="res://resources/database/recipes/tuftling_egg_water_tuftling.tres" id="new_recipe_tuftling_egg_water_tuftling"]
+
+[ext_resource type="Resource" path="res://resources/database/recipes/rock_life_water.tres" id="new_recipe_rock_life_water"]
+
+[ext_resource type="Resource" path="res://resources/database/recipes/mud_sand_soil.tres" id="new_recipe_mud_sand_soil"]
+
+[ext_resource type="Resource" path="res://resources/database/recipes/tuftling_grass_life.tres" id="new_recipe_tuftling_grass_life"]
+
+[ext_resource type="Resource" path="res://resources/database/creatures/rootle.tres" id="creature_rootle"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/rootle.tres" id="discovery_rootle"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/rootle_egg.tres" id="discovery_rootle_egg"]
+[ext_resource type="Resource" path="res://resources/database/eggs/rootle.tres" id="egg_rootle"]
+[ext_resource type="Resource" path="res://resources/database/recipes/oak_life_rootle_egg.tres" id="recipe_oak_life_rootle_egg"]
+[ext_resource type="Resource" path="res://resources/database/recipes/rootle_egg_soil_rootle.tres" id="recipe_rootle_egg_soil_rootle"]
+[ext_resource type="Resource" path="res://resources/database/research/rootle_hatch.tres" id="research_rootle_hatch"]
+[ext_resource type="Resource" path="res://resources/database/research/rootle_plant_tree.tres" id="research_rootle_plant_tree"]
+[ext_resource type="Resource" path="res://resources/database/research/rootle_breed.tres" id="research_rootle_breed"]
+[ext_resource type="Resource" path="res://resources/database/creatures/pebblit.tres" id="creature_pebblit"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/pebblit.tres" id="discovery_pebblit"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/pebblit_egg.tres" id="discovery_pebblit_egg"]
+[ext_resource type="Resource" path="res://resources/database/eggs/pebblit.tres" id="egg_pebblit"]
+[ext_resource type="Resource" path="res://resources/database/recipes/stone_seed_pebblit_egg.tres" id="recipe_stone_seed_pebblit_egg"]
+[ext_resource type="Resource" path="res://resources/database/recipes/pebblit_egg_soil_pebblit.tres" id="recipe_pebblit_egg_soil_pebblit"]
+[ext_resource type="Resource" path="res://resources/database/research/pebblit_hatch.tres" id="research_pebblit_hatch"]
+[ext_resource type="Resource" path="res://resources/database/research/pebblit_create_stone.tres" id="research_pebblit_create_stone"]
+[ext_resource type="Resource" path="res://resources/database/research/pebblit_breed.tres" id="research_pebblit_breed"]
+[ext_resource type="Resource" path="res://resources/database/creatures/bloomlet.tres" id="creature_bloomlet"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/bloomlet.tres" id="discovery_bloomlet"]
+[ext_resource type="Resource" path="res://resources/database/discoveries/bloomlet_egg.tres" id="discovery_bloomlet_egg"]
+[ext_resource type="Resource" path="res://resources/database/eggs/bloomlet.tres" id="egg_bloomlet"]
+[ext_resource type="Resource" path="res://resources/database/recipes/herbs_life_bloomlet_egg.tres" id="recipe_herbs_life_bloomlet_egg"]
+[ext_resource type="Resource" path="res://resources/database/recipes/bloomlet_egg_soil_bloomlet.tres" id="recipe_bloomlet_egg_soil_bloomlet"]
+[ext_resource type="Resource" path="res://resources/database/research/bloomlet_hatch.tres" id="research_bloomlet_hatch"]
+[ext_resource type="Resource" path="res://resources/database/research/bloomlet_grow_herbs.tres" id="research_bloomlet_grow_herbs"]
+[ext_resource type="Resource" path="res://resources/database/research/bloomlet_breed.tres" id="research_bloomlet_breed"]
+
+[ext_resource type="Resource" path="res://resources/database/glossary/rock.tres" id="term_rock"]
+
 [resource]
 script = ExtResource("script")
-discoveries = Array[ExtResource("discovery_type")]([ExtResource("discovery_soil"), ExtResource("discovery_water"), ExtResource("discovery_mud"), ExtResource("discovery_seed"), ExtResource("discovery_grass"), ExtResource("discovery_tuftling_egg"), ExtResource("discovery_fiber"), ExtResource("discovery_feeder"), ExtResource("discovery_life"), ExtResource("discovery_wood"), ExtResource("discovery_stone"), ExtResource("discovery_herbs")])
-recipes = Array[ExtResource("recipe_type")]([ExtResource("recipe_mud"), ExtResource("recipe_seed"), ExtResource("recipe_grass"), ExtResource("recipe_egg"), ExtResource("recipe_fiber"), ExtResource("recipe_feeder"), ExtResource("recipe_seed_life_egg"), ExtResource("recipe_soil_life_seed")])
-buildings = Array[ExtResource("building_type")]([ExtResource("building_incubator"), ExtResource("building_feeder")])
-eggs = Array[ExtResource("24_ifqic")]([ExtResource("egg_mossling")])
-glossary = Array[ExtResource("32_5c1lf")]([ExtResource("term_soil"), ExtResource("term_water"), ExtResource("term_grass"), ExtResource("term_fiber")])
-creatures = Array[ExtResource("2_20gof")]([ExtResource("creature")])
+discoveries = Array[ExtResource("discovery_type")]([ExtResource("discovery_soil"), ExtResource("discovery_water"), ExtResource("discovery_mud"), ExtResource("discovery_seed"), ExtResource("discovery_grass"), ExtResource("discovery_tuftling_egg"), ExtResource("discovery_fiber"), ExtResource("discovery_feeder"), ExtResource("discovery_life"), ExtResource("discovery_wood"), ExtResource("discovery_stone"), ExtResource("discovery_herbs"), ExtResource("discovery_tuftling"), ExtResource("discovery_incubator"), ExtResource("discovery_workshop"), ExtResource("new_discovery_oak"), ExtResource("new_discovery_shrub"), ExtResource("new_discovery_fern"), ExtResource("new_discovery_reeds"), ExtResource("new_discovery_sand"), ExtResource("new_discovery_rock"), ExtResource("new_discovery_wood_fence"),ExtResource("discovery_rootle"),ExtResource("discovery_rootle_egg"),ExtResource("discovery_pebblit"),ExtResource("discovery_pebblit_egg"),ExtResource("discovery_bloomlet"),ExtResource("discovery_bloomlet_egg")])
+recipes = Array[ExtResource("recipe_type")]([ExtResource("recipe_mud"), ExtResource("recipe_seed"), ExtResource("recipe_grass"), ExtResource("recipe_egg"), ExtResource("recipe_fiber"), ExtResource("recipe_feeder"), ExtResource("recipe_seed_life_egg"), ExtResource("recipe_soil_life_seed"), ExtResource("recipe_tuftling_feeder"), ExtResource("recipe_workshop"), ExtResource("new_recipe_soil_soil_stone"), ExtResource("new_recipe_seed_soil_oak"), ExtResource("new_recipe_oak_soil_wood"), ExtResource("new_recipe_grass_soil_shrub"), ExtResource("new_recipe_grass_water_fern"), ExtResource("new_recipe_seed_mud_reeds"), ExtResource("new_recipe_fern_seed_herbs"), ExtResource("new_recipe_stone_water_sand"), ExtResource("new_recipe_stone_soil_rock"), ExtResource("new_recipe_wood_wood_wood_fence"), ExtResource("new_recipe_stone_life_incubator"), ExtResource("new_recipe_tuftling_egg_water_tuftling"), ExtResource("new_recipe_rock_life_water"), ExtResource("new_recipe_mud_sand_soil"), ExtResource("new_recipe_tuftling_grass_life"),ExtResource("recipe_oak_life_rootle_egg"),ExtResource("recipe_rootle_egg_soil_rootle"),ExtResource("recipe_stone_seed_pebblit_egg"),ExtResource("recipe_pebblit_egg_soil_pebblit"),ExtResource("recipe_herbs_life_bloomlet_egg"),ExtResource("recipe_bloomlet_egg_soil_bloomlet")])
+buildings = Array[ExtResource("building_type")]([ExtResource("building_incubator"), ExtResource("building_feeder"), ExtResource("building_workshop")])
+eggs = Array[ExtResource("24_ifqic")]([ExtResource("egg_mossling"),ExtResource("egg_rootle"),ExtResource("egg_pebblit"),ExtResource("egg_bloomlet")])
+glossary = Array[ExtResource("32_5c1lf")]([ExtResource("term_soil"), ExtResource("term_water"), ExtResource("term_grass"), ExtResource("term_fiber"),ExtResource("term_rock")])
+creatures = Array[ExtResource("2_20gof")]([ExtResource("creature"),ExtResource("creature_rootle"),ExtResource("creature_pebblit"),ExtResource("creature_bloomlet")])
 flora = Array[ExtResource("6_0ds8o")]([ExtResource("flora_oak"), ExtResource("flora_shrub"), ExtResource("flora_fern"), ExtResource("flora_reeds"), ExtResource("flora_grass")])
 resources = Array[ExtResource("12_yeha7")]([ExtResource("resource_fiber"), ExtResource("resource_herbs"), ExtResource("resource_wood"), ExtResource("resource_stone")])
 deposits = Array[ExtResource("4_wi5ox")]([ExtResource("deposit")])
 construction = ExtResource("construction")
 world = ExtResource("world")
+
+research = Array[ExtResource("research_type")]([ExtResource("research_hatch"),ExtResource("research_create_grass"),ExtResource("research_breed"),ExtResource("research_rootle_hatch"),ExtResource("research_rootle_plant_tree"),ExtResource("research_rootle_breed"),ExtResource("research_pebblit_hatch"),ExtResource("research_pebblit_create_stone"),ExtResource("research_pebblit_breed"),ExtResource("research_bloomlet_hatch"),ExtResource("research_bloomlet_grow_herbs"),ExtResource("research_bloomlet_breed")])

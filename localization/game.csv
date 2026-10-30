@@ -1,0 +1,443 @@
+keys,en,pl
+"
++%d Science","
++%d Science","
++%d pkt nauki"
+"
+Carried water: %s","
+Carried water: %s","
+Zapas wody: %s"
+"
+Click to collect","
+Click to collect","
+Kliknij, aby zebrać"
+ and accessible water, and accessible water, i dostępu do wody
+ post, post, — słupek
+ sapling, sapling, — sadzonka
+ span, span, — przęsło
+ · +%d %s added to inventory, · +%d %s added to backpack, · +%d %s w plecaku
+ · Already known; no extra item reward, · Already known; no extra item reward, · Już znane; bez dodatkowej nagrody
+%d %s,%d %s,%d %s
+%d / %d combinations discovered,%d / %d combinations discovered,Odkryte połączenia: %d / %d
+%d s,%d s,%d s
+%d%%,%d%%,%d%%
+"%s
+%d s remaining","%s
+%d s remaining","%s
+Pozostało %d s"
+%s + %s → %s,%s + %s → %s,%s + %s → %s
+%s +%s,%s +%s,%s +%s
+%s post,%s post,%s — słupek
+%s sapling,%s sapling,%s — sadzonka
+%s span,%s span,%s — przęsło
+%s x%d,%s x%d,%s x%d
+%s ×%d,%s ×%d,%s ×%d
+2 discoveries,2 discoveries,Odkrycia: 2
+A bark-coated gardener that fills grassy clearings with oaks and shrubs. A woodland begins wherever a Rootle puts down roots.,A bark-coated gardener that fills grassy clearings with oaks and shrubs. A woodland begins wherever a Rootle puts down roots.,"Pokryty korą ogrodnik obsadza trawiaste polany dębami i krzewami. Gdzie zadomowi się Rootle, tam zaczyna się las."
+A fresh perspective,A fresh perspective,Z innej strony
+A full belly makes for a busy creature. Keep a little food nearby.,A full belly makes for a busy creature. Keep a little food nearby.,Pełny brzuszek zachęca do działania. Zostaw w pobliżu trochę jedzenia.
+"A heavy, craggy shell. Something stubborn stirs inside.","A heavy, craggy shell. Something stubborn stirs inside.","Ciężka, chropowata skorupka. W środku wierci się coś upartego."
+A leafy shell hiding the promise of a greener world.,A leafy shell hiding the promise of a greener world.,Liściasta skorupka kryjąca obietnicę bardziej zielonego świata.
+A modular fence. Repair damaged sections to keep creatures contained.,A modular fence. Repair damaged sections to keep creatures contained.,"Ogrodzenie z modułowych elementów. Naprawiaj uszkodzone odcinki, aby stworki pozostawały w środku."
+A new life is stirring…,A new life is stirring…,Nowe życie budzi się…
+A patient giant at the heart of a young woodland.,A patient giant at the heart of a young woodland.,Cierpliwy olbrzym w sercu młodego lasu.
+"A petal-speckled shell, light as a woodland breeze.","A petal-speckled shell, light as a woodland breeze.","Nakrapiana płatkami skorupka, lekka jak leśny powiew."
+"A piece of the land, ready to become something new.","A piece of the land, ready to become something new.","Kawałek ziemi, gotowy stać się czymś nowym."
+A place for Tuftlings to bathe and soak their coats.,A place for Tuftlings to bathe and soak their coats.,"Miejsce, w którym Tuftlingi kąpią się i moczą futerka."
+A place to begin,A place to begin,Miejsce na początek
+A save operation is already in progress.,A save operation is already in progress.,Trwa już operacja zapisu.
+A shake of its water-soaked coat brings grass to bare soil. Tuftlings leave little trails of green wherever they settle.,A shake of its water-soaked coat brings grass to bare soil. Tuftlings leave little trails of green wherever they settle.,"Potrząśnięcie mokrym futerkiem zazielenia nagą glebę. Tam, gdzie zadomowią się Tuftlingi, wyrastają kępki trawy."
+A sheltered stone nest where new life waits to hatch.,A sheltered stone nest where new life waits to hatch.,"Osłonięte kamienne gniazdo, w którym nowe życie czeka na wyklucie."
+A stubborn outcrop with useful stone beneath its surface.,A stubborn outcrop with useful stone beneath its surface.,Uparta skała skrywająca przydatny kamień.
+"A stubborn, stone-armored creature whose stomps raise rocky ground and scatter stone. Give it room — a cornered Pebblit hits hard.","A stubborn, stone-armored creature whose stomps raise rocky ground and scatter stone. Give it room — a cornered Pebblit hits hard.",Uparty stworek w kamiennej zbroi. Jego tupnięcia wypiętrzają skalny grunt i rozsypują kamienie. Daj mu przestrzeń — osaczony Pebblit uderza mocno.
+A tangle of tender leaves and busy little branches.,A tangle of tender leaves and busy little branches.,Plątanina delikatnych liści i drobnych gałązek.
+A tiny spark with endless possibilities.,A tiny spark with endless possibilities.,Drobna iskierka o nieskończonych możliwościach.
+A whole world waiting to take root.,A whole world waiting to take root.,"Cały świat czekający, by zapuścić korzenie."
+A winged woodland gardener that scatters herbs across grassy ground. New green shoots follow its fluttering wings.,A winged woodland gardener that scatters herbs across grassy ground. New green shoots follow its fluttering wings.,Skrzydlaty leśny ogrodnik rozsiewający zioła na trawiastym gruncie. Za jego trzepoczącymi skrzydełkami podążają młode pędy.
+A wood-grained shell with the quiet promise of a forest.,A wood-grained shell with the quiet promise of a forest.,"Skorupka o rysunku drewna, w której drzemie przyszły las."
+A wooden barrier for shaping creature habitats.,A wooden barrier for shaping creature habitats.,Drewniana bariera do wyznaczania przestrzeni dla stworków.
+A wooden trough to keep hungry creatures well fed.,A wooden trough to keep hungry creatures well fed.,Drewniane korytko dla głodnych stworków.
+A wooden trough with a brass supply inlet. Hungry creatures walk here to eat Plant Fiber.,A wooden trough with a brass supply inlet. Hungry creatures walk here to eat Plant Fiber.,Drewniane koryto z mosiężnym przyłączem zaopatrzenia. Głodne stworki przychodzą tu jeść Włókno roślinne.
+"A young plant, ready to put down roots.","A young plant, ready to put down roots.","Młoda roślina, gotowa zapuścić korzenie."
+Accept,Accept,Akceptuj
+All categories,All categories,Wszystkie kategorie
+An incubator for discovered eggs. Your creature will appear beside it after hatching.,An incubator for discovered eggs. Your creature will appear beside it after hatching.,Inkubator odkrytych jaj. Po wykluciu stworek pojawi się obok niego.
+Approaching the calling male,Approaching the calling male,Podchodzi do nawołującego samca
+Assign a brush preview shader.,Assign a brush preview shader.,Przypisz shader podglądu pędzla.
+"Assign a terrain shader, a positive map size and pixel density.","Assign a terrain shader, a positive map size and pixel density.","Przypisz shader terenu, dodatni rozmiar mapy i gęstość pikseli."
+Backpack,Backpack,Plecak
+"Bare earth, waiting for the first green shoots.","Bare earth, waiting for the first green shoots.",Naga ziemia czekająca na pierwsze zielone pędy.
+Being carried,Being carried,Jest przenoszony
+Bloomlet,Bloomlet,Bloomlet
+Bloomlet Egg,Bloomlet Egg,Jajo Bloomleta
+Bloomlet Egg + Soil,Bloomlet Egg + Soil,Jajo Bloomleta + Gleba
+Bloomlet: First breeding,Bloomlet: First breeding,Bloomlet: pierwszy rozród
+Bloomlet: First hatch,Bloomlet: First hatch,Bloomlet: pierwsze wyklucie
+Bloomlet: First herb patch,Bloomlet: First herb patch,Bloomlet: pierwsza kępka ziół
+"Both need %s and at least %d%% satiety.
+Recovery: %.0f s · Satiety cost: %d%% each.","Both need %s and at least %d%% satiety.
+Recovery: %.0f s · Satiety cost: %d%% each.","Oboje potrzebują %s i najedzenia co najmniej %d%%.
+Przerwa: %.0f s · Koszt: po %d%% najedzenia."
+Breeding,Breeding,Rozmnażanie
+Breeding - %d s remaining,Breeding - %d s remaining,Rozmnażanie — pozostało %d s
+Build structures,Build structures,Budowanie
+Buildings,Buildings,Budynki
+Buildings need more space,Buildings need more space,Budynki potrzebują więcej miejsca
+Call a mate,Call a mate,Zawołaj partnerkę
+Calling for a mate,Calling for a mate,Nawołuje partnerkę
+Cancel,Cancel,Anuluj
+Cancel breeding,Cancel breeding,Anuluj rozmnażanie
+Choose a planting position,Choose a planting position,Wybierz miejsce sadzenia
+Choose a position on the map,Choose a position on the map,Wybierz miejsce na mapie
+Choose dry ground,Choose dry ground,Wybierz suche podłoże
+Choose whether to keep your current progress.,Choose whether to keep your current progress.,"Zdecyduj, czy zachować bieżący postęp."
+Chop trees,Chop trees,Ścinanie drzew
+Clear board,Clear board,Wyczyść planszę
+Clear some land beside the incubator to welcome your creature.,Clear some land beside the incubator to welcome your creature.,"Zwolnij miejsce obok inkubatora, aby przyjąć stworka."
+Clear the site before building,Clear the site before building,Oczyść miejsce przed budową
+Close focus - RMB,Close focus - RMB,Zamknij widok — PPM
+Close tool or panel,Close tool or panel,Zamknięcie narzędzia lub panelu
+Collect egg,Collect egg,Zbierz jajo
+Concepts,Concepts,Pojęcia
+Condition,Condition,Stan konstrukcji
+Construction cost,Construction cost,Koszt budowy
+Contentment,Contentment,Zadowolenie
+"Contentment responds gradually to food, shared dry space and nearby companions of the same species. Crowding and isolation reduce it. Contentment affects the pace of bathing and sowing.","Contentment responds gradually to food, shared dry space and nearby companions of the same species. Crowding and isolation reduce it. Contentment affects the pace of bathing and sowing.","Zadowolenie stopniowo reaguje na pożywienie, współdzieloną suchą przestrzeń i pobliskich towarzyszy tego samego gatunku. Tłok i samotność je obniżają. Zadowolenie wpływa na tempo kąpieli i wysiewania."
+Controls,Controls,Sterowanie
+Could not load save: %s,Could not load save: %s,Nie udało się wczytać zapisu: %s
+Could not start a new world: %s,Could not start a new world: %s,Nie udało się rozpocząć nowego świata: %s
+Create egg,Create egg,Utwórz jajo
+Created by,Created by,Powstaje z
+Creating egg…,Creating egg…,Tworzenie jaja…
+Creation: %.0f s,Creation: %.0f s,Tworzenie: %.0f s
+Creature Research,Creature Research,Badania stworków
+Creatures,Creatures,Stworki
+Default world,Default world,Domyślny świat
+Description,Description,Opis
+Discover,Discover,Odkrywaj
+Discover %s to unlock this building,Discover %s to unlock this building,"Odkryj %s, aby odblokować ten budynek"
+Discover an egg recipe to begin.,Discover an egg recipe to begin.,"Odkryj recepturę jaja, aby rozpocząć."
+Discoveries,Discoveries,Odkrycia
+Discoveries: %d,Discoveries: %d,Odkrycia: %d
+Dismiss notification,Dismiss notification,Zamknij powiadomienie
+Drag / use tool,Drag / use tool,Przeciąganie / użycie narzędzia
+Drop one idea onto another to combine.,Drop one idea onto another to combine.,"Upuść jeden pomysł na drugi, by je połączyć."
+Dry soil,Dry soil,Sucha gleba
+"Dry space per creature: %.1f m²
+Preferred space: %.1f m² · Nearby company: %d","Dry space per creature: %.1f m²
+Preferred space: %.1f m² · Nearby company: %d","Sucha przestrzeń na stworka: %.1f m²
+Preferowana przestrzeń: %.1f m² · Towarzysze w pobliżu: %d"
+Earned once per new recipe and once per species action. Each crafted egg costs science.,Earned once per new recipe and once per species action. Each crafted egg costs science.,Zdobywane raz za nową recepturę i raz za działanie gatunku. Utworzenie każdego jaja kosztuje punkty nauki.
+Ecosystem production,Ecosystem production,Tworzenie ekosystemu
+"Egg
+Click to collect","Egg
+Click to collect","Jajo
+Kliknij, aby zebrać"
+Egg ready,Egg ready,Jajo gotowe
+Eggs,Eggs,Jaja
+"Eggs, saplings and other items.","Eggs, saplings and other items.","Jaja, sadzonki i inne przedmioty."
+"Empty incubator
+Discover an egg to begin incubation.","Empty incubator
+Discover an egg to begin incubation.","Pusty inkubator
+Odkryj jajo, aby rozpocząć inkubację."
+English,English,English
+Enjoying free time,Enjoying free time,Korzysta z czasu wolnego
+FOOD,FOOD,POKARM
+Feeder,Feeder,Karmnik
+Feeder · %d / %d,Feeder · %d / %d,Karmnik · %d / %d
+Feeder · 0 / 20,Feeder · 0 / 20,Karmnik · 0 / 20
+Female,Female,Samica
+Fence,Fence,Płot
+Fern,Fern,Paproć
+Fern + Seed -> Herbs,Fern + Seed -> Herbs,Paproć + Nasiono → Zioła
+Fiber + Soil,Fiber + Soil,Włókno + Gleba
+Fill with Plant Fiber (%s available),Fill with Plant Fiber (%s available),Napełnij Włóknem roślinnym (dostępne: %s)
+Find a calling male,Find a calling male,Znajdź nawołującego samca
+Find mate and breed,Find mate and breed,Znajdź partnera i rozmnażaj
+Fine grains worn down from stone by water.,Fine grains worn down from stone by water.,Drobne ziarna powstałe z kamienia pod wpływem wody.
+First Tuftling breeding,First Tuftling breeding,Pierwszy rozród Tuftlingów
+First Tuftling hatched,First Tuftling hatched,Pierwszy wykluty Tuftling
+Flatten the ground before building,Flatten the ground before building,Wyrównaj teren przed budową
+Flatten to starting height,Flatten to starting height,Wyrównanie do początkowej wysokości
+Food,Food,Pokarm
+Form discovered eggs from materials and science. Each egg appears in the central socket when production finishes.,Form discovered eggs from materials and science. Each egg appears in the central socket when production finishes.,Twórz odkryte jaja z materiałów i punktów nauki. Po zakończeniu produkcji każde jajo pojawia się w środkowym gnieździe.
+Forming the shell,Forming the shell,Formowanie skorupki
+Fragrant leaves gathered from the greenest corners.,Fragrant leaves gathered from the greenest corners.,Pachnące liście z najbardziej zielonych zakątków.
+Free,Free,Za darmo
+Game paused,Game paused,Gra wstrzymana
+Game saved.,Game saved.,Gra zapisana.
+Gather plants,Gather plants,Zbieranie roślin
+Gather resources,Gather resources,Zbieranie surowców
+Grass,Grass,Trawa
+Grass + Grass,Grass + Grass,Trawa + Trawa
+Grass + Life,Grass + Life,Trawa + Życie
+Grass + Soil -> Shrub,Grass + Soil -> Shrub,Trawa + Gleba → Krzew
+Grass + Water -> Fern,Grass + Water -> Fern,Trawa + Woda → Paproć
+Grassy ground,Grassy ground,Trawiaste podłoże
+HABITAT,HABITAT,SIEDLISKO
+Hard ground that makes Pebblits feel at home.,Hard ground that makes Pebblits feel at home.,"Twarde podłoże, na którym Pebblity czują się jak u siebie."
+Hatch,Hatch,Wykluj
+Hatching,Hatching,Wykluwanie
+Hatching…,Hatching…,Wykluwanie…
+Herbs,Herbs,Zioła
+Herbs + Life,Herbs + Life,Zioła + Życie
+Hold: pick up creature,Hold: pick up creature,Przytrzymaj: podnieś stworka
+Hungry,Hungry,Głodny
+Ideas are reusable. First discoveries can grant items.,Ideas are reusable. First discoveries can grant items.,Pomysłów można używać wielokrotnie. Pierwsze odkrycia mogą dawać przedmioty.
+Incubating · %d s remaining,Incubating · %d s remaining,Inkubacja · pozostało %d s
+"Incubation: %.0f s
+Owned eggs: %d
+Starting consumes one egg.","Incubation: %.0f s
+Owned eggs: %d
+Starting consumes one egg.","Inkubacja: %.0f s
+Posiadane jaja: %d
+Rozpoczęcie zużywa jedno jajo."
+Incubator,Incubator,Inkubator
+"Incubator
+Choose an egg","Incubator
+Choose an egg","Inkubator
+Wybierz jajo"
+"Incubator
+Empty","Incubator
+Empty","Inkubator
+Pusty"
+Inventory,Backpack,Plecak
+Language,Language,Język
+Leave space for creatures,Leave space for creatures,Zostaw miejsce dla stworków
+Life,Life,Życie
+Life + Tuftling Egg → Life Workshop,Life + Tuftling Egg → Life Workshop,Życie + Jajo Tuftlinga → Warsztat życia
+Life Workshop,Life Workshop,Warsztat życia
+Looking for a dry resting place,Looking for a dry resting place,Szuka suchego miejsca do odpoczynku
+Looking for a place to work,Looking for a place to work,Szuka miejsca do pracy
+Looking for soil,Looking for soil,Szuka gleby
+Looking for water,Looking for water,Szuka wody
+Lower terrain,Lower terrain,Obniżanie terenu
+Male,Male,Samiec
+Materials,Materials,Materiały
+"Materials, eggs and saplings.","Materials, eggs and saplings.","Surowce, jaja i sadzonki."
+Meadow grass,Meadow grass,Trawa łąkowa
+Mine rocks,Mine rocks,Wydobywanie kamienia
+Move camera,Move camera,Przesuwanie kamery
+Move the camera to explore your land.,Move the camera to explore your land.,Przesuń kamerę i rozejrzyj się po swoim skrawku świata.
+Movement and production,Movement and production,Ruch i produkcja
+Moving to a planting site,Moving to a planting site,Idzie do miejsca sadzenia
+Mud,Mud,Błoto
+Mud + Sand -> Soil,Mud + Sand -> Soil,Błoto + Piasek → Gleba
+Mud + Soil,Mud + Soil,Błoto + Gleba
+Music,Music,Muzyka
+Nature,Nature,Natura
+Nearby plants are full; harvest them to make room,Nearby plants are full; harvest them to make room,"Brak miejsca na kolejne rośliny; zbierz je, aby zwolnić przestrzeń"
+Nearby stone deposits are full; mine them to make room,Nearby stone deposits are full; mine them to make room,"Brak miejsca na kolejne złoża; wydobądź je, aby zwolnić przestrzeń"
+Needs accessible water in its habitat.,Needs accessible water in its habitat.,Potrzebuje dostępu do wody w swoim siedlisku.
+Needs accessible water or a free bathing spot,Needs accessible water or a free bathing spot,Potrzebuje dostępnej wody lub wolnego miejsca do kąpieli
+Needs at least %d%% satiety.,Needs at least %d%% satiety.,Wymaga co najmniej %d%% najedzenia.
+Needs dry ground for breeding.,Needs dry ground for breeding.,Potrzebuje suchego podłoża do rozmnażania.
+Needs free dry soil,Needs free dry soil,"Potrzebuje wolnej, suchej gleby"
+Needs free dry soil or rocky ground,Needs free dry soil or rocky ground,"Potrzebuje wolnej, suchej gleby lub skalistego podłoża"
+Needs free grassy ground,Needs free grassy ground,Potrzebuje wolnego trawiastego podłoża
+Needs its preferred ground in the habitat.,Needs its preferred ground in the habitat.,Potrzebuje odpowiedniego podłoża w siedlisku.
+New discovery,New discovery,Nowe odkrycie
+New discovery! ,New discovery! ,Nowe odkrycie! 
+New entry,New entry,Nowy wpis
+New item,New item,Nowy przedmiot
+No,No,Nie
+No building selected,No building selected,Nie wybrano budynku
+No egg is defined for this species.,No egg is defined for this species.,Ten gatunek nie ma zdefiniowanego jaja.
+"No reachable, well-fed and rested partner of the opposite sex is ready in this habitat.","No reachable, well-fed and rested partner of the opposite sex is ready in this habitat.","Brak dostępnego, najedzonego i wypoczętego partnera przeciwnej płci w tym siedlisku."
+No saplings available,No saplings available,Brak sadzonek
+No saved game was found.,No saved game was found.,Nie znaleziono zapisu gry.
+No well-fed partner is ready nearby.,No well-fed partner is ready nearby.,"W pobliżu nie ma gotowego, najedzonego partnera."
+Not enough materials.,Not enough materials.,Za mało materiałów.
+Not enough resources,Not enough resources,Za mało surowców
+Not enough science. Discover new recipes or a species' first actions.,Not enough science. Discover new recipes or a species' first actions.,Za mało punktów nauki. Odkrywaj nowe receptury lub pierwsze działania gatunków.
+Nothing discovered. Try a different combination.,Nothing discovered. Try a different combination.,Nic nie odkryto. Wypróbuj inne połączenie.
+Oak,Oak,Dąb
+Oak + Life,Oak + Life,Dąb + Życie
+Oak + Soil -> Wood,Oak + Soil -> Wood,Dąb + Gleba → Drewno
+Pause menu,Pause menu,Menu pauzy
+Pebblit,Pebblit,Pebblit
+Pebblit Egg,Pebblit Egg,Jajo Pebblita
+Pebblit Egg + Soil,Pebblit Egg + Soil,Jajo Pebblita + Gleba
+Pebblit: First breeding,Pebblit: First breeding,Pebblit: pierwszy rozród
+Pebblit: First hatch,Pebblit: First hatch,Pebblit: pierwsze wyklucie
+Pebblit: First rocky impact,Pebblit: First rocky impact,Pebblit: pierwsze skalne uderzenie
+Pick up creature,Pick up creature,Podnoszenie stworka
+Place the creature safely on the ground.,Place the creature safely on the ground.,Postaw stworka bezpiecznie na ziemi.
+Plant,Plant,Posadź
+Plant Fiber,Plant Fiber,Włókno roślinne
+"Plant Fiber: %d / %d
+Each meal restores a creature’s satiety.","Plant Fiber: %d / %d
+Each meal restores a creature’s satiety.","Włókno roślinne: %d / %d
+Każdy posiłek przywraca stworkowi najedzenie."
+Planting a sapling,Planting a sapling,Sadzi roślinę
+Plants,Plants,Rośliny
+Polski,Polski,Polski
+Preparing ingredients,Preparing ingredients,Przygotowywanie składników
+Previous save recovered.,Previous save recovered.,Przywrócono poprzedni zapis.
+Quit game,Quit game,Zamknij grę
+Quit without saving,Quit without saving,Zamknij bez zapisywania
+Raise terrain,Raise terrain,Podnoszenie terenu
+Raising the press,Raising the press,Podnoszenie prasy
+Ready,Ready,Gotowość
+Ready - A male will call one compatible female.,Ready - A male will call one compatible female.,Gotowość — samiec zawoła jedną zgodną samicę.
+Ready to hatch,Ready to hatch,Gotowe do wyklucia
+Recovering - %d s remaining,Recovering - %d s remaining,Odpoczywa — pozostało %d s
+Reeds,Reeds,Trzciny
+Repair · Free,Repair · Free,Napraw · Za darmo
+Reset,Reset,Resetuj
+Reset game,Reset game,Zresetuj grę
+Reset the world?,Reset the world?,Zresetować świat?
+Resources collected,Resources collected,Zebrane surowce
+Resting,Resting,Odpoczywa
+Resume,Resume,Wznów
+Return to incubator,Return to incubator,Wróć do inkubatora
+Rock,Rock,Skała
+Rock + Life -> Water,Rock + Life -> Water,Skała + Życie → Woda
+Rocky ground,Rocky ground,Skaliste podłoże
+Rolling to a work site,Rolling to a work site,Toczy się do miejsca pracy
+"Room to roam, a full belly and a friend make this creature feel at home.","Room to roam, a full belly and a friend make this creature feel at home.","Przestrzeń, pełny brzuszek i towarzysz dają stworkowi poczucie domu."
+Rootle,Rootle,Rootle
+Rootle Egg,Rootle Egg,Jajo Rootle’a
+Rootle Egg + Soil,Rootle Egg + Soil,Jajo Rootle’a + Gleba
+Rootle: First breeding,Rootle: First breeding,Rootle: pierwszy rozród
+Rootle: First hatch,Rootle: First hatch,Rootle: pierwsze wyklucie
+Rootle: First planted grove,Rootle: First planted grove,Rootle: pierwszy zagajnik
+Rotate camera,Rotate camera,Obracanie kamery
+Rotate the camera to look around.,Rotate the camera to look around.,Obróć kamerę i spójrz z innej strony.
+Sand,Sand,Piasek
+Satiety,Satiety,Najedzenie
+Save and quit,Save and quit,Zapisz i zamknij
+Save before quitting?,Save before quitting?,Zapisać przed zamknięciem?
+Save game,Save game,Zapisz grę
+Saving failed: %s,Saving failed: %s,Zapis nie powiódł się: %s
+Science,Science,Nauka
+"Science
+Every new discovery brings another spark of understanding.","Science
+Every new discovery brings another spark of understanding.","Nauka
+Każde odkrycie rozbudza nową iskierkę zrozumienia."
+Science gained,Science gained,Zdobyto punkty nauki
+Search discoveries…,Search discoveries…,Szukaj odkryć…
+Seed,Seed,Nasiono
+Seed + Life → Tuftling Egg,Seed + Life → Tuftling Egg,Nasiono + Życie → Jajo Tuftlinga
+Seed + Mud -> Reeds,Seed + Mud -> Reeds,Nasiono + Błoto → Trzciny
+Seed + Soil -> Oak,Seed + Soil -> Oak,Nasiono + Gleba → Dąb
+Seed + Water,Seed + Water,Nasiono + Woda
+Select / interact,Select / interact,Wybór / interakcja
+Select a discovery to view its combinations.,Select a discovery to view its combinations.,"Wybierz odkrycie, aby zobaczyć jego połączenia."
+Settings,Settings,Ustawienia
+Shaking and sowing grass,Shaking and sowing grass,Otrzepuje się i wysiewa trawę
+Shape terrain,Shape terrain,Modelowanie terenu
+Shrub,Shrub,Krzew
+Slender stems rustling beside the water.,Slender stems rustling beside the water.,Smukłe łodygi szeleszczące nad wodą.
+Smooth terrain,Smooth terrain,Wygładzanie terenu
+Soft fronds sheltering a little woodland goodness.,Soft fronds sheltering a little woodland goodness.,Miękkie liście kryjące odrobinę leśnego dobra.
+Soft green ground where woodland creatures feel at home.,Soft green ground where woodland creatures feel at home.,"Miękka zieleń, wśród której leśne stworki czują się jak u siebie."
+Soil,Soil,Gleba
+Soil + Life → Seed,Soil + Life → Seed,Gleba + Życie → Nasiono
+Soil + Soil -> Stone,Soil + Soil -> Stone,Gleba + Gleba → Kamień
+Soil + Water,Soil + Water,Gleba + Woda
+Soil / rock,Soil / rock,Gleba / skała
+Sort: Category,Sort: Category,Sortuj: kategoria
+Sort: Name,Sort: Name,Sortuj: nazwa
+Sort: Newest,Sort: Newest,Sortuj: najnowsze
+Sowing herbs,Sowing herbs,Wysiewa zioła
+Start incubation,Start incubation,Rozpocznij inkubację
+Stomping rocky ground,Stomping rocky ground,Uderza w skaliste podłoże
+Stone,Stone,Kamień
+Stone + Life -> Incubator,Stone + Life -> Incubator,Kamień + Życie → Inkubator
+Stone + Seed,Stone + Seed,Kamień + Nasiono
+Stone + Soil -> Rock,Stone + Soil -> Rock,Kamień + Gleba → Skała
+Stone + Water -> Sand,Stone + Water -> Sand,Kamień + Woda → Piasek
+Stone deposit,Stone deposit,Złoże kamienia
+"Stone, brass and a little wonder, shaping the beginnings of life.","Stone, brass and a little wonder, shaping the beginnings of life.","Kamień, mosiądz i odrobina niezwykłości nadają początek nowemu życiu."
+Stored item.,Stored item.,Przechowywany przedmiot.
+Swimming and bathing,Swimming and bathing,Pływa i kąpie się
+Taking a short break,Taking a short break,Robi krótką przerwę
+Tender leaves and stems — a meal for hungry creatures.,Tender leaves and stems — a meal for hungry creatures.,Delikatne liście i łodygi — posiłek dla głodnych stworków.
+Terrain appearance,Terrain appearance,Wygląd terenu
+Terrain generation,Terrain generation,Generowanie terenu
+Terrain shape,Terrain shape,Rzeźba terenu
+The bare ground beneath your ecosystem.,The bare ground beneath your ecosystem.,Gołe podłoże Twojego ekosystemu.
+The previous backup was loaded because the latest save was damaged.,The previous backup was loaded because the latest save was damaged.,"Wczytano poprzednią kopię zapasową, ponieważ najnowszy zapis był uszkodzony."
+The previous save could not be backed up.,The previous save could not be backed up.,Nie udało się utworzyć kopii poprzedniego zapisu.
+The save folder could not be created.,The save folder could not be created.,Nie udało się utworzyć folderu zapisów.
+The saved breeding pairs are invalid.,The saved breeding pairs are invalid.,Zapis rozmnażających się par jest nieprawidłowy.
+The saved buildings are invalid.,The saved buildings are invalid.,Zapis budynków jest nieprawidłowy.
+The saved camera is invalid.,The saved camera is invalid.,Zapis kamery jest nieprawidłowy.
+The saved creature activities are invalid.,The saved creature activities are invalid.,Zapis działań stworków jest nieprawidłowy.
+The saved creatures are invalid.,The saved creatures are invalid.,Zapis stworków jest nieprawidłowy.
+The saved deposits are invalid.,The saved deposits are invalid.,Zapis złóż jest nieprawidłowy.
+The saved discoveries no longer match the game database.,The saved discoveries no longer match the game database.,Zapisane odkrycia nie odpowiadają aktualnej bazie danych gry.
+The saved discovery board is invalid.,The saved discovery board is invalid.,Zapis planszy odkryć jest nieprawidłowy.
+The saved eggs are invalid.,The saved eggs are invalid.,Zapis jaj jest nieprawidłowy.
+The saved fences are invalid.,The saved fences are invalid.,Zapis płotów jest nieprawidłowy.
+The saved game contains invalid entity data.,The saved game contains invalid entity data.,Zapis gry zawiera nieprawidłowe dane obiektów.
+The saved game contains invalid world data.,The saved game contains invalid world data.,Zapis gry zawiera nieprawidłowe dane świata.
+The saved game could not be removed.,The saved game could not be removed.,Nie udało się usunąć zapisu gry.
+The saved game could not be replaced.,The saved game could not be replaced.,Nie udało się zastąpić zapisu gry.
+The saved game could not be verified.,The saved game could not be verified.,Nie udało się zweryfikować zapisu gry.
+The saved game could not be written.,The saved game could not be written.,Nie udało się zapisać gry.
+The saved game is damaged or uses an unsupported version.,The saved game is damaged or uses an unsupported version.,Zapis gry jest uszkodzony lub pochodzi z nieobsługiwanej wersji.
+The saved game uses a different map size or pixel density.,The saved game uses a different map size or pixel density.,Zapis gry używa innego rozmiaru mapy lub gęstości pikseli.
+The saved inventory is invalid.,The saved inventory is invalid.,Zapis ekwipunku jest nieprawidłowy.
+The saved plants are invalid.,The saved plants are invalid.,Zapis roślin jest nieprawidłowy.
+The saved science is invalid.,The saved science is invalid.,Zapis punktów nauki jest nieprawidłowy.
+The saved terrain is invalid.,The saved terrain is invalid.,Zapis terenu jest nieprawidłowy.
+The saved terrain textures are invalid.,The saved terrain textures are invalid.,Zapis tekstur terenu jest nieprawidłowy.
+The site is obstructed,The site is obstructed,Miejsce jest zablokowane
+The whole building must fit inside the map,The whole building must fit inside the map,Cały budynek musi mieścić się na mapie
+The world is not ready to load.,The world is not ready to load.,Świat nie jest gotowy do wczytania.
+The world is not ready to save.,The world is not ready to save.,Świat nie jest gotowy do zapisania.
+This egg recipe has not been discovered.,This egg recipe has not been discovered.,Ta receptura jaja nie została odkryta.
+This removes the current save and starts a new world.,This removes the current save and starts a new world.,Bieżący zapis zostanie usunięty i rozpocznie się nowy świat.
+Timber harvested by chopping trees.,Timber harvested by chopping trees.,Surowiec uzyskiwany przez ścinanie drzew.
+Tooltip,Tooltip,Podpowiedź
+Tuftling,Tuftling,Tuftling
+Tuftling + Grass -> Life,Tuftling + Grass -> Life,Tuftling + Trawa → Życie
+Tuftling + Plant Fiber,Tuftling + Plant Fiber,Tuftling + Włókno roślinne
+Tuftling Egg,Tuftling Egg,Jajo Tuftlinga
+Tuftling Egg + Water -> Tuftling,Tuftling Egg + Water -> Tuftling,Jajo Tuftlinga + Woda → Tuftling
+Tuftling creates grass,Tuftling creates grass,Tuftling tworzy trawę
+Turning to the recipe,Turning to the recipe,Otwieranie receptury
+Unknown resource,Unknown resource,Nieznany surowiec
+Unsuitable ground or plants too close,Unsuitable ground or plants too close,Nieodpowiednie podłoże lub zbyt blisko innych roślin
+Upset: striking a nearby structure,Upset: striking a nearby structure,Niezadowolony: uderza w pobliską konstrukcję
+Used in,Used in,Używane w
+Waiting for a clear route,Waiting for a clear route,Czeka na wolną drogę
+Waiting for a clear route.,Waiting for a clear route.,Czeka na wolną drogę.
+Walking to a feeder,Walking to a feeder,Idzie do karmnika
+Walking to a resting place,Walking to a resting place,Idzie do miejsca odpoczynku
+Walking to soil,Walking to soil,Idzie do gleby
+Walking to water,Walking to water,Idzie do wody
+Water,Water,Woda
+Water access,Water access,Dostęp do wody
+Water and soil together: a cradle for new beginnings.,Water and soil together: a cradle for new beginnings.,Woda i gleba razem — kolebka nowych początków.
+Water appearance,Water appearance,Wygląd wody
+Welcome to Hatchworks,Welcome to Hatchworks,Witaj w Hatchworks
+Wood,Wood,Drewno
+Wood + Wood -> Wood Fence,Wood + Wood -> Wood Fence,Drewno + Drewno → Drewniany płot
+Wooden fence,Wooden fence,Drewniany płot
+World Balance,World Balance,Balans świata
+X,X,X
+Yes,Yes,Tak
+Your backpack is empty.,Your backpack is empty.,Twój plecak jest pusty.
+Your egg is ready.,Your egg is ready.,Twoje jajo jest gotowe.
+Zoom,Zoom,Przybliżanie
+dry ground,dry ground,suchego podłoża
+female,female,samica
+grass,grass,trawa
+grassy ground,grassy ground,trawiastego podłoża
+herbs,herbs,zioła
+keyword:Plant Fiber,Plant Fiber,Włókno roślinne|Włókna roślinnego|Włóknem roślinnym
+keyword:grass,grass,trawa|trawy|trawę|trawie|trawą|trawiaste podłoże|trawiastym podłożu
+keyword:rocky ground,rocky ground,skaliste podłoże|skalistego podłoża|skalistym podłożu
+keyword:soil,soil,gleba|gleby|glebę|glebie|glebą
+keyword:water,water,woda|wody|wodę|wodzie|wodą
+male,male,samiec
+plant fiber,plant fiber,włókno roślinne
+rocky ground,rocky ground,skaliste podłoże
+soil,soil,gleba
+stone,stone,kamień
+their preferred ground,their preferred ground,odpowiedniego podłoża
+water,water,woda
+wood,wood,drewno

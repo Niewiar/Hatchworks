@@ -1,9 +1,15 @@
 [gd_scene format=3 uid="uid://k8j1b0cw20hv"]
 
 [ext_resource type="Script" path="res://code/creatures/TuftlingController.gd" id="1_4f8mf"]
-[ext_resource type="PackedScene" uid="uid://63lm2vayabd0" path="res://assets/creatures/mossling/mossling_v1.glb" id="2_u0svn"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/tuftling_model.tscn" id="2_u0svn"]
+
+[ext_resource type="PackedScene" path="res://scenes/creatures/breeding_hearts.tscn" id="hearts"]
+
+[ext_resource type="AnimationLibrary" path="res://resources/creatures/tuftling_swimming.tres" id="swim"]
+[ext_resource type="AnimationLibrary" path="res://resources/creatures/tuftling_behaviours.tres" id="behaviour"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_lg3ar"]
+radius = 0.325
 
 [sub_resource type="StandardMaterial3D" id="SplashMaterial"]
 albedo_color = Color(0.4, 0.75, 0.8, 0.8)
@@ -17,21 +23,24 @@ rings = 3
 material = SubResource("SplashMaterial")
 
 [node name="Tuftling" type="CharacterBody3D" unique_id=280441931 node_paths=PackedStringArray("animation_player")]
-collision_layer = 4
-collision_mask = 3
+collision_layer = 8
+collision_mask = 15
 script = ExtResource("1_4f8mf")
 animation_player = NodePath("mossling_v1/AnimationPlayer")
+swimming_library = ExtResource("swim")
+behaviour_library = ExtResource("behaviour")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1694708186]
 shape = SubResource("SphereShape3D_lg3ar")
 
 [node name="mossling_v1" parent="." unique_id=1258856697 instance=ExtResource("2_u0svn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.52732646, 0)
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 0, -0.342762199, 0)
 
 [node name="AnimationPlayer" parent="mossling_v1" index="1"]
 autoplay = &"Idle"
 
 [node name="Splash" type="CPUParticles3D" parent="."]
+scale = Vector3(0.65,0.65,0.65)
 position = Vector3(0, 0.3, 0)
 emitting = false
 amount = 18
@@ -44,4 +53,8 @@ spread = 85.0
 gravity = Vector3(0, -3, 0)
 initial_velocity_min = 0.8
 initial_velocity_max = 1.8
+[node name="Hearts" parent="." instance=ExtResource("hearts")]
+position = Vector3(0,0.6175,0)
+scale = Vector3(0.65,0.65,0.65)
+
 [editable path="mossling_v1"]

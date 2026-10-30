@@ -5,6 +5,6 @@
 script = ExtResource("script")
 id = &"tuftling_egg"
 display_name = "Tuftling Egg"
-description = "Discovered by combining Seed and Life, or Grass and Life. One egg is consumed when incubation starts; a Tuftling hatches after 30 seconds."
+description = "A leafy shell hiding the promise of a greener world."
 creature_id = &"tuftling"
 model = ExtResource("model")

@@ -1,0 +1,118 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://code/ui/WorkshopPanel.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/fiber.png" id="fiber"]
+[ext_resource type="Texture2D" path="res://assets/ui/wood.png" id="wood"]
+[ext_resource type="Texture2D" path="res://assets/ui/stone_resource.png" id="stone"]
+[ext_resource type="Texture2D" path="res://assets/ui/discoveries.png" id="science"]
+[node name="WorkshopPanel" type="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+script = ExtResource("script")
+[node name="Recipe" type="OptionButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/icon_max_width = 28
+custom_minimum_size = Vector2(0,42)
+[node name="CreationTime" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+[node name="Costs" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+[node name="Fiber" type="HBoxContainer" parent="Costs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="Icon" type="TextureRect" parent="Costs/Fiber"]
+layout_mode = 2
+custom_minimum_size = Vector2(26,26)
+size_flags_vertical = 4
+texture = ExtResource("fiber")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Costs/Fiber"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Plant Fiber"
+[node name="Quantity" type="Label" parent="Costs/Fiber"]
+layout_mode = 2
+text = "0 / 0"
+
+[node name="Wood" type="HBoxContainer" parent="Costs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="Icon" type="TextureRect" parent="Costs/Wood"]
+layout_mode = 2
+custom_minimum_size = Vector2(26,26)
+size_flags_vertical = 4
+texture = ExtResource("wood")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Costs/Wood"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Wood"
+[node name="Quantity" type="Label" parent="Costs/Wood"]
+layout_mode = 2
+text = "0 / 0"
+
+[node name="Stone" type="HBoxContainer" parent="Costs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="Icon" type="TextureRect" parent="Costs/Stone"]
+layout_mode = 2
+custom_minimum_size = Vector2(26,26)
+size_flags_vertical = 4
+texture = ExtResource("stone")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Costs/Stone"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Stone"
+[node name="Quantity" type="Label" parent="Costs/Stone"]
+layout_mode = 2
+text = "0 / 0"
+
+[node name="ScienceRow" type="HBoxContainer" parent="Costs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="Icon" type="TextureRect" parent="Costs/ScienceRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(26,26)
+size_flags_vertical = 4
+texture = ExtResource("science")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Name" type="Label" parent="Costs/ScienceRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Science"
+[node name="ScienceCost" type="Label" parent="Costs/ScienceRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0 / 0"
+
+[node name="CraftStatus" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+[node name="CraftProgress" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,14)
+show_percentage = false
+[node name="Craft" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,42)
+text = "Create egg"

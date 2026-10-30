@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://code/incubation/egg_shell.gdshader" id="1_g0r12"]
+[ext_resource type="Texture2D" path="res://assets/creatures/bloomlet/bloomlet_egg_albedo.res" id="2_rdrdq"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_g0r12")
+shader_parameter/shell_texture = ExtResource("2_rdrdq")
+shader_parameter/inner_color = Color(0.94, 0.88, 0.74, 1)

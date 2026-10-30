@@ -8,3 +8,5 @@ script = ExtResource("1")
 ui_icon = ExtResource("2")
 id = &"wood"
 display_name = "Wooden fence"
+
+required_discovery = &"wood_fence"

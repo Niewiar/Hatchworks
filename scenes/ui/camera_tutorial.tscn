@@ -1,0 +1,141 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://code/ui/CameraTutorial.gd" id="script"]
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/keys/wasd.png" id="wasd"]
+[ext_resource type="Texture2D" path="res://assets/ui/keys/arrows.png" id="arrows"]
+[ext_resource type="Texture2D" path="res://assets/ui/keys/mmb.png" id="mmb"]
+[ext_resource type="Texture2D" path="res://assets/ui/keys/qe.png" id="qe"]
+[ext_resource type="Texture2D" path="res://assets/ui/keys/alt_mmb.png" id="alt_mmb"]
+
+[sub_resource type="StyleBoxFlat" id="panel"]
+bg_color = Color(0.025,0.045,0.032,0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.4,0.52,0.28,0.8)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+shadow_color = Color(0,0,0,0.22)
+shadow_size = 4
+
+[node name="CameraTutorial" type="MarginContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 96.0
+mouse_filter = 2
+theme = ExtResource("theme")
+script = ExtResource("script")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("panel")
+
+[node name="Padding" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="Steps" type="VBoxContainer" parent="Panel/Padding"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Move" type="VBoxContainer" parent="Panel/Padding/Steps"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Panel/Padding/Steps/Move"]
+layout_mode = 2
+mouse_filter = 2
+text = "A place to begin"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.87,0.79,0.4,1)
+theme_override_font_sizes/font_size = 21
+
+[node name="Description" type="Label" parent="Panel/Padding/Steps/Move"]
+layout_mode = 2
+mouse_filter = 2
+text = "Move the camera to explore your land."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 17
+
+[node name="Keys" type="HBoxContainer" parent="Panel/Padding/Steps/Move"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 14
+
+[node name="wasd" type="TextureRect" parent="Panel/Padding/Steps/Move/Keys"]
+layout_mode = 2
+custom_minimum_size = Vector2(112,32)
+mouse_filter = 2
+texture = ExtResource("wasd")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="arrows" type="TextureRect" parent="Panel/Padding/Steps/Move/Keys"]
+layout_mode = 2
+custom_minimum_size = Vector2(112,32)
+mouse_filter = 2
+texture = ExtResource("arrows")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="mmb" type="TextureRect" parent="Panel/Padding/Steps/Move/Keys"]
+layout_mode = 2
+custom_minimum_size = Vector2(112,32)
+mouse_filter = 2
+texture = ExtResource("mmb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Rotate" type="VBoxContainer" parent="Panel/Padding/Steps"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Panel/Padding/Steps/Rotate"]
+layout_mode = 2
+mouse_filter = 2
+text = "A fresh perspective"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.87,0.79,0.4,1)
+theme_override_font_sizes/font_size = 21
+
+[node name="Description" type="Label" parent="Panel/Padding/Steps/Rotate"]
+layout_mode = 2
+mouse_filter = 2
+text = "Rotate the camera to look around."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 17
+
+[node name="Keys" type="HBoxContainer" parent="Panel/Padding/Steps/Rotate"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 14
+
+[node name="qe" type="TextureRect" parent="Panel/Padding/Steps/Rotate/Keys"]
+layout_mode = 2
+custom_minimum_size = Vector2(112,32)
+mouse_filter = 2
+texture = ExtResource("qe")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="alt_mmb" type="TextureRect" parent="Panel/Padding/Steps/Rotate/Keys"]
+layout_mode = 2
+custom_minimum_size = Vector2(112,32)
+mouse_filter = 2
+texture = ExtResource("alt_mmb")
+expand_mode = 1
+stretch_mode = 5

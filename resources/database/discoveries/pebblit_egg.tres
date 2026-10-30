@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/pebblit_egg.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"pebblit_egg"
+display_name = "Pebblit Egg"
+description = "A heavy, craggy shell. Something stubborn stirs inside."
+category = 4
+icon = ExtResource("icon")
+reward_item = &"pebblit_egg"
+reward_count = 1

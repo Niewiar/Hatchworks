@@ -8,8 +8,11 @@ extends Node3D
 @export var hatch_presentation: HatchPresentation
 @export var camera_controller: MapCameraController
 
+@onready var new_content: NewContentTracker = $NewContent
 @onready var discoveries: DiscoveryController = $Discoveries
 @onready var items: ItemInventory = $Items
+@onready var science: ScienceController = $Science
+@onready var breeding: BreedingController = $Breeding
 @onready var navigation: CreatureNavigation = $Navigation
 @onready var building_controller: BuildingController = $Buildings
 @onready var inventory: ResourceInventory = $Inventory
@@ -19,19 +22,20 @@ extends Node3D
 @onready var water_controller: WaterController = $Water
 @onready var environment_controller: EnvironmentController = $Environment
 @onready var vegetation_controller: VegetationController = $Vegetation
+@onready var planting_controller: PlantingController = $Planting
 @onready var brush_controller: BrushController = $Brush
 @onready var fances_controller: FenceController = %Fances
 @onready var regions_controller: RegionsController = $Regions
 
-enum MODE { NONE = 0, FANCE = 2, SCULPT = 4, HARVEST = 5, BUILD = 6, DISCOVERIES = 7, INVENTORY = 8 }
+enum MODE { NONE = 0, FANCE = 2, SCULPT = 4, HARVEST = 5, BUILD = 6, DISCOVERIES = 7, BACKPACK = 8, PLANT = 9 }
 
 signal mode_changed(mode: MODE)
+signal modal_changed(active: bool)
 
 const CREATURE_HOLD_DELAY := 0.22
 const CREATURE_DRAG_DISTANCE := 6.0
 
 var modal_active := false
-var _rmb_closed_focus := false
 
 var _mode: MODE = MODE.NONE
 var _sculpting_active := false
@@ -39,6 +43,9 @@ var _harvesting_active := false
 var _collect_elapsed := 0.0
 var _panning := false
 var _rotating := false
+var _keyboard_navigating := false
+var _camera_direction := Vector2.ZERO
+var _camera_turn := 0.0
 var _last_pointer := Vector2.ZERO
 var selected_sculpt_tool: TerrainController.SCULPT_TOOL = TerrainController.SCULPT_TOOL.RAISE
 var _held_creature: Creature
@@ -56,16 +63,20 @@ func _ready() -> void:
 	water_controller.initialize(terrain_controller)
 	fances_controller.configure_world(pixels_per_unit, Rect2(-Vector2(map_size) * 0.5, Vector2(map_size)))
 	fances_controller.configure_surface(terrain_controller)
-	fances_controller.configure_inventory(inventory)
+	fances_controller.configure_inventory(inventory,discoveries)
 	brush_controller.configure_surface()
 	environment_controller.initialize(terrain_controller, water_controller)
 	vegetation_controller.initialize(terrain_controller, environment_controller)
+	planting_controller.initialize(self)
 	rock_controller.initialize(terrain_controller,environment_controller,vegetation_controller)
 	harvest_controller.initialize(terrain_controller,vegetation_controller,rock_controller,inventory)
 	regions_controller.initialize(terrain_controller, fances_controller, water_controller)
 	building_controller.building_placed.connect(_on_building_placed)
+	science.initialize(database)
+	breeding.initialize(self)
 	discoveries.initialize(self)
 	building_controller.initialize(self)
+	new_content.initialize(self)
 	navigation.initialize(self)
 	if camera_controller != null:
 		camera_controller.configure(terrain_controller.world_size)
@@ -74,6 +85,8 @@ func _ready() -> void:
 	InputManager.on_rmb.connect(_on_rmb)
 	InputManager.on_mouse_move.connect(_on_mouse_move)
 	InputManager.on_mouse_scroll.connect(_on_mouse_scroll)
+	InputManager.on_camera_move.connect(_on_camera_move)
+	InputManager.on_camera_turn.connect(_on_camera_turn)
 	get_window().focus_exited.connect(_on_focus_exited)
 	_last_pointer = get_viewport().get_mouse_position()
 
@@ -95,6 +108,7 @@ func _apply_database() -> void:
 func _physics_process(delta: float) -> void:
 	if inspection_panel != null and inspection_panel.focused and is_instance_valid(inspection_panel.target):
 		camera_controller.track_focus(inspection_panel.focus_position())
+	_tick_keyboard_navigation(delta)
 	if modal_active:
 		return
 	if _harvesting_active and _mode == MODE.HARVEST and not _is_navigating():
@@ -129,7 +143,7 @@ func set_mode(mode: MODE) -> void:
 	_update_harvest_hover()
 	building_controller.activate(mode == MODE.BUILD and not _is_navigating())
 	_update_build_preview()
-	set_modal(mode in [MODE.DISCOVERIES,MODE.INVENTORY])
+	set_modal(mode in [MODE.DISCOVERIES,MODE.BACKPACK])
 	mode_changed.emit(mode)
 
 func select_fence(index: int) -> void:
@@ -150,6 +164,12 @@ func _pointer_position(prefer_post: bool = false) -> Variant:
 	return point
 
 func _on_lmb(pressed: bool) -> void:
+	if pressed and _mode != MODE.NONE and not _is_navigating() and get_viewport().gui_get_hovered_control() == null:
+		var actor := _pick_actor(get_viewport().get_mouse_position())
+		if actor != null and building_controller.building_definition(actor) != null:
+			set_mode(MODE.NONE)
+			_begin_actor_click(get_viewport().get_mouse_position())
+			return
 	if modal_active:
 		return
 	match _mode:
@@ -158,6 +178,11 @@ func _on_lmb(pressed: bool) -> void:
 				_begin_actor_click(get_viewport().get_mouse_position())
 			else:
 				_finish_actor_click()
+		MODE.PLANT:
+			if pressed and not _is_navigating() and get_viewport().gui_get_hovered_control() == null:
+				var point = _pointer_position()
+				if point != null and planting_controller.place_at(point) and items.amount(planting_controller.selected.sapling_item) == 0:
+					set_mode(MODE.NONE)
 		MODE.BUILD:
 			if pressed and not _is_navigating() and get_viewport().gui_get_hovered_control() == null:
 				var point = _pointer_position()
@@ -168,6 +193,7 @@ func _on_lmb(pressed: bool) -> void:
 			terrain_controller.end_sculpt()
 			var point = _pointer_position()
 			if _sculpting_active and point != null:
+				new_content.mark_tool_seen(MODE.SCULPT,int(selected_sculpt_tool))
 				terrain_controller.begin_sculpt(selected_sculpt_tool,point,brush_controller.brush_radius,brush_controller.brush_hardness)
 		MODE.HARVEST:
 			var allowed := not _is_navigating() and get_viewport().gui_get_hovered_control() == null
@@ -178,6 +204,7 @@ func _on_lmb(pressed: bool) -> void:
 				_collect_at_mouse()
 			elif pressed and allowed and not harvest_controller.uses_brush():
 				_update_harvest_hover()
+				new_content.mark_tool_seen(MODE.HARVEST,int(harvest_controller.selected_tool))
 				harvest_controller.strike()
 		MODE.FANCE:
 			var over_ui := get_viewport().gui_get_hovered_control() != null
@@ -189,23 +216,19 @@ func _on_lmb(pressed: bool) -> void:
 				fances_controller.finish_drawing(point if point != null else Vector3.ZERO, not over_ui and not _is_navigating() and point != null)
 
 func _on_rmb(pressed: bool) -> void:
+	if not pressed:
+		return
+	for panel in get_tree().get_nodes_in_group("discovery_panels"):
+		if panel.get_viewport() == get_viewport() and panel.owns_secondary_action():
+			return
+	if _mode != MODE.NONE:
+		set_mode(MODE.NONE)
+		return
 	if modal_active:
 		return
-	if not pressed and _rmb_closed_focus:
-		_rmb_closed_focus = false
-		return
-	if pressed:
-		_release_creature()
-	if pressed and inspection_panel != null and inspection_panel.focused:
+	_release_creature()
+	if inspection_panel != null and inspection_panel.focused:
 		inspection_panel.close_focus()
-		_rmb_closed_focus = true
-		return
-	if pressed and get_viewport().gui_get_hovered_control() != null:
-		return
-	if not pressed and not _panning:
-		return
-	_panning = pressed
-	_on_navigation_changed(pressed)
 
 func _on_mmb(pressed: bool) -> void:
 	if modal_active or (inspection_panel != null and inspection_panel.focused):
@@ -213,15 +236,39 @@ func _on_mmb(pressed: bool) -> void:
 	if pressed:
 		if get_viewport().gui_get_hovered_control() != null or camera_controller == null:
 			return
-		if not camera_controller.begin_orbit(terrain_controller):
+		_rotating = Input.is_key_pressed(KEY_ALT)
+		if _rotating and not camera_controller.begin_orbit(terrain_controller):
+			_rotating = false
 			return
-	elif not _rotating:
-		return
-	_rotating = pressed
+		_panning = not _rotating
+	else:
+		if not _panning and not _rotating:
+			return
+		_panning = false
+		_rotating = false
 	_on_navigation_changed(pressed)
 
+func _on_camera_move(direction: Vector2) -> void:
+	_camera_direction = direction
+
+func _on_camera_turn(direction: float) -> void:
+	_camera_turn = direction
+
+func _tick_keyboard_navigation(delta: float) -> void:
+	var owner := get_viewport().gui_get_focus_owner()
+	var blocked := modal_active or (inspection_panel != null and inspection_panel.focused) or owner is LineEdit or owner is TextEdit
+	var moving := not blocked and (not _camera_direction.is_zero_approx() or not is_zero_approx(_camera_turn)) and camera_controller != null
+	if moving != _keyboard_navigating:
+		_keyboard_navigating = moving
+		_on_navigation_changed(moving)
+	if not moving:
+		return
+	camera_controller.pan_direction(_camera_direction,delta,terrain_controller)
+	if not is_zero_approx(_camera_turn) and camera_controller.begin_orbit(terrain_controller):
+		camera_controller.orbit(_camera_turn*180.0*delta)
+
 func _is_navigating() -> bool:
-	return _panning or _rotating
+	return _panning or _rotating or _keyboard_navigating
 
 func _update_brush_state() -> void:
 	brush_controller.activate(not _is_navigating() and (_mode == MODE.SCULPT or (_mode == MODE.HARVEST and harvest_controller.uses_brush())))
@@ -261,7 +308,7 @@ func _on_mouse_move(viewport_position: Vector2) -> void:
 		return
 
 func _on_mouse_scroll(direction: int) -> void:
-	if modal_active:
+	if modal_active or (inspection_panel != null and inspection_panel.focused):
 		return
 	if get_viewport().gui_get_hovered_control() != null:
 		return
@@ -302,10 +349,12 @@ func _pick_actor(screen: Vector2) -> Node3D:
 	var nearest := camera.far
 	var candidates: Array = get_tree().get_nodes_in_group("creatures")
 	candidates.append_array(building_controller.get_buildings())
+	candidates.append_array(fances_controller.get_damageable_views())
+	candidates.append_array(get_tree().get_nodes_in_group("loose_eggs"))
 	for actor: Node3D in candidates:
 		if not is_instance_valid(actor) or actor.is_queued_for_deletion() or actor.get_viewport() != get_viewport() or not actor.is_visible_in_tree():
 			continue
-		if not (actor is Creature or actor is IncubatorController or actor is FeederController):
+		if not (actor is Creature or actor is IncubatorController or actor is FeederController or actor is WorkshopController or actor is LooseEggController or actor.has_method("structure_condition")):
 			continue
 		var inverse := actor.global_transform.affine_inverse()
 		var bounds: AABB = actor.inspection_bounds()
@@ -324,7 +373,12 @@ func _finish_actor_click() -> void:
 	if clicked and actor is Creature and _press_elapsed >= CREATURE_HOLD_DELAY:
 		clicked = false
 	_release_creature()
-	if clicked and inspection_panel != null:
+	if clicked and actor is LooseEggController:
+		actor.collect()
+	elif clicked and inspection_panel != null:
+		var data := building_controller.building_definition(actor)
+		if data != null:
+			new_content.mark_building_seen(data.id)
 		inspection_panel.inspect(actor)
 
 func _cancel_pointer_action() -> void:
@@ -377,7 +431,8 @@ func _update_creature_drag() -> void:
 func _release_creature() -> void:
 	_cancel_pointer_action()
 	if is_instance_valid(_held_creature):
-		_held_creature.release()
+		if not _held_creature.release():
+			return
 	_held_creature = null
 
 func select_harvest_tool(tool: HarvestController.TOOL) -> void:
@@ -394,6 +449,7 @@ func _collect_at_mouse() -> void:
 	if point == null:
 		harvest_controller.end_stroke()
 		return
+	new_content.mark_tool_seen(MODE.HARVEST,int(harvest_controller.selected_tool))
 	harvest_controller.collect(point,brush_controller.brush_radius)
 
 func _update_harvest_hover() -> void:
@@ -401,6 +457,9 @@ func _update_harvest_hover() -> void:
 
 func _on_focus_exited() -> void:
 	_release_creature()
+	_camera_direction = Vector2.ZERO
+	_camera_turn = 0.0
+	_keyboard_navigating = false
 	_panning = false
 	_rotating = false
 	_sculpting_active = false
@@ -413,18 +472,26 @@ func _on_focus_exited() -> void:
 	harvest_controller.cancel_action()
 
 func _update_build_preview() -> void:
-	if _mode != MODE.BUILD:
+	planting_controller.activate(_mode == MODE.PLANT and not modal_active and not _is_navigating())
+	if _mode not in [MODE.BUILD,MODE.PLANT]:
 		return
 	var allowed := not modal_active and not _is_navigating() and get_viewport().gui_get_hovered_control() == null
-	building_controller.preview_at(_pointer_position() if allowed else null)
+	var point = _pointer_position() if allowed else null
+	if _mode == MODE.PLANT:
+		planting_controller.preview_at(point)
+	else:
+		building_controller.preview_at(point)
 
 func _on_building_placed(building: Node3D, _definition: BuildingDefinition) -> void:
+	discoveries.discover(_definition.id,building.global_position)
 	if building is IncubatorController:
 		building.initialize(self)
 		building.hatch_requested.connect(_on_hatch_requested)
-		discoveries.discover(&"life")
+		discoveries.discover(&"life",building.global_position)
 	elif building is FeederController:
 		building.initialize(self,_definition)
+	elif building is WorkshopController:
+		building.initialize(self)
 
 func _on_hatch_requested(incubator_node: IncubatorController) -> void:
 	if hatch_presentation != null:
@@ -432,6 +499,9 @@ func _on_hatch_requested(incubator_node: IncubatorController) -> void:
 
 func set_modal(active: bool) -> void:
 	modal_active = active
+	_camera_direction = Vector2.ZERO
+	_camera_turn = 0.0
+	_keyboard_navigating = false
 	_panning = false
 	_rotating = false
 	_sculpting_active = false
@@ -442,14 +512,17 @@ func set_modal(active: bool) -> void:
 	brush_controller.activate(false)
 	fances_controller.activate(false)
 	building_controller.activate(false)
+	planting_controller.activate(false)
 	if not active:
 		_update_brush_state()
 		fances_controller.activate(_mode == MODE.FANCE)
 		building_controller.activate(_mode == MODE.BUILD)
 		_update_build_preview()
 
+	modal_changed.emit(active)
+
 func cancel_action() -> bool:
-	if _mode in [MODE.DISCOVERIES,MODE.INVENTORY]:
+	if _mode in [MODE.DISCOVERIES,MODE.BACKPACK]:
 		set_mode(MODE.NONE)
 		return true
 	if modal_active:
@@ -464,3 +537,10 @@ func cancel_action() -> bool:
 
 func current_mode() -> MODE:
 	return _mode
+
+func start_planting(id: StringName) -> void:
+	var data := database.plant(id)
+	if data == null or items.amount(data.sapling_item) <= 0:
+		return
+	planting_controller.select_plant(data)
+	set_mode(MODE.PLANT)

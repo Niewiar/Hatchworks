@@ -2,6 +2,8 @@
 [ext_resource type="Script" path="res://code/ui/InspectionPanel.gd" id="script"]
 [ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/creature_card.tscn" id="creature"]
+[ext_resource type="PackedScene" path="res://scenes/ui/workshop_panel.tscn" id="workshop"]
+[ext_resource type="PackedScene" path="res://scenes/ui/breeding_panel.tscn" id="breeding"]
 [sub_resource type="StyleBoxFlat" id="SatietyFill"]
 bg_color = Color(0.52,0.7,0.26,1)
 corner_radius_top_left = 5
@@ -10,6 +12,18 @@ corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
 [sub_resource type="StyleBoxFlat" id="SatietyBackground"]
 bg_color = Color(0.1,0.16,0.11,1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+[sub_resource type="StyleBoxFlat" id="DurabilityFill"]
+bg_color = Color(0.85,0.69,0.3,1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+[sub_resource type="StyleBoxFlat" id="HappinessFill"]
+bg_color = Color(0.3,0.7,0.66,1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_left = 5
@@ -58,7 +72,7 @@ theme_override_constants/separation = 16
 [node name="Close" type="Button" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Close focus · RMB"
+text = "Close focus - RMB"
 [node name="CreatureCard" parent="Position/Panel/Scroll/Content" instance=ExtResource("creature")]
 unique_name_in_owner = true
 layout_mode = 2
@@ -85,23 +99,25 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
-[node name="Satiety" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
+[node name="Satiety" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureCard" index="2"]
 propagate_maximum_size = true
+mouse_filter = 0
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/Satiety"]
+[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureCard/Satiety"]
 propagate_maximum_size = true
+mouse_filter = 2
 layout_mode = 2
-[node name="Label" type="Label" parent="Position/Panel/Scroll/Content/Satiety/Header"]
+[node name="Label" type="Label" parent="Position/Panel/Scroll/Content/CreatureCard/Satiety/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Satiety"
-[node name="SatietyValue" type="Label" parent="Position/Panel/Scroll/Content/Satiety/Header"]
+[node name="SatietyValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureCard/Satiety/Header"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "100%"
-[node name="SatietyBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/Satiety"]
+[node name="SatietyBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureCard/Satiety"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0,16)
 layout_mode = 2
@@ -109,6 +125,65 @@ mouse_filter = 2
 show_percentage = false
 theme_override_styles/fill = SubResource("SatietyFill")
 theme_override_styles/background = SubResource("SatietyBackground")
+[node name="Happiness" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureCard" index="3"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 0
+[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureCard/Happiness"]
+layout_mode = 2
+mouse_filter = 2
+[node name="Label" type="Label" parent="Position/Panel/Scroll/Content/CreatureCard/Happiness/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "Contentment"
+[node name="HappinessValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureCard/Happiness/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+text = "100%"
+[node name="HappinessBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureCard/Happiness"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,16)
+layout_mode = 2
+mouse_filter = 2
+show_percentage = false
+theme_override_styles/fill = SubResource("HappinessFill")
+theme_override_styles/background = SubResource("SatietyBackground")
+[node name="HabitatNeeds" type="RichTextLabel" parent="Position/Panel/Scroll/Content/CreatureCard" index="4"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+fit_content = true
+scroll_active = false
+mouse_filter = 2
+[node name="Durability" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/Durability"]
+layout_mode = 2
+[node name="Name" type="Label" parent="Position/Panel/Scroll/Content/Durability/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Condition"
+[node name="DurabilityValue" type="Label" parent="Position/Panel/Scroll/Content/Durability/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "100%"
+[node name="DurabilityBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/Durability"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,16)
+show_percentage = false
+theme_override_styles/fill = SubResource("DurabilityFill")
+theme_override_styles/background = SubResource("SatietyBackground")
+[node name="Repair" type="Button" parent="Position/Panel/Scroll/Content/Durability"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Repair · Free"
 [node name="Progress" type="ProgressBar" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 14)
@@ -119,3 +194,14 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 text = "Start incubation"
+
+[node name="Workshop" parent="Position/Panel/Scroll/Content" instance=ExtResource("workshop")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+[node name="Breeding" parent="Position/Panel/Scroll/Content" instance=ExtResource("breeding")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[editable path="Position/Panel/Scroll/Content/CreatureCard"]

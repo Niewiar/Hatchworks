@@ -5,10 +5,19 @@ signal on_mmb(pressed: bool)
 signal on_rmb(pressed: bool)
 signal on_mouse_move(position: Vector2)
 signal on_mouse_scroll(direction: int)
+signal on_camera_move(direction: Vector2)
+signal on_camera_turn(direction: float)
 signal on_esc()
 
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.is_echo() and event.keycode == KEY_ESCAPE:
+		on_esc.emit()
+		return
+	if get_tree().paused:
+		return
 	if event is InputEventMouseButton:
 		var button := event as InputEventMouseButton
 		if button.button_index == MOUSE_BUTTON_LEFT:
@@ -25,7 +34,9 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion:
 		on_mouse_move.emit(event.position)
 	elif event is InputEventKey:
-		var key := event as InputEventKey
-		if key.pressed and not key.is_echo():
-			if key.keycode == KEY_ESCAPE:
-				on_esc.emit()
+		var left := Input.is_physical_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)
+		var right := Input.is_physical_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)
+		var forward := Input.is_physical_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)
+		var back := Input.is_physical_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN)
+		on_camera_move.emit(Vector2(int(right)-int(left),int(back)-int(forward)).limit_length())
+		on_camera_turn.emit(float(int(Input.is_physical_key_pressed(KEY_E))-int(Input.is_physical_key_pressed(KEY_Q))))

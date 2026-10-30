@@ -22,57 +22,93 @@ corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_left = 10
 corner_radius_bottom_right = 10
-[node name="Notification" type="Button"]
-custom_minimum_size = Vector2(280,66)
+[sub_resource type="StyleBoxEmpty" id="empty"]
+[sub_resource type="StyleBoxFlat" id="track"]
+bg_color = Color(0.12,0.18,0.1,1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_left = 2
+corner_radius_bottom_right = 2
+[sub_resource type="StyleBoxFlat" id="fill"]
+bg_color = Color(0.77,0.76,0.38,1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_left = 2
+corner_radius_bottom_right = 2
+[node name="Notification" type="PanelContainer"]
+custom_minimum_size = Vector2(280,72)
+custom_maximum_size = Vector2(300,-1)
+layout_mode = 2
+theme_override_styles/panel = SubResource("normal")
+script = ExtResource("script")
+[node name="Hit" type="Button" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("normal")
+theme_override_styles/normal = SubResource("empty")
 theme_override_styles/hover = SubResource("hover")
 theme_override_styles/pressed = SubResource("hover")
-script = ExtResource("script")
-[node name="Content" type="HBoxContainer" parent="."]
-propagate_maximum_size = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = -8.0
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+[node name="Content" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+[node name="Row" type="HBoxContainer" parent="Margin/Content"]
+layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 10
-[node name="Icon" type="TextureRect" parent="Content"]
+[node name="Icon" type="TextureRect" parent="Margin/Content/Row"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(32,32)
 layout_mode = 2
+size_flags_vertical = 4
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-[node name="Text" type="VBoxContainer" parent="Content"]
-propagate_maximum_size = true
+[node name="Text" type="VBoxContainer" parent="Margin/Content/Row"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 3
-[node name="Title" type="Label" parent="Content/Text"]
+[node name="Title" type="Label" parent="Margin/Content/Row/Text"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
+autowrap_mode = 3
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.9,0.79,0.44,1)
-[node name="Message" type="Label" parent="Content/Text"]
+[node name="Message" type="Label" parent="Margin/Content/Row/Text"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-text_overrun_behavior = 3
+autowrap_mode = 3
 theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.87,0.92,0.75,1)
-[node name="Close" type="Button" parent="Content"]
+[node name="Close" type="Button" parent="Margin/Content/Row"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(26,26)
 layout_mode = 2
 size_flags_vertical = 0
-text = "×"
+text = "X"
 flat = true
+[node name="Lifetime" type="ProgressBar" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0,4)
+mouse_filter = 2
+show_percentage = false
+max_value = 16.0
+value = 16.0
+theme_override_styles/background = SubResource("track")
+theme_override_styles/fill = SubResource("fill")
+[node name="Expiry" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 16.0
+one_shot = true

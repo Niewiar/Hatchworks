@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/BuildingDefinition.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/constructions/life_workshop.tscn" id="scene"]
+[ext_resource type="Texture2D" path="res://assets/ui/life_workshop.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"life_workshop"
+display_name = "Life Workshop"
+description = "Stone, brass and a little wonder, shaping the beginnings of life."
+scene = ExtResource("scene")
+icon = ExtResource("icon")
+wood_cost = 0
+stone_cost = 0
+fiber_cost = 0
+footprint_radius = 1.65
+required_discovery = &"life_workshop"

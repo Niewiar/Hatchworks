@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="script"]
+[resource]
+script = ExtResource("script")
+id = &"pebblit_egg_soil_pebblit"
+display_name = "Pebblit Egg + Soil"
+first = &"pebblit_egg"
+second = &"soil"
+result = &"pebblit"
+science_reward = 1

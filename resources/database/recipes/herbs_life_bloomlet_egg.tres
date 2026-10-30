@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="script"]
+[resource]
+script = ExtResource("script")
+id = &"herbs_life_bloomlet_egg"
+display_name = "Herbs + Life"
+first = &"herbs"
+second = &"life"
+result = &"bloomlet_egg"
+science_reward = 1

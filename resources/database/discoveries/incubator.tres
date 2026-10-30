@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/ui/incubator.png" id="icon"]
+[resource]
+script = ExtResource("script")
+category = 6
+id = &"incubator"
+display_name = "Incubator"
+description = "A sheltered stone nest where new life waits to hatch."
+icon = ExtResource("icon")

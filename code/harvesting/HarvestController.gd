@@ -79,7 +79,7 @@ func collect(point: Vector3, radius: float) -> void:
 			for kind in collected:
 				totals[kind] = totals.get(kind,0)+collected[kind]
 		for kind in totals:
-			_inventory.add(kind,totals[kind])
+			_inventory.add(kind,totals[kind],point+Vector3.UP*0.2)
 		_last_collect_point = point
 		_has_collect_point = true
 
@@ -88,8 +88,9 @@ func strike() -> void:
 		return
 	tool_view.swing()
 	var resource := _target.resource_kind
+	var origin := _target.global_position+Vector3.UP*0.6
 	var quantity := _target.strike()
-	_inventory.add(resource,quantity)
+	_inventory.add(resource,quantity,origin)
 	if _target.exhausted:
 		_set_target(null)
 

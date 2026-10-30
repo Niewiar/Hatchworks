@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
+[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="script"]
+[resource]
+script = ExtResource("script")
+id = &"tuftling_egg_water_tuftling"
+display_name = "Tuftling Egg + Water -> Tuftling"
+first = &"tuftling_egg"
+second = &"water"
+result = &"tuftling"

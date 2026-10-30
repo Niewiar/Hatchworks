@@ -1,11 +1,12 @@
-[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3]
-[ext_resource type="Script" path="res://code/database/DiscoveryDefinition.gd" id="script"]
-[ext_resource type="Texture2D" path="res://assets/ui/stone_resource.png" id="icon"]
+[gd_resource type="Resource" script_class="DiscoveryDefinition" format=3 uid="uid://dfoq02p8paea5"]
+
+[ext_resource type="Texture2D" uid="uid://2itbhngpfnjg" path="res://assets/ui/stone_resource.png" id="icon"]
+[ext_resource type="Script" uid="uid://btt4tn8jtjgi2" path="res://code/database/DiscoveryDefinition.gd" id="script"]
+
 [resource]
 script = ExtResource("script")
+category = 1
+icon = ExtResource("icon")
 id = &"stone"
 display_name = "Stone"
-description = "Mineral material gathered by mining deposits."
-icon = ExtResource("icon")
-reward_item = &""
-reward_count = 0
+description = "A piece of the land, ready to become something new."

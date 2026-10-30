@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/creatures/mossling/mossling_v1.glb" id="base"]
+[ext_resource type="Script" path="res://code/creatures/TuftlingAppearance.gd" id="appearance"]
+[ext_resource type="ArrayMesh" path="res://resources/creatures/tuftling_female_leaves.res" id="leaves"]
+[ext_resource type="ArrayMesh" path="res://resources/creatures/tuftling_female_flowers.res" id="flowers"]
+
+[node name="mossling_v1" instance=ExtResource("base")]
+script = ExtResource("appearance")
+
+[node name="FemaleCrown" type="BoneAttachment3D" parent="Mossling_Rig/Skeleton3D"]
+visible = false
+bone_name = "frond.center"
+bone_idx = 4
+
+[node name="Leaves" type="MeshInstance3D" parent="Mossling_Rig/Skeleton3D/FemaleCrown"]
+position = Vector3(0.09,0.015,0.04)
+mesh = ExtResource("leaves")
+
+[node name="Flowers" type="MeshInstance3D" parent="Mossling_Rig/Skeleton3D/FemaleCrown"]
+position = Vector3(0.09,0.015,0.04)
+mesh = ExtResource("flowers")
+
+[editable path="Mossling_Rig/Skeleton3D"]

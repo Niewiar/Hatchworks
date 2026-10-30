@@ -16,12 +16,10 @@
 [ext_resource type="Texture2D" path="res://assets/ui/pickaxe.png" id="harvest_pickaxe"]
 
 [ext_resource type="Texture2D" path="res://assets/ui/build.png" id="build_mode"]
-[ext_resource type="Texture2D" path="res://assets/ui/incubator.png" id="build_incubator"]
 
 [ext_resource type="Texture2D" path="res://assets/ui/discoveries.png" id="discoveries_icon"]
-[ext_resource type="Texture2D" path="res://assets/ui/wood_fence.png" id="wood_icon"]
-[ext_resource type="Texture2D" path="res://assets/ui/stone_fence.png" id="stone_icon"]
 [ext_resource type="Texture2D" path="res://assets/ui/inventory.png" id="inventory_icon"]
+[ext_resource type="PackedScene" path="res://scenes/ui/new_content_badge.tscn" id="new_badge"]
 [sub_resource type="AtlasTexture" id="AtlasTexture_lg3ar"]
 atlas = ExtResource("1_qv1gk")
 region = Rect2(128, 0, 128, 128)
@@ -38,7 +36,6 @@ region = Rect2(0, 0, 128, 128)
 atlas = ExtResource("1_qv1gk")
 region = Rect2(0, 0, 128, 128)
 
-[sub_resource type="ButtonGroup" id="FenceTypes"]
 [sub_resource type="ButtonGroup" id="SculptTypes"]
 
 [sub_resource type="ButtonGroup" id="GatherTypes"]
@@ -77,6 +74,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
 script = ExtResource("1_n1sdo")
+build_button_group = SubResource("BuildingTypes")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1572403575]
 layout_mode = 1
@@ -92,15 +90,19 @@ grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 
-[node name="BuildCost" type="Label" parent="VBoxContainer"]
+[node name="BuildCost" type="RichTextLabel" parent="VBoxContainer"]
 visible = false
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.9, 0.94, 0.78, 1)
-theme_override_colors/font_outline_color = Color(0.025, 0.04, 0.03, 1)
-theme_override_constants/outline_size = 5
-text = "Draw a fence to see its cost"
+theme_override_font_sizes/normal_font_size = 16
+theme_override_colors/default_color = Color(1,1,1,1)
+theme_override_colors/font_outline_color = Color(0.025,0.04,0.03,1)
+theme_override_constants/outline_size = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 
 [node name="BuildingButtons" type="HBoxContainer" parent="VBoxContainer"]
@@ -109,105 +111,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 mouse_filter = 2
-
-[node name="Incubator" type="CheckButton" parent="VBoxContainer/BuildingButtons"]
-layout_mode = 2
-button_group = SubResource("BuildingTypes")
-button_pressed = true
-metadata/building_index = 0
-metadata/tooltip_title = "Incubator"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
-icon_alignment = 1
-
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BuildingButtons/Incubator"]
-layout_mode = 1
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -28.0
-offset_top = -28.0
-offset_right = 28.0
-offset_bottom = 28.0
-mouse_filter = 2
-texture = ExtResource("build_incubator")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="ConstructionsButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1119161433]
-visible = false
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-mouse_filter = 2
-
-[node name="Wood" type="CheckButton" parent="VBoxContainer/ConstructionsButtons" unique_id=509349297]
-button_group = SubResource("FenceTypes")
-button_pressed = true
-metadata/fence_index = 0
-metadata/tooltip_title = "Wooden fence"
-layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
-icon_alignment = 1
-
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/ConstructionsButtons/Wood" unique_id=95243519]
-texture_filter = 1
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -28.0
-offset_top = -28.0
-offset_right = 28.0
-offset_bottom = 28.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("wood_icon")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Stone" type="CheckButton" parent="VBoxContainer/ConstructionsButtons"]
-button_group = SubResource("FenceTypes")
-metadata/fence_index = 1
-metadata/tooltip_title = "Stone fence"
-layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
-icon_alignment = 1
-
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/ConstructionsButtons/Stone"]
-texture_filter = 1
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -28.0
-offset_top = -28.0
-offset_right = 28.0
-offset_bottom = 28.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("stone_icon")
-expand_mode = 1
-stretch_mode = 5
 
 [node name="SculptButtons" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
@@ -528,36 +431,6 @@ texture = ExtResource("harvest_harvest")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="BuildButton" type="CheckButton" parent="VBoxContainer/BaseButtons" unique_id=520531800]
-metadata/mode = 2
-metadata/tooltip_title = "Fences"
-layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_u114x")
-icon_alignment = 1
-
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/BuildButton" unique_id=786235585]
-texture_filter = 1
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -28.0
-offset_top = -28.0
-offset_right = 28.0
-offset_bottom = 28.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("wood_icon")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="DiscoveriesButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
 unique_name_in_owner = true
 metadata/mode = 7
@@ -598,7 +471,7 @@ libraries = {
 [node name="InventoryButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
 unique_name_in_owner = true
 metadata/mode = 8
-metadata/tooltip_title = "Inventory"
+metadata/tooltip_title = "Backpack"
 layout_mode = 2
 theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
 theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
@@ -625,3 +498,27 @@ mouse_filter = 2
 texture = ExtResource("inventory_icon")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/BuildingButton" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/SculptButton" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/GatherButton" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/DiscoveriesButton" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/InventoryButton" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/SculptButtons/Raise" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/SculptButtons/Lower" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/SculptButtons/Smooth" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/SculptButtons/Flatten" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/GatherButtons/Plants" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/GatherButtons/Axe" instance=ExtResource("new_badge")]
+
+[node name="NewContent" parent="VBoxContainer/GatherButtons/Mining" instance=ExtResource("new_badge")]

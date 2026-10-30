@@ -2,10 +2,8 @@
 class_name FanceData
 extends DatabaseEntry
 
-enum MaterialKind { WOOD, STONE }
-
-@export var material_kind: MaterialKind = MaterialKind.WOOD
 @export var ui_icon: Texture2D
+@export var required_discovery: StringName
 @export_range(24.0, 160.0, 1.0) var max_span_length := 84.0
 @export_range(16.0, 100.0, 1.0) var height := 52.0
 @export_range(6.0, 32.0, 1.0) var post_width := 13.0

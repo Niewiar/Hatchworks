@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
+[ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/rootle.tscn" id="scene"]
+[ext_resource type="Texture2D" path="res://assets/ui/rootle.png" id="icon"]
+[resource]
+script = ExtResource("script")
+id = &"rootle"
+display_name = "Rootle"
+description = "A bark-coated gardener that fills grassy clearings with oaks and shrubs. A woodland begins wherever a Rootle puts down roots."
+scene = ExtResource("scene")
+icon = ExtResource("icon")
+production = 1
+requires_water = false
+habitat_ground = 0
+production_limit = 8
+production_seconds = 4.0
+impact_time = 2.0
+production_radius = 5.0
+preferred_area = 18.0
+walk_speed = 1.4

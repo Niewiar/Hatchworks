@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3]
 [ext_resource type="Script" path="res://code/ui/ResourcePanel.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/resource_counter.tscn" id="2"]
 [ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="3"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/herbs.png" id="5"]
 [ext_resource type="Texture2D" path="res://assets/ui/wood.png" id="8"]
 [ext_resource type="Texture2D" path="res://assets/ui/stone_resource.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/ui/discoveries.png" id="science"]
 [sub_resource type="StyleBoxFlat" id="Panel"]
 content_margin_left = 16.0
 content_margin_top = 10.0
@@ -62,3 +63,29 @@ icon = ExtResource("8")
 layout_mode = 2
 resource_kind = 10
 icon = ExtResource("9")
+
+[node name="ScienceCounter" type="HBoxContainer" parent="Panel/Counters"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+[node name="Icon" type="TextureRect" parent="Panel/Counters/ScienceCounter"]
+layout_mode = 2
+custom_minimum_size = Vector2(28,28)
+size_flags_vertical = 4
+texture = ExtResource("science")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+[node name="Text" type="VBoxContainer" parent="Panel/Counters/ScienceCounter"]
+layout_mode = 2
+mouse_filter = 2
+[node name="Name" type="Label" parent="Panel/Counters/ScienceCounter/Text"]
+layout_mode = 2
+text = "Science"
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+[node name="ScienceValue" type="Label" parent="Panel/Counters/ScienceCounter/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+mouse_filter = 2

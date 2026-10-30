@@ -7,4 +7,4 @@ script = ExtResource("script")
 keywords = PackedStringArray("Plant Fiber")
 id = &"fiber"
 display_name = "Plant Fiber"
-description = "Food for Tuftlings. Gather it from grass tufts, shrubs and reeds."
+description = "Tender leaves and stems — a meal for hungry creatures."

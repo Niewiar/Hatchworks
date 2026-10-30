@@ -6,6 +6,8 @@ enum KIND { TREE, SHRUB, FERN, REEDS, GRASS }
 
 @export var kind: KIND = KIND.GRASS
 @export var variants: Array[Mesh] = []
+@export var icon: Texture2D
+@export var sapling_item: StringName
 @export_range(0.0, 2.0, 0.001) var density := 0.1
 @export var spacing := 0.5
 @export var minimum_scale := 0.8
