@@ -13,7 +13,12 @@ func initialize(database: GameDatabase) -> void:
 	_database = database
 
 func record_recipe(recipe: DiscoveryRecipe, origin: Variant = null) -> void:
-	_award("recipe:"+str(recipe.id),recipe.display_name,recipe.science_reward,origin)
+	var reward := recipe.science_reward
+	for data: BuildingDefinition in _database.buildings:
+		if recipe.result == data.id or (not data.required_discovery.is_empty() and recipe.result == data.required_discovery):
+			reward = 0
+			break
+	_award("recipe:"+str(recipe.id),recipe.display_name,reward,origin)
 
 func observe(species_id: StringName, action_id: StringName, origin: Variant = null) -> void:
 	for entry: CreatureResearch in _database.research:

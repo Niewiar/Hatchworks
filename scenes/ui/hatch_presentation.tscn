@@ -24,6 +24,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
+z_index = 100
 theme = ExtResource("theme")
 script = ExtResource("script")
 [node name="Background" type="ColorRect" parent="."]

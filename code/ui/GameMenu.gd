@@ -18,8 +18,7 @@ func _ready() -> void:
 	%Music.value_changed.connect(_set_music)
 	%Sound.value_changed.connect(Localization.set_sound_volume)
 	%ConfirmReset.pressed.connect(GameManager.reset_game)
-	%SaveQuit.pressed.connect(GameManager.quit_game.bind(true))
-	%QuitWithoutSaving.pressed.connect(GameManager.quit_game.bind(false))
+	%ConfirmQuit.pressed.connect(GameManager.quit_game)
 	%Cancel.pressed.connect(cancel_confirmation)
 	Localization.language_changed.connect(_refresh_language)
 	%Music.set_value_no_signal(Localization.music_volume())
@@ -39,7 +38,7 @@ func close_menu() -> void:
 	%Status.hide()
 
 func set_busy(busy: bool) -> void:
-	for control in [%Resume, %Save, %Reset, %Quit, %Language, %ConfirmReset, %SaveQuit, %QuitWithoutSaving, %Cancel]:
+	for control in [%Resume, %Save, %Reset, %Quit, %Language, %ConfirmReset, %ConfirmQuit, %Cancel]:
 		control.disabled = busy
 
 func show_status(key: String, detail: String = "", failure: bool = false) -> void:
@@ -60,8 +59,8 @@ func _refresh_language() -> void:
 	%Language.select(1 if Localization.language() == "pl" else 0)
 	_refresh_status()
 	if %Confirmation.visible:
-		%ConfirmTitle.text = tr("Reset the world?" if _confirmation_kind == 1 else "Save before quitting?")
-		%ConfirmDescription.text = tr("This removes the current save and starts a new world." if _confirmation_kind == 1 else "Choose whether to keep your current progress.")
+		%ConfirmTitle.text = tr("Reset the world?" if _confirmation_kind == 1 else "Are you sure you want to leave the game?")
+		%ConfirmDescription.text = tr("This removes the current save and starts a new world." if _confirmation_kind == 1 else "Your game will be saved.")
 
 func _set_music(value: float) -> void:
 	Localization.set_music_volume(value)
@@ -73,19 +72,17 @@ func _confirm_reset() -> void:
 	%ConfirmTitle.text = tr("Reset the world?")
 	%ConfirmDescription.text = tr("This removes the current save and starts a new world.")
 	%ConfirmReset.show()
-	%SaveQuit.hide()
-	%QuitWithoutSaving.hide()
+	%ConfirmQuit.hide()
 	%Cancel.grab_focus()
 
 func confirm_quit() -> void:
 	_confirmation_kind = 2
 	%Main.hide()
 	%Confirmation.show()
-	%ConfirmTitle.text = tr("Save before quitting?")
-	%ConfirmDescription.text = tr("Choose whether to keep your current progress.")
+	%ConfirmTitle.text = tr("Are you sure you want to leave the game?")
+	%ConfirmDescription.text = tr("Your game will be saved.")
 	%ConfirmReset.hide()
-	%SaveQuit.show()
-	%QuitWithoutSaving.show()
+	%ConfirmQuit.show()
 	%Cancel.grab_focus()
 
 func cancel_confirmation() -> bool:

@@ -1,5 +1,14 @@
 [gd_scene format=3 uid="uid://kyuvevkts1wx"]
 
+[ext_resource type="Texture2D" uid="uid://c3jgbfgq3burs" path="res://assets/ui/discoveries.png" id="all_icon"]
+[ext_resource type="Texture2D" uid="uid://b84biaaspa066" path="res://assets/ui/build.png" id="buildings_icon"]
+[ext_resource type="PackedScene" path="res://scenes/ui/discovery_category_tab.tscn" id="category_tab"]
+[ext_resource type="Texture2D" uid="uid://b0xfhbgd5gvnw" path="res://assets/ui/life.png" id="concepts_icon"]
+[ext_resource type="Texture2D" uid="uid://bvgpl4ufsl1bb" path="res://assets/ui/tuftling.png" id="creatures_icon"]
+[ext_resource type="Texture2D" uid="uid://cbp6mr5fspt74" path="res://assets/ui/egg.png" id="eggs_icon"]
+[ext_resource type="Texture2D" uid="uid://2itbhngpfnjg" path="res://assets/ui/stone_resource.png" id="materials_icon"]
+[ext_resource type="Texture2D" uid="uid://b7op02nye52yq" path="res://assets/ui/water.png" id="nature_icon"]
+[ext_resource type="Texture2D" uid="uid://de270r57daueo" path="res://assets/ui/fern.png" id="plants_icon"]
 [ext_resource type="Script" uid="uid://4svvin0fq138" path="res://code/ui/DiscoveryPanel.gd" id="script"]
 [ext_resource type="Theme" uid="uid://ddr8mba2rg76t" path="res://resources/ui/tooltip_theme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/discovery_token.tscn" id="token"]
@@ -53,6 +62,41 @@ corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
 
+[sub_resource type="StyleBoxFlat" id="summary"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.035, 0.055, 0.045, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.29, 0.2, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="progress_background"]
+bg_color = Color(0.07, 0.105, 0.08, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.29, 0.2, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="progress_fill"]
+bg_color = Color(0.98, 0.8, 0.3, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="Discoveries" type="MarginContainer" unique_id=1176251108 groups=["discovery_panels"]]
 z_index = 40
 anchors_preset = 15
@@ -75,9 +119,9 @@ alignment = 1
 
 [node name="Panel" type="PanelContainer" parent="Center" unique_id=353305595]
 unique_name_in_owner = true
-propagate_maximum_size = false
 custom_minimum_size = Vector2(980, 360)
 custom_maximum_size = Vector2(1160, 800)
+propagate_maximum_size = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 3
@@ -98,6 +142,15 @@ theme_override_constants/separation = 12
 layout_mode = 2
 theme_override_constants/separation = 18
 
+[node name="Icon" type="TextureRect" parent="Center/Panel/Margin/Content/Header" unique_id=23910901]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("all_icon")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Title" type="Label" parent="Center/Panel/Margin/Content/Header" unique_id=176195725]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -108,6 +161,13 @@ text = "Discoveries"
 unique_name_in_owner = true
 layout_mode = 2
 text = "2 discoveries"
+
+[node name="Close" type="Button" parent="Center/Panel/Margin/Content/Header" unique_id=1408870882]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "×"
 
 [node name="Tabs" type="TabContainer" parent="Center/Panel/Margin/Content" unique_id=473378246]
 unique_name_in_owner = true
@@ -206,8 +266,8 @@ layout_mode = 2
 
 [node name="OutcomeRow" type="HBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Discover/BoardColumn" unique_id=111486000]
 layout_mode = 2
-alignment = 2
 theme_override_constants/separation = 12
+alignment = 2
 
 [node name="Clear" type="Button" parent="Center/Panel/Margin/Content/Tabs/Discover/BoardColumn/OutcomeRow" unique_id=1214887615]
 unique_name_in_owner = true
@@ -215,130 +275,222 @@ layout_mode = 2
 size_flags_vertical = 4
 text = "Clear board"
 
-[node name="Discoveries" type="HBoxContainer" parent="Center/Panel/Margin/Content/Tabs" unique_id=862585478]
+[node name="Catalog" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs" unique_id=505922783]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 12
 metadata/_tab_index = 1
 
-[node name="ArchiveColumn" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Discoveries" unique_id=700071391]
-custom_minimum_size = Vector2(260, 200)
+[node name="Summary" type="PanelContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog" unique_id=1952235674]
+layout_mode = 2
+theme_override_styles/panel = SubResource("summary")
+
+[node name="Row" type="HBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Summary" unique_id=1731061635]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ArchiveSearch" type="LineEdit" parent="Center/Panel/Margin/Content/Tabs/Discoveries/ArchiveColumn" unique_id=1139086468]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 0)
+[node name="Title" type="Label" parent="Center/Panel/Margin/Content/Tabs/Catalog/Summary/Row" unique_id=1779152256]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "Discovery catalog"
+
+[node name="CatalogProgress" type="ProgressBar" parent="Center/Panel/Margin/Content/Tabs/Catalog/Summary/Row" unique_id=952500725]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 10)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/background = SubResource("progress_background")
+theme_override_styles/fill = SubResource("progress_fill")
+show_percentage = false
+
+[node name="CatalogPercent" type="Label" parent="Center/Panel/Margin/Content/Tabs/Catalog/Summary/Row" unique_id=726474135]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+text = "0%"
+horizontal_alignment = 2
+
+[node name="CategoryTabs" type="HBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog" unique_id=665842763]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="All" parent="Center/Panel/Margin/Content/Tabs/Catalog/CategoryTabs" unique_id=262326578 instance=ExtResource("category_tab")]
+layout_mode = 2
+button_pressed = true
+icon_texture = ExtResource("all_icon")
+
+[node name="Nature" parent="Center/Panel/Margin/Content/Tabs/Catalog/CategoryTabs" unique_id=307845118 instance=ExtResource("category_tab")]
+layout_mode = 2
+category = 0
+display_name = "Nature"
+icon_texture = ExtResource("nature_icon")
+
+[node name="Materials" parent="Center/Panel/Margin/Content/Tabs/Catalog/CategoryTabs" unique_id=818278035 instance=ExtResource("category_tab")]
+layout_mode = 2
+category = 1
+display_name = "Materials"
+icon_texture = ExtResource("materials_icon")
+
+[node name="Plants" parent="Center/Panel/Margin/Content/Tabs/Catalog/CategoryTabs" unique_id=369311896 instance=ExtResource("category_tab")]
+layout_mode = 2
+category = 2
+display_name = "Plants"
+icon_texture = ExtResource("plants_icon")
+
+[node name="Concepts" parent="Center/Panel/Margin/Content/Tabs/Catalog/CategoryTabs" unique_id=419103620 instance=ExtResource("category_tab")]
+layout_mode = 2
+category = 3
+display_name = "Concepts"
+icon_texture = ExtResource("concepts_icon")
+
+[node name="Eggs" parent="Center/Panel/Margin/Content/Tabs/Catalog/CategoryTabs" unique_id=425128093 instance=ExtResource("category_tab")]
+layout_mode = 2
+category = 4
+display_name = "Eggs"
+icon_texture = ExtResource("eggs_icon")
+
+[node name="Creatures" parent="Center/Panel/Margin/Content/Tabs/Catalog/CategoryTabs" unique_id=2134889044 instance=ExtResource("category_tab")]
+layout_mode = 2
+category = 5
+display_name = "Creatures"
+icon_texture = ExtResource("creatures_icon")
+
+[node name="Buildings" parent="Center/Panel/Margin/Content/Tabs/Catalog/CategoryTabs" unique_id=599136210 instance=ExtResource("category_tab")]
+layout_mode = 2
+category = 6
+display_name = "Buildings"
+icon_texture = ExtResource("buildings_icon")
+
+[node name="Body" type="HBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog" unique_id=870684846]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="ArchiveColumn" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body" unique_id=1831065932]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Filters" type="HBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/ArchiveColumn" unique_id=187913887]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ArchiveSearch" type="LineEdit" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/ArchiveColumn/Filters" unique_id=1703192541]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 placeholder_text = "Search discoveries…"
 
-[node name="ArchiveCategory" type="OptionButton" parent="Center/Panel/Margin/Content/Tabs/Discoveries/ArchiveColumn" unique_id=287162391]
-unique_name_in_owner = true
-layout_mode = 2
-selected = 0
-item_count = 8
-popup/item_0/text = "All categories"
-popup/item_0/id = 0
-popup/item_1/text = "Nature"
-popup/item_1/id = 1
-popup/item_2/text = "Materials"
-popup/item_2/id = 2
-popup/item_3/text = "Plants"
-popup/item_3/id = 3
-popup/item_4/text = "Concepts"
-popup/item_4/id = 4
-popup/item_5/text = "Eggs"
-popup/item_5/id = 5
-popup/item_6/text = "Creatures"
-popup/item_6/id = 6
-popup/item_7/text = "Buildings"
-popup/item_7/id = 7
-
-[node name="ArchiveSort" type="OptionButton" parent="Center/Panel/Margin/Content/Tabs/Discoveries/ArchiveColumn" unique_id=1351734285]
+[node name="ArchiveSort" type="OptionButton" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/ArchiveColumn/Filters" unique_id=201481657]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
 item_count = 3
-popup/item_0/text = "Sort: Name"
+popup/item_0/text = "Name"
 popup/item_0/id = 0
-popup/item_1/text = "Sort: Category"
+popup/item_1/text = "Category"
 popup/item_1/id = 1
-popup/item_2/text = "Sort: Newest"
+popup/item_2/text = "Newest"
 popup/item_2/id = 2
 
-[node name="ArchiveScroll" type="ScrollContainer" parent="Center/Panel/Margin/Content/Tabs/Discoveries/ArchiveColumn" unique_id=2134703895]
+[node name="ArchiveScroll" type="ScrollContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/ArchiveColumn" unique_id=515369396]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+follow_focus = true
 horizontal_scroll_mode = 0
 
-[node name="Archive" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Discoveries/ArchiveColumn/ArchiveScroll" unique_id=194271114]
+[node name="Archive" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/ArchiveColumn/ArchiveScroll" unique_id=868694945]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 9
 
-[node name="DetailScroll" type="ScrollContainer" parent="Center/Panel/Margin/Content/Tabs/Discoveries"]
+[node name="ArchiveEmpty" type="Label" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/ArchiveColumn" unique_id=1438689760]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
-vertical_scroll_mode = 1
-follow_focus = true
+theme_override_colors/font_color = Color(0.65, 0.72, 0.56, 1)
+text = "No discoveries found."
+autowrap_mode = 3
 
-[node name="RecipeColumn" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Discoveries/DetailScroll"]
+[node name="Divider" type="VSeparator" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body" unique_id=1260281971]
+modulate = Color(0.4, 0.5, 0.35, 1)
+layout_mode = 2
+
+[node name="DetailColumn" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body" unique_id=1124796749]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="DetailEmpty" type="RichTextLabel" parent="Center/Panel/Margin/Content/Tabs/Discoveries/DetailScroll/RecipeColumn"]
+[node name="DetailEmpty" type="RichTextLabel" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn" unique_id=1133239256]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Select a discovery to view its combinations."
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
 
-[node name="DetailContent" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Discoveries/DetailScroll/RecipeColumn"]
+[node name="DetailContent" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn" unique_id=1815860878]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="Header" type="HBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Discoveries/DetailScroll/RecipeColumn/DetailContent"]
+[node name="Header" type="HBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn/DetailContent" unique_id=992101272]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
-[node name="DetailIcon" type="TextureRect" parent="Center/Panel/Margin/Content/Tabs/Discoveries/DetailScroll/RecipeColumn/DetailContent/Header"]
+[node name="DetailIcon" type="TextureRect" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn/DetailContent/Header" unique_id=98928430]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
-custom_minimum_size = Vector2(40,40)
 size_flags_vertical = 4
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="DetailName" type="RichTextLabel" parent="Center/Panel/Margin/Content/Tabs/Discoveries/DetailScroll/RecipeColumn/DetailContent/Header"]
+[node name="NameColumn" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn/DetailContent/Header" unique_id=1318417008]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="DetailName" type="RichTextLabel" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn/DetailContent/Header/NameColumn" unique_id=2094485012]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/normal_font_size = 25
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
 
-[node name="DetailCount" type="Label" parent="Center/Panel/Margin/Content/Tabs/Discoveries/DetailScroll/RecipeColumn/DetailContent"]
+[node name="DetailProgress" type="ProgressBar" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn/DetailContent/Header/NameColumn" unique_id=529328840]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 8)
 layout_mode = 2
-autowrap_mode = 3
-theme_override_font_sizes/font_size = 15
+size_flags_horizontal = 0
+mouse_filter = 2
+theme_override_styles/background = SubResource("progress_background")
+theme_override_styles/fill = SubResource("progress_fill")
+show_percentage = false
 
-[node name="Recipes" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Discoveries/DetailScroll/RecipeColumn/DetailContent"]
+[node name="DetailScroll" type="ScrollContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn/DetailContent" unique_id=879300560]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 18
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="Recipes" type="VBoxContainer" parent="Center/Panel/Margin/Content/Tabs/Catalog/Body/DetailColumn/DetailContent/DetailScroll" unique_id=889588265]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
 
 [node name="DragPreview" parent="." unique_id=1862185184 instance=ExtResource("token")]
 unique_name_in_owner = true

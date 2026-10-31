@@ -40,16 +40,16 @@ static func fields(category: String) -> Array:
 		"Discoveries":
 			result.append_array([field("category","Category","enum",0,6,1,DiscoveryDefinition.CATEGORY_NAMES),field("icon","Icon","Texture2D"),field("reward_item","First discovery reward","item"),field("reward_count","First discovery quantity","number",0,100,1)])
 		"Creature Research":
-			result.append_array([field("creature_id","Creature species","creature"),field("action_id","Action ID · hatch, create_grass, plant_tree, create_stone, grow_herbs or breed"),field("science_reward","One-time science reward","number",0,1000,1)])
+			result.append_array([field("creature_id","Creature species","creature"),field("action_id","Action ID · hatch, create_grass, plant_tree, create_stone, create_sand, grow_herbs or breed"),field("science_reward","One-time science reward","number",0,1000,1)])
 		"Recipes":
 			result.append_array([field("science_reward","One-time science reward","number",0,1000,1),field("first","Ingredient A","discovery"),field("second","Ingredient B","discovery"),field("result","Result","discovery")])
 		"Creatures":
-			result.append_array([field("scene","Creature scene","PackedScene"),field("icon","Icon","Texture2D"),field("hold_height","Hold height (m)","number",0.5,4,0.1),field("follow_speed","Hold follow speed","number",0.1,50,0.1),field("rotation_speed","Rotation speed","number",0.1,50,0.1),field("maximum_tilt","Maximum tilt (rad)","number",0,0.8,0.01),field("walk_speed","Walking speed (m/s)","number",0.2,5,0.1),field("swim_speed","Swimming speed (m/s)","number",0.2,5,0.1),field("minimum_swim_depth","Bathing depth (m)","number",0.1,1,0.05),field("bathing_seconds","Bathing duration (s)","number",1,30,0.5),field("shaking_seconds","Shaking duration (s)","number",0.5,10,0.1),field("resting_seconds","Rest duration (s)","number",0.5,30,0.5),field("grass_per_cycle","Grass tufts per cycle","number",1,12,1),field("grass_radius","Grass patch radius (m)","number",0.4,3,0.1),field("food_resource","Food","resource"),field("food_per_feeding","Food per feeding","number",1,10,1),field("satiety_seconds","Full satiety duration (s)","number",30,3600,1),field("feeding_threshold","Seek food below (%)","number",1,90,1),field("satiety_per_meal","Satiety restored per meal (%)","number",1,100,1),field("feeding_seconds","Eating duration (s)","number",0.5,10,0.1),field("breeding_seconds","Breeding duration (s)","number",1,120,1),field("breeding_cooldown","Breeding recovery (s)","number",1,3600,1),field("breeding_min_satiety","Breeding minimum satiety (%)","number",1,100,1),field("breeding_satiety_cost","Breeding satiety cost (%)","number",0,100,1)])
+			result.append_array([field("scene","Creature scene · matching Species ID","PackedScene"),field("icon","Icon","Texture2D"),field("hold_height","Hold height (m)","number",0.5,4,0.1),field("follow_speed","Hold follow speed","number",0.1,50,0.1),field("rotation_speed","Rotation speed","number",0.1,50,0.1),field("maximum_tilt","Maximum tilt (rad)","number",0,0.8,0.01),field("walk_speed","Walking speed (m/s)","number",0.2,5,0.1),field("swim_speed","Swimming speed (m/s)","number",0.2,5,0.1),field("minimum_swim_depth","Bathing depth (m)","number",0.1,1,0.05),field("bathing_seconds","Bathing duration (s)","number",1,30,0.5),field("shaking_seconds","Shaking duration (s)","number",0.5,10,0.1),field("resting_seconds","Rest duration (s)","number",0.5,30,0.5),field("grass_per_cycle","Grass tufts per cycle","number",1,12,1),field("grass_radius","Grass patch radius (m)","number",0.4,3,0.1),field("food_resource","Food","resource"),field("food_per_feeding","Food per feeding","number",1,10,1),field("satiety_seconds","Full satiety duration (s)","number",30,3600,1),field("feeding_threshold","Seek food below (%)","number",1,90,1),field("satiety_per_meal","Satiety restored per meal (%)","number",1,100,1),field("feeding_seconds","Eating duration (s)","number",0.5,10,0.1),field("breeding_seconds","Breeding duration (s)","number",1,120,1),field("breeding_cooldown","Breeding recovery (s)","number",1,3600,1),field("breeding_min_satiety","Breeding minimum satiety (%)","number",1,100,1),field("breeding_satiety_cost","Breeding satiety cost (%)","number",0,100,1)])
 			result.append_array([field("leisure_seconds_min","Shortest leisure (s)","number",1,120,0.5),field("leisure_seconds_max","Longest leisure (s)","number",1,120,0.5),field("leisure_cycles_min","Fewest cycles before leisure","number",1,10,1),field("leisure_cycles_max","Most cycles before leisure","number",1,10,1),field("happiness_response_seconds","Contentment response (s)","number",1,300,1),field("preferred_area","Preferred dry area (m²)","number",1,100,0.5),field("company_radius","Companion radius (m)","number",1,30,0.5),field("breeding_call_seconds","Mate call duration (s)","number",0.5,30,0.5)])
 			result.append_array([field("noise_sensitivity","Noise sensitivity","number",0,1,0.05),field("crowding_sensitivity","Crowding sensitivity","number",0,1,0.05),field("species_aversions","Species aversions · species_id = weight 0..1","aversions")])
-			result.append_array([field("requires_water","Requires water access","boolean"),field("habitat_ground","Breeding ground (-1 any)","number",-1,4,1),field("production","Production behaviour","enum",0,3,1,["Tuftling","Gardener","Quarry","Herbalist"]),field("production_seconds","Work duration (s)","number",1,30,0.1),field("impact_time","Work impact time (s)","number",0.1,30,0.1),field("production_radius","Work search radius (m)","number",1,15,0.5),field("production_limit","Nearby output limit","number",1,40,1),field("impact_radius","Rock impact radius (m)","number",0.4,3,0.1),field("impact_strength","Rock ripple height (m)","number",0.01,0.3,0.01),field("aggression_threshold","Quarry anger below contentment (%)","number",0,100,1),field("impact_damage","Quarry structure damage","number",1,100,1),field("aggression_cooldown","Quarry anger recovery (s)","number",1,60,1)])
+			result.append_array([field("requires_water","Requires water access","boolean"),field("habitat_ground","Breeding ground (-1 any)","number",-1,4,1),field("production","Shared / male production","enum",0,4,1,["Tuftling","Gardener","Quarry","Herbalist","Sand maker"]),field("female_production","Female production override","enum",0,4,1,["Shared","Gardener","Quarry","Herbalist","Sand maker"]),field("sand_coverage_limit","Nearby sand coverage limit","number",0.05,0.75,0.05),field("production_seconds","Work duration (s)","number",1,30,0.1),field("impact_time","Work impact time (s)","number",0.1,30,0.1),field("production_radius","Work search radius (m)","number",1,15,0.5),field("production_limit","Nearby output limit","number",1,40,1),field("impact_radius","Rock impact radius (m)","number",0.4,3,0.1),field("impact_strength","Rock ripple height (m)","number",0.01,0.3,0.01),field("aggression_threshold","Pebblit anger below contentment (%)","number",0,100,1),field("impact_damage","Pebblit attack damage","number",1,100,1),field("aggression_cooldown","Rest after each charge (s)","number",1,60,1)])
 		"Flora":
-			result.append_array([field("icon","Icon","Texture2D"),field("sapling_item","Sapling item ID"),field("kind","Plant type","enum",0,4,1,["Tree","Shrub","Fern","Reeds","Grass"]),field("variants","Mesh variants · one path per line","meshes"),field("density","Candidates per m²","number",0,2,0.001),field("spacing","Spacing (m)","number",0.1,20,0.05),field("minimum_scale","Minimum scale","number",0.1,4,0.05),field("maximum_scale","Maximum scale","number",0.1,4,0.05),field("growth_rate","Growth per second","number",0,5,0.001),field("maximum_slope","Maximum slope (rise / run)","number",0,4,0.01),field("water_depth_range","Water depth range (m)","vector",-100,20,0.005),field("canopy_radius","Canopy radius (m)","number",0,10,0.05),field("trunk_radius","Trunk radius (m)","number",0.01,2,0.01),field("trunk_height","Trunk height (m)","number",0.1,10,0.1),field("harvest_resource","Harvest resource","resource"),field("harvest_amount","Harvest amount","number",1,10000,1),field("hits_required","Tree hits required","number",1,100,1),field("ground_material","Ground material ID (-1 any)","number",-1,4,1)])
+			result.append_array([field("icon","Icon","Texture2D"),field("sapling_item","Sapling item ID"),field("kind","Plant type","enum",0,4,1,["Tree","Shrub","Fern","Reeds","Grass"]),field("variants","Mesh variants · one path per line","meshes"),field("density","Candidates per m²","number",0,2,0.001),field("spacing","Spacing (m)","number",0.1,20,0.05),field("minimum_scale","Minimum scale","number",0.1,4,0.05),field("maximum_scale","Maximum scale","number",0.1,4,0.05),field("growth_rate","Growth per second","number",0,5,0.001),field("maximum_slope","Maximum slope (rise / run)","number",0,4,0.01),field("water_depth_range","Water depth range (m)","vector",-100,20,0.005),field("canopy_radius","Canopy radius (m)","number",0,10,0.05),field("trunk_radius","Trunk radius (m)","number",0.01,2,0.01),field("trunk_height","Trunk height (m)","number",0.1,10,0.1),field("harvest_resource","Harvest resource","resource"),field("harvest_amount","Harvest amount","number",1,10000,1),field("sapling_chance","Sapling chance per harvested plant (0–1)","number",0,1,0.01),field("hits_required","Tree hits required","number",1,100,1),field("ground_material","Ground material ID (-1 any)","number",-1,4,1)])
 		"Eggs":
 			result.append_array([field("creature_id","Creature species","creature"),field("model","Breakable egg scene","PackedScene"),field("incubation_seconds","Incubation (s)","number",1,3600,1),field("crafting_seconds","Workshop crafting time (s)","number",1,3600,1),field("science_cost","Science cost per egg","number",1,1000,1),field("fiber_cost","Plant Fiber cost per egg","number",0,10000,1),field("wood_cost","Wood cost per egg","number",0,10000,1),field("stone_cost","Stone cost per egg","number",0,10000,1)])
 		"Glossary":
@@ -61,7 +61,7 @@ static func fields(category: String) -> Array:
 		"Construction":
 			result.append_array([field("ui_icon","Icon","Texture2D"),field("required_discovery","Required discovery","discovery"),field("max_span_length","Maximum span (terrain px)","number",24,160,1),field("height","Height (terrain px)","number",16,100,1),field("post_width","Post width (terrain px)","number",6,32,1),field("thickness","Thickness (terrain px)","number",3,24,1),field("body_color","Body color","color"),field("highlight_color","Highlight color","color"),field("outline_color","Outline color","color"),field("max_health","Span health","number",1,100000,1),field("post_max_health","Post health","number",1,100000,1),field("post_priority","Junction post priority","number",0,100,1),field("construction_resource","Construction resource","resource"),field("material_per_meter","Material per meter","number",0,1000,0.1),field("material_per_post","Material per post","number",0,1000,1)])
 		"Buildings":
-			result.append_array([field("scene","Building scene","PackedScene"),field("icon","Icon","Texture2D"),field("wood_cost","Wood cost","number",0,10000,1),field("stone_cost","Stone cost","number",0,10000,1),field("fiber_cost","Plant Fiber cost","number",0,10000,1),field("footprint_radius","Footprint radius (m)","number",0.25,8,0.05),field("maximum_height_difference","Maximum ground height difference (m)","number",0,1,0.01),field("required_discovery","Required discovery","discovery"),field("storage_capacity","Food storage capacity (feeder)","number",1,1000,1),field("max_health","Durability","number",1,1000,1)])
+			result.append_array([field("scene","Building scene","PackedScene"),field("icon","Icon","Texture2D"),field("wood_cost","Wood cost","number",0,10000,1),field("stone_cost","Stone cost","number",0,10000,1),field("fiber_cost","Plant Fiber cost","number",0,10000,1),field("first_placement_free","First placement is free","boolean"),field("cost_scaling","Price growth type","enum",0,1,1,["Linear","Multiplicative"]),field("cost_growth_percent","Price increase per copy (%)","number",0,500,1),field("footprint_radius","Footprint radius (m)","number",0.25,8,0.05),field("maximum_height_difference","Maximum ground height difference (m)","number",0,1,0.01),field("required_discovery","Required discovery","discovery"),field("storage_capacity","Food storage capacity (feeder)","number",1,1000,1),field("max_health","Durability","number",1,1000,1)])
 		"World Balance":
 			result.append_array([field("generate_nature_on_start","Generate natural terrain and resources at start","boolean"),field("water_level","Water level (m)","number",-4,6,0.05),field("starting_height_variation","Starting height variation (m)","number",0,4,0.1),field("terrain_wavelength","Terrain wavelength (m)","number",8,64,1),field("spawn_clearing_radius","Spawn clearing radius (m)","number",0,8,0.25),field("sculpt_speed","Sculpt speed (m/s)","number",0.1,4,0.1),field("maximum_sculpt_slope","Maximum sculpt slope (deg)","number",10,60,1),field("gather_interval","Gather interval (s)","number",0.05,1,0.01),field("starting_pond_radius","Starting pond radius (m)","number",0,5,0.1),field("starting_pond_offset","Starting pond offset","vector",-20,20,0.5)])
 	return result
@@ -117,12 +117,27 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 			if entry is BuildingDefinition and entry.scene == null:
 				errors.append(title+": building scene is required.")
 			if entry is CreatureSpecies:
+				var graph_error := CreatureAiGraph.validate(entry.ai_graph)
+				if not graph_error.is_empty():
+					errors.append(title+": "+graph_error)
 				if entry.scene == null:
 					errors.append(title+": creature scene is required.")
 				else:
 					var root_type: StringName = entry.scene.get_state().get_node_type(0)
 					if not root_type.is_empty() and not ClassDB.is_parent_class(root_type,&"Node3D"):
 						errors.append(title+": creature scene must have a 3D root.")
+					var identity := _creature_scene_identity(entry.scene)
+					var controller: Script = identity.controller
+					if identity.species_id != entry.id:
+						errors.append(title+": creature scene species_id must match stable ID "+str(entry.id)+".")
+					var valid_controller := false
+					while controller != null:
+						if controller.get_global_name() == &"Creature":
+							valid_controller = true
+							break
+						controller = controller.get_base_script()
+					if not valid_controller:
+						errors.append(title+": creature scene requires a Creature controller.")
 			if entry is EggDefinition:
 				if database.creature(entry.creature_id) == null:
 					errors.append(title+": unknown creature species.")
@@ -153,7 +168,7 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 		var key := "%s:%s" % [entry.creature_id,entry.action_id]
 		if database.creature(entry.creature_id) == null:
 			errors.append("Creature Research / %s: unknown creature species." % entry.display_name)
-		if entry.action_id not in [&"hatch",&"create_grass",&"breed",&"plant_tree",&"create_stone",&"grow_herbs"] or research_keys.has(key):
+		if entry.action_id not in [&"hatch",&"create_grass",&"breed",&"plant_tree",&"create_stone",&"create_sand",&"grow_herbs"] or research_keys.has(key):
 			errors.append("Creature Research / %s: action must be supported and unique per species." % entry.display_name)
 		research_keys[key] = true
 	for species: CreatureSpecies in database.creatures:
@@ -190,6 +205,8 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 				errors.append("Discoveries / %s: unknown reward item." % entry.display_name)
 	var sapling_ids := {}
 	for flora: FloraSpecies in database.flora:
+		if not is_finite(flora.sapling_chance) or flora.sapling_chance < 0.0 or flora.sapling_chance > 1.0:
+			errors.append("Flora / %s: sapling chance must be between 0 and 1." % flora.display_name)
 		if sapling_ids.has(flora.sapling_item) or not str(flora.sapling_item).is_valid_identifier():
 			errors.append("Flora / %s: sapling item ID must be unique and valid." % flora.display_name)
 		sapling_ids[flora.sapling_item] = true
@@ -241,7 +258,7 @@ Starting stock: %.1f
 Built-in numeric IDs keep their gameplay roles." % ["items",entry.starting_amount]
 
 	if entry is CreatureSpecies:
-		return "Food per meal: %d\nFull satiety lasts %.0f s. At 0%%, only seeking food remains active.\nGrass tufts per cycle: %d" % [entry.food_per_feeding,entry.satiety_seconds,entry.grass_per_cycle]
+		return "Food per meal: %d\nFull satiety lasts %.0f s. Without reachable food, normal behavior continues even at 0%%.\nGrass tufts per cycle: %d" % [entry.food_per_feeding,entry.satiety_seconds,entry.grass_per_cycle]
 	if entry is BuildingDefinition:
 		return "Build cost: %d Wood, %d Stone, %d Plant Fiber\nPlace on dry, level ground." % [entry.wood_cost,entry.stone_cost,entry.fiber_cost]
 	if entry is CreatureResearch:
@@ -284,3 +301,19 @@ static func recipe_error(database: GameDatabase, first: StringName, second: Stri
 		if recipe != except and recipe.matches(first,second):
 			return "This ingredient pair already belongs to: "+recipe.display_name
 	return ""
+
+static func _creature_scene_identity(scene: PackedScene) -> Dictionary:
+	var state: SceneState = scene.get_state()
+	var controller: Script
+	var species_id: Variant
+	while state != null:
+		for index in state.get_node_property_count(0):
+			var key := state.get_node_property_name(0,index)
+			if key == &"script" and controller == null:
+				controller = state.get_node_property_value(0,index) as Script
+			elif key == &"species_id" and species_id == null:
+				species_id = state.get_node_property_value(0,index)
+		state = state.get_base_scene_state()
+	if species_id == null and controller != null:
+		species_id = controller.get_property_default_value(&"species_id")
+	return {"controller":controller,"species_id":StringName(species_id) if species_id != null else &""}

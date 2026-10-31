@@ -1,10 +1,10 @@
 [gd_scene format=3]
 
 [node name="Discovery" type="GraphNode"]
-custom_minimum_size = Vector2(220, 0)
+custom_minimum_size = Vector2(190, 0)
 title = "Discovery"
 slot/0/left_enabled = true
-slot/0/left_type = 2
+slot/0/left_type = 1
 slot/0/left_color = Color(0.93, 0.73, 0.35, 1)
 slot/0/right_enabled = true
 slot/0/right_type = 1

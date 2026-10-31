@@ -21,11 +21,11 @@ func _ready() -> void:
 	%EggChoice.item_selected.connect(_select_egg)
 	%Close.pressed.connect(close_focus)
 	%CreatureClose.pressed.connect(close_focus)
-	%CreatureClose.mouse_entered.connect(func(): tooltip_controller.show_text(tr("Close focus - RMB"),%CreatureClose))
+	%CreatureClose.mouse_entered.connect(func(): tooltip_controller.show_text(tr("Close focus - Esc / RMB"),%CreatureClose))
 	%CreatureClose.mouse_exited.connect(tooltip_controller.hide_text.bind(%CreatureClose))
 	%Description.meta_hover_started.connect(_show_term)
 	%Description.meta_hover_ended.connect(func(_meta): tooltip_controller.hide_text(%Description))
-	for stat in [%Satiety,%Happiness]:
+	for stat in [%Satiety]:
 		stat.mouse_entered.connect(_show_stat_hint.bind(stat))
 		stat.mouse_exited.connect(tooltip_controller.hide_text.bind(stat))
 	for control in [%CreatureState,%Space,%Company,%CarriedWater,%NoiseSensitivity,%CrowdingSensitivity,%NeighboursSensitivity]:
@@ -54,6 +54,7 @@ func inspect(chosen: Node3D) -> void:
 	if chosen is Creature:
 		%Breeding.configure(chosen,map_manager)
 		%CreatureCard.configure(chosen.species_data(),chosen.sex,map_manager.database,tooltip_controller)
+		%Happiness.configure(chosen,tooltip_controller)
 	_refresh()
 	if map_manager.camera_controller != null:
 		map_manager.camera_controller.focus_on(focus_position())
@@ -69,7 +70,9 @@ func close_focus() -> void:
 	set_process(false)
 
 func focus_position() -> Vector3:
-	return target.global_position+Vector3.UP*0.5 if is_instance_valid(target) else Vector3.ZERO
+	if not is_instance_valid(target):
+		return Vector3.ZERO
+	return target.to_global(target.inspection_bounds().get_center())
 
 func _process(delta: float) -> void:
 	if map_manager.modal_active:
@@ -78,6 +81,8 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(target) or target.is_queued_for_deletion():
 		close_focus()
 		return
+	if map_manager.camera_controller != null:
+		map_manager.camera_controller.track_focus(focus_position())
 	%Panel.show()
 	_elapsed += delta
 	if _elapsed >= 0.15:
@@ -199,8 +204,6 @@ func _refresh_eggs() -> void:
 
 func _show_stat_hint(stat: Control) -> void:
 	var message := tr("A full belly makes for a busy creature. Keep a little food nearby.")
-	if stat == %Happiness:
-		message = tr("Room to roam, a full belly and a friend make this creature feel at home.")
 	tooltip_controller.show_hint(message,stat)
 
 func _repair_target() -> void:
@@ -222,8 +225,7 @@ func _refresh_creature() -> void:
 	%Breeding.refresh()
 	%SatietyBar.value = target.satiety
 	%SatietyValue.text = tr("%d%%") % ceili(target.satiety)
-	%HappinessBar.value = target.happiness
-	%HappinessValue.text = tr("%d%%") % ceili(target.happiness)
+	%Happiness.refresh()
 	var species: CreatureSpecies = target.species_data()
 	%SpaceValue.text = tr("%.1f / %.1f m²") % [target.space_per_creature,species.preferred_area]
 	%CompanyValue.text = tr("×%d") % target.companions

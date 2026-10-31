@@ -7,3 +7,4 @@ display_name = "Fiber + Soil"
 first = &"fiber"
 second = &"soil"
 result = &"feeder"
+science_reward = 0

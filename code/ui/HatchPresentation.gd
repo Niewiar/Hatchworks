@@ -17,7 +17,7 @@ func _ready() -> void:
 	hide()
 	set_process(false)
 	%Accept.pressed.connect(_accept)
-	%Return.pressed.connect(_return_to_incubator)
+	%Return.pressed.connect(close_presentation)
 
 func present(incubator: IncubatorController) -> void:
 	if _transition != null and _transition.is_valid():
@@ -34,11 +34,12 @@ func present(incubator: IncubatorController) -> void:
 	_egg.hatching_finished.connect(_move_to_left)
 	var species: CreatureSpecies = map_manager.database.creature(incubator.current_egg.creature_id)
 	_creature = species.scene.instantiate() as Node3D
+	var actor := _creature as Creature
+	actor.sex = incubator.pending_sex
+	actor.prepare_appearance()
 	var appearance := _creature.get_node_or_null("Model")
 	if appearance == null:
 		appearance = _creature.get_node_or_null("mossling_v1")
-	if appearance != null and appearance.has_method("apply_sex"):
-		appearance.apply_sex(incubator.pending_sex)
 	var floor_offset := 0.55
 	var collider := _creature.get_node_or_null("CollisionShape3D") as CollisionShape3D
 	if collider != null and collider.shape is SphereShape3D:
@@ -73,14 +74,18 @@ func _process(_delta: float) -> void:
 	var progress := _egg.reveal_progress
 	if progress > 0.0:
 		_creature.show()
-		_creature.scale = Vector3.ONE*lerpf(0.68,1.0,smoothstep(0.0,1.0,progress))
 
 func _move_to_left() -> void:
 	set_process(false)
 	_play_animation(&"Walk")
+	var duration := 0.75
+	var appearance := _creature.get_node_or_null("Model") as CreatureCelAppearance
+	if appearance != null and _animation != null and _animation.has_animation(&"Walk"):
+		duration = 0.9 / appearance.walk_speed
+		_animation.speed_scale = appearance.walk_speed * _animation.get_animation(&"Walk").length / maxf(appearance.walk_distance * absf(appearance.scale.x), 0.001)
 	_transition = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	_transition.tween_property(_creature,"rotation:y",-PI*0.5,0.12)
-	_transition.tween_property(_creature,"position:x",-0.9,0.75)
+	_transition.tween_property(_creature,"position:x",-0.9,duration).set_trans(Tween.TRANS_LINEAR)
 	_transition.tween_property(_creature,"rotation:y",0.0,0.12)
 	_transition.tween_callback(_show_card)
 
@@ -99,6 +104,7 @@ func _finish_reveal() -> void:
 
 func _play_animation(id: StringName) -> void:
 	if _animation != null and _animation.has_animation(id):
+		_animation.speed_scale = 1.0
 		_animation.play(id)
 
 func _accept() -> void:
@@ -147,7 +153,7 @@ func cancel_for(incubator: IncubatorController) -> void:
 	hide()
 	map_manager.set_modal(false)
 
-func _return_to_incubator() -> void:
+func close_presentation() -> void:
 	if not is_instance_valid(_incubator) or _incubator.state != IncubatorController.STATE.PRESENTING:
 		return
 	var chosen := _incubator

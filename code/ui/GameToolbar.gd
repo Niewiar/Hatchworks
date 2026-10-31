@@ -43,6 +43,7 @@ func _ready() -> void:
 	map_manager.discoveries.discovered.connect(_on_discovered)
 	map_manager.building_controller.preview_changed.connect(_on_build_preview_changed)
 	map_manager.building_controller.selection_changed.connect(_on_building_selection_changed)
+	map_manager.building_controller.building_placed.connect(func(_building, _data): _refresh_building_cost())
 	_refresh_unlocks()
 	_on_mode_changed(MapManager.MODE.NONE)
 	_refresh_badges()
@@ -138,11 +139,12 @@ func _refresh_building_cost() -> void:
 		_set_build_cost("")
 		return
 	var parts := PackedStringArray()
-	var costs := data.costs()
+	var costs := map_manager.building_controller.placement_costs(data)
 	for kind: int in costs:
 		if costs[kind] > 0:
 			parts.append(_resource_cost(kind,costs[kind]))
-	_set_build_cost("   ".join(parts) if not parts.is_empty() else tr("Free"))
+	var first_free := data.first_placement_free and map_manager.building_controller.placement_count(data) == 0
+	_set_build_cost(tr("First one free") if first_free else ("   ".join(parts) if not parts.is_empty() else tr("Free")))
 
 func _resource_cost(kind: int, cost: int) -> String:
 	var color := "#ffffff" if map_manager.inventory.can_afford(kind,cost) else "#f45e4b"

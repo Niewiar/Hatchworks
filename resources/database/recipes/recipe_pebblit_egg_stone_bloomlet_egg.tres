@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
+
+[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="1_djmld"]
+
+[resource]
+script = ExtResource("1_djmld")
+first = &"stone"
+second = &"bloomlet_egg"
+result = &"incubator"
+id = &"recipe_pebblit_egg_stone_bloomlet_egg"
+display_name = "Stone + Bloomlet Egg → Incubator"
+science_reward = 0

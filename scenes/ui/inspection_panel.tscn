@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/workshop_panel.tscn" id="workshop"]
 [ext_resource type="PackedScene" path="res://scenes/ui/breeding_panel.tscn" id="breeding"]
 [ext_resource type="Texture2D" path="res://assets/ui/status_satiety.png" id="satiety"]
-[ext_resource type="Texture2D" path="res://assets/ui/status_contentment.png" id="contentment"]
+[ext_resource type="PackedScene" path="res://scenes/ui/happiness_meter.tscn" id="happiness"]
 [ext_resource type="Texture2D" path="res://assets/ui/status_noise.png" id="noise"]
 [ext_resource type="Texture2D" path="res://assets/ui/status_crowding.png" id="crowding"]
 [ext_resource type="Texture2D" path="res://assets/ui/status_neighbours.png" id="neighbours"]
@@ -31,12 +31,6 @@ corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
 [sub_resource type="StyleBoxFlat" id="DurabilityFill"]
 bg_color = Color(0.85,0.69,0.3,1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_left = 5
-corner_radius_bottom_right = 5
-[sub_resource type="StyleBoxFlat" id="HappinessFill"]
-bg_color = Color(0.3,0.7,0.66,1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_left = 5
@@ -85,7 +79,7 @@ theme_override_constants/separation = 12
 [node name="Close" type="Button" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Close focus - RMB"
+text = "Close focus - Esc / RMB"
 [node name="CreatureClose" type="Button" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 visible = false
@@ -137,37 +131,9 @@ mouse_filter = 2
 horizontal_alignment = 2
 text = "100%"
 
-[node name="Happiness" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
+[node name="Happiness" parent="Position/Panel/Scroll/Content/CreatureDetails" instance=ExtResource("happiness")]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/Happiness"]
-custom_minimum_size = Vector2(26,26)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("contentment")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="HappinessBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/Happiness"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0,14)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-mouse_filter = 2
-show_percentage = false
-theme_override_styles/fill = SubResource("HappinessFill")
-theme_override_styles/background = SubResource("SatietyBackground")
-
-[node name="HappinessValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/Happiness"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(46,0)
-layout_mode = 2
-mouse_filter = 2
-horizontal_alignment = 2
-text = "100%"
 
 [node name="CreatureState" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
 unique_name_in_owner = true

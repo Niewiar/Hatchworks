@@ -3,11 +3,14 @@ extends VBoxContainer
 
 signal edited(entry: Resource, property: String, value: Variant)
 signal asset_requested(field: Control, multiple: bool, asset_type: String)
+signal draft_changed
 
 var _entry: Resource
 var _data: Dictionary
 var _syncing := false
 var _database: GameDatabase
+var _last_display: Variant
+var _committing := false
 
 func configure(entry: Resource, data: Dictionary, database: GameDatabase) -> void:
 	_entry = entry
@@ -19,7 +22,7 @@ func configure(entry: Resource, data: Dictionary, database: GameDatabase) -> voi
 	match data.type:
 		"text":
 			$Editors/Text.show()
-			$Editors/Text.editable = not (entry is CreatureSpecies and entry.id == &"tuftling" and data.key == "id")
+			$Editors/Text.editable = not data.get("readonly",false) and not (entry is CreatureSpecies and entry.id == &"tuftling" and data.key == "id")
 			$Editors/Text.text_submitted.connect(func(_text): _submit())
 			$Editors/Text.focus_exited.connect(_submit)
 		"multiline":
@@ -84,6 +87,8 @@ func configure(entry: Resource, data: Dictionary, database: GameDatabase) -> voi
 			$Editors/Asset/Path.focus_exited.connect(_submit)
 			$Editors/Asset/Browse.pressed.connect(func(): asset_requested.emit(self,false,data.type))
 			$Editors/Asset/Clear.pressed.connect(func(): edited.emit(_entry,_data.key,null))
+	for editor in [$Editors/Text,$Editors/Multiline,$Editors/Paths/Text,$Editors/Asset/Path,$Editors/Number.get_line_edit(),$Editors/Vector/Minimum.get_line_edit(),$Editors/Vector/Maximum.get_line_edit()]:
+		editor.text_changed.connect(_on_draft_changed)
 	entry.changed.connect(sync)
 	sync()
 
@@ -92,9 +97,12 @@ func _setup_number(number: SpinBox) -> void:
 	number.max_value = _data.max
 	number.step = _data.step
 
-func sync() -> void:
+func sync(force: bool = false) -> void:
 	if not is_instance_valid(_entry):
 		return
+	if not force and not _committing and has_pending_edit():
+		return
+	var had_draft := has_pending_edit()
 	_syncing = true
 	var value: Variant = _entry.get(_data.key)
 	match _data.type:
@@ -127,7 +135,15 @@ func sync() -> void:
 ".join(paths)
 		_:
 			$Editors/Asset/Path.text = value.resource_path if value != null else ""
+	if _data.type == "number":
+		_last_display = $Editors/Number.value
+	elif _data.type == "vector":
+		_last_display = [$Editors/Vector/Minimum.value,$Editors/Vector/Maximum.value]
+	else:
+		_last_display = _display_value()
 	_syncing = false
+	if had_draft:
+		draft_changed.emit()
 
 func accept_paths(paths: PackedStringArray) -> void:
 	if _data.type == "meshes":
@@ -150,8 +166,22 @@ func _submit() -> void:
 	match _data.type:
 		"text": value = StringName($Editors/Text.text.strip_edges()) if typeof(_entry.get(_data.key)) == TYPE_STRING_NAME else $Editors/Text.text
 		"multiline": value = $Editors/Multiline.text
-		"number": value = int($Editors/Number.value) if typeof(_entry.get(_data.key)) == TYPE_INT else $Editors/Number.value
-		"vector": value = Vector2($Editors/Vector/Minimum.value,$Editors/Vector/Maximum.value)
+		"number":
+			var raw: String = $Editors/Number.get_line_edit().text.strip_edges()
+			if not raw.is_valid_float() or not is_finite(raw.to_float()) or raw.to_float() < _data.min or raw.to_float() > _data.max:
+				$Label.text = _data.label+" · enter a number within the allowed range"
+				return
+			if typeof(_entry.get(_data.key)) == TYPE_INT and raw.to_float() != floorf(raw.to_float()):
+				$Label.text = _data.label+" · enter a whole number"
+				return
+			value = int(raw.to_float()) if typeof(_entry.get(_data.key)) == TYPE_INT else raw.to_float()
+		"vector":
+			var a: String = $Editors/Vector/Minimum.get_line_edit().text.strip_edges()
+			var b: String = $Editors/Vector/Maximum.get_line_edit().text.strip_edges()
+			if not a.is_valid_float() or not b.is_valid_float() or not is_finite(a.to_float()) or not is_finite(b.to_float()) or a.to_float() < _data.min or a.to_float() > _data.max or b.to_float() < _data.min or b.to_float() > _data.max:
+				$Label.text = _data.label+" · enter numbers within the allowed range"
+				return
+			value = Vector2(a.to_float(),b.to_float())
 		"color": value = $Editors/Color.color
 		"enum", "resource": value = $Editors/Choice.get_selected_id()
 		"creature", "discovery", "item": value = StringName($Editors/Choice.get_item_metadata($Editors/Choice.selected))
@@ -188,11 +218,41 @@ func _submit() -> void:
 				$Label.text = _data.label+" · invalid asset path or type"
 				return
 	$Label.text = _data.label
+	_committing = true
 	if _entry.get(_data.key) != value:
 		edited.emit(_entry,_data.key,value)
+	sync(true)
+	_committing = false
 
 func _load_asset(path: String, type: String) -> Resource:
 	if not path.begins_with("res://") or not ResourceLoader.exists(path):
 		return null
 	var asset := load(path)
 	return asset if asset != null and asset.is_class(type) else null
+
+func has_pending_edit() -> bool:
+	return _last_display != null and _display_value() != _last_display
+
+func commit_edit() -> bool:
+	_submit()
+	return not has_pending_edit()
+
+func _on_draft_changed(_value: Variant = null) -> void:
+	if not _syncing:
+		draft_changed.emit()
+
+func _display_value() -> Variant:
+	match _data.get("type",""):
+		"text": return $Editors/Text.text
+		"multiline": return $Editors/Multiline.text
+		"words","aversions","meshes": return $Editors/Paths/Text.text
+		"number": return _number_display($Editors/Number)
+		"vector": return [_number_display($Editors/Vector/Minimum),_number_display($Editors/Vector/Maximum)]
+		"enum","resource","creature","discovery","item","boolean": return null
+	return $Editors/Asset/Path.text
+
+func _number_display(number: SpinBox) -> Variant:
+	if not number.get_line_edit().has_focus():
+		return number.value
+	var raw := number.get_line_edit().text.strip_edges()
+	return raw.to_float() if raw.is_valid_float() and is_finite(raw.to_float()) else raw

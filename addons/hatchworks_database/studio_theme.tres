@@ -1,0 +1,121 @@
+[gd_resource type="Theme" format=3 uid="uid://b2ssl1y3kvc6r"]
+
+[sub_resource type="StyleBoxFlat" id="Hover"]
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+bg_color = Color(0.18, 0.24, 0.16, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.34, 0.43, 0.27, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Input"]
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+bg_color = Color(0.063, 0.098, 0.067, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.204, 0.263, 0.184, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Selected"]
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+bg_color = Color(0.204, 0.282, 0.173, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.39, 0.48, 0.306, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Panel"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.094, 0.125, 0.106, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.172, 0.22, 0.188, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="Primary"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.702, 0.8, 0.522, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[resource]
+default_font_size = 14
+Button/styles/focus = SubResource("Hover")
+Button/styles/hover = SubResource("Hover")
+Button/styles/normal = SubResource("Input")
+Button/styles/pressed = SubResource("Selected")
+CheckBox/styles/focus = SubResource("Hover")
+CheckBox/styles/hover = SubResource("Hover")
+CheckBox/styles/normal = SubResource("Input")
+CheckBox/styles/pressed = SubResource("Selected")
+CheckButton/styles/focus = SubResource("Hover")
+CheckButton/styles/hover = SubResource("Hover")
+CheckButton/styles/normal = SubResource("Input")
+CheckButton/styles/pressed = SubResource("Selected")
+CodeEdit/styles/focus = SubResource("Hover")
+CodeEdit/styles/normal = SubResource("Input")
+Label/colors/font_color = Color(0.816, 0.855, 0.776, 1)
+LineEdit/styles/focus = SubResource("Hover")
+LineEdit/styles/normal = SubResource("Input")
+OptionButton/styles/focus = SubResource("Hover")
+OptionButton/styles/hover = SubResource("Hover")
+OptionButton/styles/normal = SubResource("Input")
+OptionButton/styles/pressed = SubResource("Selected")
+PanelContainer/styles/panel = SubResource("Panel")
+PrimaryButton/base_type = &"Button"
+PrimaryButton/colors/font_color = Color(0.08, 0.12, 0.07, 1)
+PrimaryButton/colors/font_hover_color = Color(0.08, 0.12, 0.07, 1)
+PrimaryButton/colors/font_pressed_color = Color(0.92, 0.95, 0.87, 1)
+PrimaryButton/styles/hover = SubResource("Primary")
+PrimaryButton/styles/normal = SubResource("Primary")
+PrimaryButton/styles/pressed = SubResource("Selected")
+RichTextLabel/colors/default_color = Color(0.816, 0.855, 0.776, 1)
+RichTextLabel/styles/normal = SubResource("Input")
+TabContainer/styles/panel = SubResource("Input")
+TabContainer/styles/tab_hovered = SubResource("Hover")
+TabContainer/styles/tab_selected = SubResource("Selected")
+TabContainer/styles/tab_unselected = SubResource("Input")
+TextEdit/styles/focus = SubResource("Hover")
+TextEdit/styles/normal = SubResource("Input")
+Tree/constants/h_separation = 10
+Tree/constants/v_separation = 12
+Tree/styles/panel = SubResource("Input")
+Tree/styles/selected = SubResource("Selected")
+Tree/styles/selected_focus = SubResource("Selected")

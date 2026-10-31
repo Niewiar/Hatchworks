@@ -3,7 +3,7 @@
 [resource]
 script = ExtResource("script")
 id = &"rock_life_water"
-display_name = "Rock + Life -> Water"
+display_name = "Boulder + Life → Pebblit Egg"
 first = &"rock"
 second = &"life"
-result = &"water"
+result = &"pebblit_egg"

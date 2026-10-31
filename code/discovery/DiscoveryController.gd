@@ -22,6 +22,7 @@ func initialize(map: Node3D) -> void:
 	for data in map.inventory.definitions:
 		_stocks[data.kind] = map.inventory.amount(data.kind)
 	discover(&"soil")
+	discover(&"life")
 	for flora: FloraSpecies in map.vegetation_controller.present_species():
 		discover(flora.id)
 	for child in map.rock_controller.get_children():

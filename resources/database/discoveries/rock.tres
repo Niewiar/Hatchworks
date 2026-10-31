@@ -4,7 +4,7 @@
 [resource]
 script = ExtResource("script")
 id = &"rock"
-display_name = "Rock"
+display_name = "Boulder"
 description = "A stubborn outcrop with useful stone beneath its surface."
 category = 0
 icon = ExtResource("icon")

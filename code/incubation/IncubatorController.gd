@@ -68,12 +68,13 @@ func accept_hatch(origin: Variant = null) -> Creature:
 	var creature := data.scene.instantiate() as Creature
 	if creature == null:
 		return null
+	creature.sex = pending_sex
+	creature.prepare_appearance()
 	var point = _map.navigation.spawn_position(global_position,creature.body_radius())
 	if point == null:
 		creature.free()
 		return null
 	creature.species_id = data.id
-	creature.sex = pending_sex
 	creature.terrain_controller = _map.terrain_controller
 	creature.position = _map.get_parent().to_local(point)
 	_map.get_parent().add_child(creature)

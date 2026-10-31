@@ -7,3 +7,4 @@ display_name = "Tuftling + Plant Fiber"
 first = &"tuftling"
 second = &"fiber"
 result = &"feeder"
+science_reward = 0

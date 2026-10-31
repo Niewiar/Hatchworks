@@ -82,6 +82,7 @@ func _refresh() -> void:
 	%Equation.text = "%s + %s → %s" % [names[0],names[1],names[2]]
 	var reason := SCHEMA.recipe_error(_database,ids[0],ids[1],ids[2],_recipe)
 	valid_selection = reason.is_empty()
-	%Feedback.text = "Valid combination. Ingredient order does not matter." if valid_selection else reason
+	%Feedback.text = "" if valid_selection else reason
+	%Feedback.visible = not valid_selection
 	%Feedback.modulate = Color(0.6,0.82,0.63) if valid_selection else Color(1,0.65,0.47)
 	validity_changed.emit(valid_selection)

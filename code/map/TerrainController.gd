@@ -524,6 +524,9 @@ func rocky_impact(world_position: Vector3, radius: float, strength: float) -> fl
 			var distance := (Vector2(x,y)*_height_cell-world_size*0.5).distance_to(point)/radius
 			if distance >= 1.0:
 				continue
+			var sample_point := Vector2(x,y)*_height_cell-world_size*0.5
+			if ground_weight(to_global(Vector3(sample_point.x,0,sample_point.y)),GROUND_TYPE.SAND) > 0.05:
+				continue
 			var ripple := sin(distance*TAU-PI*0.5)*(1.0-smoothstep(0.45,1.0,distance))
 			var index := y*_height_size.x+x
 			_heights[index] = clampf(_heights[index]+ripple*strength,minimum_height,maximum_height)
@@ -544,9 +547,59 @@ func rocky_impact(world_position: Vector3, radius: float, strength: float) -> fl
 			if distance >= 1.0:
 				continue
 			var amount := 1.0-smoothstep(0.5,1.0,distance)
-			var before := _ground_weight(_coverage_at_pixel(x,y),GROUND_TYPE.ROCK)
+			var coverage := _coverage_at_pixel(x,y)
+			if _ground_weight(coverage,GROUND_TYPE.SAND) > 0.05:
+				continue
+			var before := _ground_weight(coverage,GROUND_TYPE.ROCK)
 			_ground_image.set_pixel(x,y,_ground_image.get_pixel(x,y).lerp(TARGET_WEIGHTS[GROUND_TYPE.ROCK],amount))
 			_ground_influence.set_pixel(x,y,Color(1,0,0,1))
 			area += maxf(0.0,_ground_weight(_coverage_at_pixel(x,y),GROUND_TYPE.ROCK)-before)/(pixels_per_unit*pixels_per_unit)
 	_queue_upload()
+	return area
+
+func ground_coverage_near(world_position: Vector3, radius: float, material_index: int) -> float:
+	if radius <= 0.0 or not contains_world_point(world_position):
+		return 0.0
+	var cells := maxi(2,ceili(radius/0.5))
+	var coverage := 0.0
+	var samples := 0
+	for y in range(-cells,cells+1):
+		for x in range(-cells,cells+1):
+			var offset := Vector2(x,y)*radius/cells
+			if offset.length_squared() > radius*radius:
+				continue
+			var point := world_position+Vector3(offset.x,0,offset.y)
+			if not contains_world_point(point) or surface_position(point).y <= surface_water_level+0.015:
+				continue
+			coverage += ground_weight(point,material_index)
+			samples += 1
+	return coverage/maxi(samples,1)
+
+func make_sand(world_position: Vector3, radius: float) -> float:
+	if radius <= 0.0 or not contains_world_point(world_position):
+		return 0.0
+	var center := _world_to_mask(world_position)
+	var pixel_radius := radius*pixels_per_unit
+	var first := Vector2i((center-Vector2.ONE*pixel_radius).floor()).max(Vector2i.ZERO)
+	var last := Vector2i((center+Vector2.ONE*pixel_radius).ceil()).min(_map_size-Vector2i.ONE)
+	var area := 0.0
+	for y in range(first.y,last.y+1):
+		for x in range(first.x,last.x+1):
+			var pixel := Vector2(x,y)+Vector2(0.5,0.5)
+			var distance := pixel.distance_to(center)
+			if distance >= pixel_radius:
+				continue
+			var point := (pixel-Vector2(_map_size)*0.5)/pixels_per_unit
+			if _sample_height(point) <= surface_water_level+0.015:
+				continue
+			var before := _coverage_at_pixel(x,y)
+			if _ground_weight(before,GROUND_TYPE.SOIL)+_ground_weight(before,GROUND_TYPE.GRASS)+_ground_weight(before,GROUND_TYPE.ROCK) < 0.55:
+				continue
+			var amount := 1.0-smoothstep(pixel_radius*0.45,pixel_radius,distance)
+			_ground_image.set_pixel(x,y,_ground_image.get_pixel(x,y).lerp(TARGET_WEIGHTS[GROUND_TYPE.SAND],amount))
+			var influence := _ground_influence.get_pixel(x,y).r
+			_ground_influence.set_pixel(x,y,Color(lerpf(influence,1.0,amount),0,0,1))
+			area += maxf(0.0,_ground_weight(_coverage_at_pixel(x,y),GROUND_TYPE.SAND)-_ground_weight(before,GROUND_TYPE.SAND))/(pixels_per_unit*pixels_per_unit)
+	if area > 0.0:
+		_queue_upload()
 	return area

@@ -48,7 +48,10 @@ func status(creature: Creature) -> String:
 	var reason := _condition(creature)
 	if not reason.is_empty():
 		return reason
-	return tr("Ready - A male will call one compatible female.")
+	return tr("Ready to call a mate.")
+
+func can_call(creature: Creature) -> bool:
+	return not is_breeding(creature) and _condition(creature).is_empty()
 
 func start(creature: Creature) -> bool:
 	if is_breeding(creature) or not _condition(creature,true).is_empty():
@@ -63,9 +66,7 @@ func start(creature: Creature) -> bool:
 			continue
 		if not _condition(candidate,true).is_empty():
 			continue
-		var male: Creature = creature if creature.sex == Creature.SEX.MALE else candidate
-		var female: Creature = candidate if creature.sex == Creature.SEX.MALE else creature
-		var path: PackedVector3Array = _map.navigation.route_to_partner(female,male)
+		var path: PackedVector3Array = _map.navigation.route_to_partner(candidate,creature)
 		if path.is_empty():
 			continue
 		var length := 0.0
@@ -83,15 +84,15 @@ func start(creature: Creature) -> bool:
 		if not actor.tree_exiting.is_connected(cancel.bind(actor)):
 			actor.tree_exiting.connect(cancel.bind(actor))
 		actor.interrupt_activity()
-	if not _map.navigation.reserve_place(male,male.global_position) or not _map.navigation.reserve_place(female,chosen_path[-1]):
+	if not _map.navigation.reserve_place(creature,creature.global_position) or not _map.navigation.reserve_place(partner,chosen_path[-1]):
 		_map.navigation.release_place(male)
 		_map.navigation.release_place(female)
 		return false
-	var pair := {"male":male,"female":female,"path":chosen_path,"index":0,"revision":_map.navigation.revision,"elapsed":0.0,"call_elapsed":0.0,"age":0.0,"courting":false,"stuck":0.0,"last_position":female.global_position,"male_position":male.global_position,"check":0.0,"blocked_retries":0}
+	var pair := {"male":male,"female":female,"caller":creature,"path":chosen_path,"index":0,"revision":_map.navigation.revision,"elapsed":0.0,"call_elapsed":0.0,"age":0.0,"courting":false,"stuck":0.0,"last_position":partner.global_position,"caller_position":creature.global_position,"check":0.0,"blocked_retries":0}
 	_pairs.append(pair)
 	_active[male] = pair
 	_active[female] = pair
-	male.face_point(female.global_position,&"behaviour/Call")
+	creature.face_point(partner.global_position,&"behaviour/Call")
 	set_physics_process(true)
 	changed.emit()
 	return true
@@ -105,7 +106,7 @@ func progress(creature: Creature) -> float:
 		return 0.0
 	var pair: Dictionary = _active[creature]
 	if not pair.courting:
-		return clampf(pair.call_elapsed/maxf(pair.male.species_data().breeding_call_seconds,0.1),0.0,1.0)
+		return clampf(pair.call_elapsed/maxf(pair.caller.species_data().breeding_call_seconds,0.1),0.0,1.0)
 	return clampf(pair.elapsed/creature.species_data().breeding_seconds,0.0,1.0)
 
 func activity_text(creature: Creature) -> String:
@@ -114,33 +115,33 @@ func activity_text(creature: Creature) -> String:
 	var pair: Dictionary = _active[creature]
 	if pair.courting:
 		return tr("Breeding - %d s remaining") % ceili(creature.species_data().breeding_seconds-pair.elapsed)
-	return tr("Calling for a mate") if creature == pair.male else tr("Approaching the calling male")
+	return tr("Calling for a mate") if creature == pair.caller else tr("Approaching the calling mate")
 
 func move_creature(creature: Creature, delta: float) -> void:
 	var pair: Dictionary = _active[creature]
-	var male: Creature = pair.male
-	var female: Creature = pair.female
-	if not is_instance_valid(male) or not is_instance_valid(female):
+	var caller: Creature = pair.caller
+	var visitor: Creature = pair.female if caller == pair.male else pair.male
+	if not is_instance_valid(caller) or not is_instance_valid(visitor):
 		return
-	if creature == male:
-		male.face_point(female.global_position,&"Idle" if pair.courting else &"behaviour/Call")
+	if creature == caller:
+		caller.face_point(visitor.global_position,&"Idle" if pair.courting else &"behaviour/Call")
 		return
 	if pair.courting:
-		female.face_point(male.global_position)
+		visitor.face_point(caller.global_position)
 		return
-	var difference := Vector2(male.global_position.x-female.global_position.x,male.global_position.z-female.global_position.z)
-	if difference.length() <= male.body_radius()+female.body_radius()+0.35 and _clear_sight(male,female):
-		female.face_point(male.global_position)
-		if pair.call_elapsed >= male.species_data().breeding_call_seconds:
+	var difference := Vector2(caller.global_position.x-visitor.global_position.x,caller.global_position.z-visitor.global_position.z)
+	if difference.length() <= caller.body_radius()+visitor.body_radius()+0.35 and _clear_sight(caller,visitor):
+		visitor.face_point(caller.global_position)
+		if pair.call_elapsed >= caller.species_data().breeding_call_seconds:
 			pair.courting = true
 			pair.elapsed = 0.0
-			male.set_breeding_effect(true)
-			female.set_breeding_effect(true)
+			caller.set_breeding_effect(true)
+			visitor.set_breeding_effect(true)
 			changed.emit()
 		return
 	if not _map.navigation.ready_for_paths:
 		return
-	if pair.revision != _map.navigation.revision or male.global_position.distance_to(pair.male_position) > 0.4:
+	if pair.revision != _map.navigation.revision or caller.global_position.distance_to(pair.caller_position) > 0.4:
 		_repath(pair)
 	var path: PackedVector3Array = pair.path
 	if pair.index >= path.size():
@@ -149,15 +150,15 @@ func move_creature(creature: Creature, delta: float) -> void:
 		if path.is_empty():
 			return
 	var destination := path[pair.index]
-	var direction := Vector2(destination.x-female.global_position.x,destination.z-female.global_position.z)
+	var direction := Vector2(destination.x-visitor.global_position.x,destination.z-visitor.global_position.z)
 	var arrival_distance := 0.07 if pair.index == path.size()-1 else 0.14
 	if direction.length() < arrival_distance:
 		pair.index += 1
 	else:
-		female.walk_direction(direction.normalized(),female.species_data().walk_speed)
+		visitor.walk_direction(direction.normalized(),visitor.species_data().walk_speed)
 	pair.stuck += delta
 	if pair.stuck >= 2.5:
-		if female.global_position.distance_to(pair.last_position) < 0.12:
+		if visitor.global_position.distance_to(pair.last_position) < 0.12:
 			pair.blocked_retries += 1
 			_repath(pair)
 			if pair.blocked_retries >= 3:
@@ -166,18 +167,20 @@ func move_creature(creature: Creature, delta: float) -> void:
 		else:
 			pair.blocked_retries = 0
 		pair.stuck = 0.0
-		pair.last_position = female.global_position
+		pair.last_position = visitor.global_position
 
 func _repath(pair: Dictionary) -> void:
-	_map.navigation.release_place(pair.female)
-	_map.navigation.release_place(pair.male)
-	pair.path = _map.navigation.route_to_partner(pair.female,pair.male)
-	if not pair.path.is_empty() and not _map.navigation.reserve_place(pair.female,pair.path[-1]):
+	var caller: Creature = pair.caller
+	var visitor: Creature = pair.female if caller == pair.male else pair.male
+	_map.navigation.release_place(visitor)
+	_map.navigation.release_place(caller)
+	pair.path = _map.navigation.route_to_partner(visitor,caller)
+	if not pair.path.is_empty() and not _map.navigation.reserve_place(visitor,pair.path[-1]):
 		pair.path = PackedVector3Array()
-	_map.navigation.reserve_place(pair.male,pair.male.global_position)
+	_map.navigation.reserve_place(caller,caller.global_position)
 	pair.index = 0
 	pair.revision = _map.navigation.revision
-	pair.male_position = pair.male.global_position
+	pair.caller_position = caller.global_position
 
 func _physics_process(delta: float) -> void:
 	for pair in _pairs.duplicate():

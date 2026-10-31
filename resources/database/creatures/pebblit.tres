@@ -1,24 +1,27 @@
-[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
-[ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="script"]
-[ext_resource type="PackedScene" path="res://scenes/creatures/pebblit.tscn" id="scene"]
-[ext_resource type="Texture2D" path="res://assets/ui/pebblit.png" id="icon"]
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://dw6tqt3iikt1a"]
+
+[ext_resource type="Texture2D" uid="uid://b2jhh7ovwr7ow" path="res://assets/ui/pebblit.png" id="1_oxhof"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/pebblit.tscn" id="2_30why"]
+[ext_resource type="Script" uid="uid://c3sw6o85wjpeg" path="res://code/database/CreatureSpecies.gd" id="3_y2v01"]
+
 [resource]
-script = ExtResource("script")
-id = &"pebblit"
-display_name = "Pebblit"
-description = "A stubborn, stone-armored creature whose stomps raise rocky ground and scatter stone. Give it room — a cornered Pebblit hits hard."
-scene = ExtResource("scene")
-icon = ExtResource("icon")
-production = 2
+script = ExtResource("3_y2v01")
+scene = ExtResource("2_30why")
+icon = ExtResource("1_oxhof")
+walk_speed = 0.35
+satiety_seconds = 120.0
+feeding_threshold = 60.0
+preferred_area = 24.0
+noise_sensitivity = 0.1
+species_aversions = Dictionary[StringName, float]({
+&"bloomlet": 0.3
+})
 requires_water = false
 habitat_ground = 4
+production = 2
+female_production = 4
 production_limit = 5
-production_seconds = 4.0
-impact_time = 2.0
-production_radius = 5.0
-preferred_area = 24.0
-walk_speed = 1.0
-
-noise_sensitivity = 0.1
-crowding_sensitivity = 1.0
-species_aversions = Dictionary[StringName, float]({&"bloomlet": 0.3})
+aggression_threshold = 50.0
+id = &"pebblit"
+display_name = "Pebblit"
+description = "Armored and stubborn. Males walk on four paws and charge on stone elbows when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard."

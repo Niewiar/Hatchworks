@@ -9,6 +9,21 @@ var _busy := false
 var _skip_load_once := false
 var _presentation_mode := -1
 
+func start_game(new_game: bool) -> Error:
+	if _busy:
+		return ERR_BUSY
+	if new_game:
+		var error: Error = SaveGame.reset_save()
+		if error != OK:
+			return error
+	elif not SaveGame.has_save():
+		return ERR_FILE_NOT_FOUND
+	_skip_load_once = new_game
+	var scene_error := get_tree().change_scene_to_file("res://scenes/gameplay/gameplay.tscn")
+	if scene_error != OK:
+		_skip_load_once = false
+	return scene_error
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	InputManager.on_esc.connect(_on_esc)
@@ -53,6 +68,8 @@ func _on_esc() -> void:
 	if _menu.visible:
 		if not _menu.cancel_confirmation():
 			resume_game()
+	elif is_instance_valid(_map) and _map.cancel_active_interaction():
+		return
 	else:
 		open_menu()
 
@@ -89,11 +106,14 @@ func save_game() -> int:
 	if _busy or not is_instance_valid(_map):
 		return ERR_BUSY
 	_busy = true
-	_menu.set_busy(true)
+	if is_instance_valid(_menu):
+		_menu.set_busy(true)
 	var error: int = SaveGame.save_game(_map)
-	_menu.set_busy(false)
+	if is_instance_valid(_menu):
+		_menu.set_busy(false)
 	_busy = false
-	_menu.show_status("Game saved." if error == OK else "Saving failed: %s", "" if error == OK else SaveGame.last_error, error != OK)
+	if is_instance_valid(_menu):
+		_menu.show_status("Game saved." if error == OK else "Saving failed: %s", "" if error == OK else SaveGame.last_error, error != OK)
 	return error
 
 func reset_game() -> void:
@@ -117,15 +137,15 @@ func request_quit() -> void:
 	if _busy:
 		return
 	if not is_instance_valid(_menu):
-		quit_game(false)
+		quit_game()
 		return
 	open_menu()
 	_menu.confirm_quit()
 
-func quit_game(save_first: bool) -> void:
+func quit_game() -> void:
 	if _busy:
 		return
-	if save_first and save_game() != OK:
+	if is_instance_valid(_map) and _map.is_inside_tree() and save_game() != OK:
 		return
 	_busy = true
 	if is_instance_valid(_menu):

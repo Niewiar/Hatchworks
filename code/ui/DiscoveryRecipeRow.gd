@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends PanelContainer
 
 func configure(database: GameDatabase, recipe: DiscoveryRecipe, known: bool, visible_part: int) -> void:
 	var parts := [recipe.first,recipe.second,recipe.result]
@@ -8,4 +8,7 @@ func configure(database: GameDatabase, recipe: DiscoveryRecipe, known: bool, vis
 		var entry := database.discovery(parts[index])
 		box.get_node("Name").text = entry.display_name if revealed else "???"
 		box.get_node("Icon").texture = entry.icon if revealed else null
-		box.get_node("Icon").visible = true
+		box.get_node("Icon").visible = revealed
+		box.get_node("Unknown").visible = not revealed
+	$Equation/Completed.text = "✓" if known else ""
+	modulate = Color.WHITE if known else Color(0.7,0.75,0.7,1)

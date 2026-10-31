@@ -4,6 +4,9 @@ extends DatabaseEntry
 
 @export var scene: PackedScene
 @export var icon: Texture2D
+@export_group("AI state graph")
+@export var ai_graph: Dictionary = {}
+@export_group("Handling")
 @export_range(0.5, 4.0, 0.1) var hold_height := 1.8
 @export_range(0.1, 50.0, 0.1) var follow_speed := 14.0
 @export_range(0.1, 50.0, 0.1) var rotation_speed := 9.0
@@ -53,7 +56,7 @@ extends DatabaseEntry
 @export_group("Courtship")
 @export_range(0.5,30.0,0.5) var breeding_call_seconds := 3.0
 
-enum PRODUCTION { NONE, GARDENER, QUARRY, HERBALIST }
+enum PRODUCTION { NONE, GARDENER, QUARRY, HERBALIST, SAND_MAKER }
 
 @export_group("Habitat")
 @export var requires_water := true
@@ -61,6 +64,8 @@ enum PRODUCTION { NONE, GARDENER, QUARRY, HERBALIST }
 
 @export_group("Ecosystem production")
 @export var production: PRODUCTION = PRODUCTION.NONE
+@export var female_production: PRODUCTION = PRODUCTION.NONE
+@export_range(0.05,0.75,0.05) var sand_coverage_limit := 0.3
 @export_range(1.0,30.0,0.1) var production_seconds := 4.0
 @export_range(0.1,30.0,0.1) var impact_time := 2.0
 @export_range(1.0,15.0,0.5) var production_radius := 5.0
@@ -70,3 +75,6 @@ enum PRODUCTION { NONE, GARDENER, QUARRY, HERBALIST }
 @export_range(0.0,100.0,1.0) var aggression_threshold := 40.0
 @export_range(1.0,100.0,1.0) var impact_damage := 25.0
 @export_range(1.0,60.0,1.0) var aggression_cooldown := 12.0
+
+func production_for(female: bool) -> PRODUCTION:
+	return female_production if female and female_production != PRODUCTION.NONE else production

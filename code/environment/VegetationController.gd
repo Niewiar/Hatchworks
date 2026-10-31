@@ -3,6 +3,7 @@ extends Node3D
 
 signal plant_sown(species: FloraSpecies, world_position: Vector3)
 signal obstacles_changed
+signal sapling_found(id: StringName, world_position: Vector3)
 
 const TREE_SCENE = preload("res://scenes/harvesting/deposit.tscn")
 
@@ -175,10 +176,19 @@ func _update_tree_views() -> void:
 		plant.tree_view.set_growth(plant.growth,plant.scale)
 		plant.tree_view.global_position = _terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y)))
 
-func _on_tree_depleted(_deposit: HarvestableDeposit, plant: FloraPlant) -> void:
+func _on_tree_depleted(deposit: HarvestableDeposit, plant: FloraPlant) -> void:
+	if plant.removed:
+		return
 	plant.removed = true
 	plant.growth = 0.0
+	_growing.erase(plant)
+	_harvest_sapling(plant,deposit.global_position)
 	obstacles_changed.emit()
+
+func _harvest_sapling(plant: FloraPlant, world_position: Vector3) -> void:
+	var chance := clampf(plant.species.sapling_chance,0.0,1.0)
+	if not plant.species.sapling_item.is_empty() and chance > 0.0 and (chance >= 1.0 or randf() < chance):
+		sapling_found.emit(plant.species.sapling_item,world_position+Vector3.UP*0.2)
 
 func tree_at_screen(screen: Vector2, camera: Camera3D) -> HarvestableDeposit:
 	var best: HarvestableDeposit
@@ -246,6 +256,7 @@ func gather_plants(world_position: Vector3, radius: float) -> Dictionary[int, in
 				plant.removed = true
 				_growing.erase(plant)
 				dirty[plant.batch_key] = true
+				_harvest_sapling(plant,_terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y))))
 	for key in dirty:
 		_upload_batch(key)
 	if obstacles_removed:

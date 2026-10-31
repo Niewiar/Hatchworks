@@ -14,6 +14,7 @@ var _map: Node3D
 var _definitions: Array[BuildingDefinition] = []
 var _placed: Dictionary[Node3D, BuildingDefinition] = {}
 var _health: Dictionary[Node3D,float] = {}
+var _build_counts: Dictionary[StringName,int] = {}
 var _preview: Node3D
 var _preview_material: ShaderMaterial
 var _active := false
@@ -34,6 +35,7 @@ func initialize(map: Node3D) -> void:
 		if child is Node3D:
 			for data: BuildingDefinition in _definitions:
 				if data.scene != null and child.scene_file_path == data.scene.resource_path:
+					_build_counts[data.id] = placement_count(data)+1
 					_register_building(child,data)
 	select_building(0)
 
@@ -84,6 +86,15 @@ func _configure_preview(node: Node) -> void:
 
 func activate(active: bool) -> void:
 	_active = active
+	if active and not is_instance_valid(_preview):
+		var data := definition()
+		if data != null and unlocked(data):
+			select_building(selected_building)
+		else:
+			for index in _definitions.size():
+				if unlocked(_definitions[index]):
+					select_building(index)
+					break
 	if not active:
 		_target = null
 	_refresh_preview()
@@ -119,7 +130,7 @@ func _placement_error(point: Vector3) -> String:
 	var inventory: ResourceInventory = _map.inventory
 	if not unlocked(data):
 		return tr("Discover %s to unlock this building") % data.display_name
-	if not inventory.can_afford_costs(data.costs()):
+	if not inventory.can_afford_costs(placement_costs(data)):
 		return tr("Not enough resources")
 	var terrain: TerrainController = _map.terrain_controller
 	var water: WaterController = _map.water_controller
@@ -174,7 +185,7 @@ func place_at(point: Vector3) -> Node3D:
 		model.free()
 		return null
 	var inventory: ResourceInventory = _map.inventory
-	var paid := inventory.spend_costs(data.costs())
+	var paid := inventory.spend_costs(placement_costs(data))
 	if not paid:
 		model.free()
 		return null
@@ -182,6 +193,7 @@ func place_at(point: Vector3) -> Node3D:
 	building.name = data.display_name.to_pascal_case()
 	add_child(building)
 	building.global_position = _map.terrain_controller.surface_position(point)
+	_build_counts[data.id] = placement_count(data)+1
 	_register_building(building,data)
 	_refresh_preview()
 	return building
@@ -200,6 +212,12 @@ func _on_height_changed() -> void:
 
 func _on_inventory_changed(_kind: int, _amount: float) -> void:
 	_refresh_preview()
+
+func placement_count(data: BuildingDefinition) -> int:
+	return _build_counts.get(data.id,0) if data != null else 0
+
+func placement_costs(data: BuildingDefinition) -> Dictionary[int, int]:
+	return data.scaled_costs(placement_count(data)) if data != null else {}
 
 func unlocked(data: BuildingDefinition) -> bool:
 	return data.required_discovery.is_empty() or _map.discoveries.knows(data.required_discovery)

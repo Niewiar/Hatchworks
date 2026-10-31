@@ -25,11 +25,31 @@ var _cycles_until_leisure := 1
 var _leisure_duration := 0.0
 var _leisure_elapsed := 0.0
 
+func prepare_appearance() -> void:
+	super.prepare_appearance()
+	_configure_animation_libraries()
+
+func _configure_animation_libraries() -> void:
+	if animation_player == null:
+		return
+	if not animation_player.has_animation_library(&"water"):
+		if animation_player.has_animation(&"Swim"):
+			var library := AnimationLibrary.new()
+			library.add_animation(&"Swim", animation_player.get_animation(&"Swim"))
+			animation_player.add_animation_library(&"water", library)
+		elif swimming_library != null:
+			animation_player.add_animation_library(&"water", swimming_library)
+	if not animation_player.has_animation_library(&"behaviour"):
+		if animation_player.has_animation(&"Rest") and animation_player.has_animation(&"Call"):
+			var library := AnimationLibrary.new()
+			library.add_animation(&"Rest", animation_player.get_animation(&"Rest"))
+			library.add_animation(&"Call", animation_player.get_animation(&"Call"))
+			animation_player.add_animation_library(&"behaviour", library)
+		elif behaviour_library != null:
+			animation_player.add_animation_library(&"behaviour", behaviour_library)
+
 func _ready() -> void:
-	if swimming_library != null and animation_player != null and not animation_player.has_animation_library(&"water"):
-		animation_player.add_animation_library(&"water",swimming_library)
-	if behaviour_library != null and animation_player != null and not animation_player.has_animation_library(&"behaviour"):
-		animation_player.add_animation_library(&"behaviour",behaviour_library)
+	prepare_appearance()
 	super._ready()
 	_map = get_parent().get_node_or_null("Map") if get_parent() != null else null
 	if _map == null:
@@ -60,7 +80,7 @@ func _physics_process(delta: float) -> void:
 	_tick_activity(delta)
 	if _swimming:
 		_play_animation(&"water/Swim")
-		var height: float = _map.water_controller.global_position.y+0.2+sin(Time.get_ticks_msec()*0.002)*0.025
+		var height: float = _map.water_controller.global_position.y+body_radius()*0.3+sin(Time.get_ticks_msec()*0.002)*body_radius()*0.08
 		height = maxf(height,terrain_controller.surface_position(global_position).y+body_radius()+0.04)
 		velocity.y = clampf((height-global_position.y)*5.0,-2.0,2.0)
 		_apply_avoidance(delta)
@@ -73,11 +93,34 @@ func _physics_process(delta: float) -> void:
 func _update_visual_activity() -> void:
 	if _model != null:
 		_model.rotation = _model_rotation
+		if _model is CreatureCelAppearance:
+			_update_skeletal_animation_speed()
+			return
 		if activity == ACTIVITY.SHAKING:
 			_model.rotation.z += sin(_elapsed*34.0)*0.16
 			_model.rotation.y += sin(_elapsed*28.0)*0.10
 		elif activity == ACTIVITY.EATING:
 			_model.rotation.x += sin(_elapsed*9.0)*0.045
+
+func _update_skeletal_animation_speed() -> void:
+	var appearance := _model as CreatureCelAppearance
+	if appearance == null or animation_player == null:
+		return
+	var clip := animation_player.current_animation
+	if clip == &"Walk":
+		var distance := appearance.walk_distance * absf(appearance.scale.x)
+		animation_player.speed_scale = Vector2(velocity.x, velocity.z).length() * animation_player.get_animation(clip).length / maxf(distance, 0.001)
+	elif clip == &"Work":
+		animation_player.speed_scale = animation_player.get_animation(clip).length * work_efficiency() / maxf(work_cycle_seconds(), 0.01)
+
+func walk_direction(direction: Vector2, speed: float) -> void:
+	var appearance := _model as CreatureCelAppearance
+	if appearance != null and not _swimming:
+		speed = minf(speed, appearance.walk_speed)
+	super.walk_direction(direction, speed)
+
+func work_cycle_seconds() -> float:
+	return _species.shaking_seconds
 
 func _tick_activity(delta: float) -> void:
 	velocity.x = 0
@@ -85,32 +128,16 @@ func _tick_activity(delta: float) -> void:
 	if _map.breeding.is_breeding(self):
 		_map.breeding.move_creature(self,delta)
 		return
+	if _map.navigation.ready_for_paths and _path_revision != _map.navigation.revision:
+		_on_navigation_changed()
+	if _tick_ai(delta):
+		return
 	if not _map.navigation.ready_for_paths:
-		if satiety <= 0.0:
-			activity = ACTIVITY.HUNGRY
-			_path.clear()
-			return
-		if activity == ACTIVITY.LEISURE and satiety > 0.0:
+		if activity == ACTIVITY.LEISURE:
 			_tick_rest(delta)
 		return
-	if _path_revision != _map.navigation.revision:
-		_on_navigation_changed()
-	if satiety <= 0.0 or activity in [ACTIVITY.MOVING_TO_FOOD,ACTIVITY.EATING]:
-		_tick_hunger(delta)
-		return
-	_food_retry -= delta
-	if satiety <= _species.feeding_threshold and _food_retry <= 0.0:
-		_food_retry = 1.0
-		var route: Dictionary = _map.navigation.route_to_feeder(global_position,_species,self)
-		if not route.is_empty():
-			_feeder = route.feeder
-			_start_path(route.path,ACTIVITY.MOVING_TO_FOOD,ACTIVITY.HUNGRY)
-			return
 	if activity == ACTIVITY.LEISURE:
 		_tick_rest(delta)
-		return
-	if activity not in [ACTIVITY.SEEKING_REST,ACTIVITY.MOVING_TO_REST] and _work_cycles >= _cycles_until_leisure:
-		_begin_break()
 		return
 	if activity == ACTIVITY.SEEKING_REST:
 		if _on_dry_ground():
@@ -146,6 +173,7 @@ func _tick_activity(delta: float) -> void:
 			if _elapsed >= 0.3:
 				_start_path(_map.navigation.bathing_route(self),ACTIVITY.SWIMMING,ACTIVITY.BATHING)
 		ACTIVITY.SHAKING:
+			_play_animation(&"Work")
 			if _elapsed >= _species.shaking_seconds:
 				var planted: int = _map.vegetation_controller.seed_grass(global_position,_species.grass_per_cycle,_species.grass_radius)
 				if planted > 0:
@@ -219,7 +247,8 @@ func _start_path(path: PackedVector3Array, moving: ACTIVITY, failure: ACTIVITY) 
 func _follow_path(delta: float) -> void:
 	var target := _path[_path_index]
 	var difference := Vector2(target.x-global_position.x,target.z-global_position.z)
-	var arrived := difference.length() < 0.14
+	var tolerance := 0.025 if _model is CreatureCelAppearance and _path_index == _path.size() - 1 else 0.14
+	var arrived := difference.length() < tolerance
 	if activity == ACTIVITY.MOVING_TO_WATER and _path_index == _path.size()-1:
 		var depth: float = _map.water_controller.water_level-terrain_controller.surface_position(global_position).y
 		arrived = arrived and depth >= _species.minimum_swim_depth
@@ -286,35 +315,102 @@ func activity_text() -> String:
 		return tr("Waiting for a clear route")
 	return [tr("Looking for water"),tr("Walking to water"),"Bathing",tr("Looking for soil"),tr("Walking to soil"),tr("Shaking and sowing grass"),tr("Resting"),tr("Hungry"),tr("Needs accessible water or a free bathing spot"),tr("Needs free dry soil"),tr("Walking to a feeder"),"Eating",tr("Swimming and bathing"),tr("Looking for a dry resting place"),tr("Walking to a resting place"),tr("Enjoying free time")][activity]
 
-func _tick_hunger(delta: float) -> void:
-	if activity == ACTIVITY.MOVING_TO_FOOD and is_instance_valid(_feeder) and _feeder.can_feed(_species) and not _path.is_empty():
-		_follow_path(delta)
-		return
-	_play_animation(&"water/Swim" if _swimming else &"Idle")
-	_elapsed += delta
-	if activity == ACTIVITY.EATING:
-		if not is_instance_valid(_feeder) or not _feeder.can_feed(_species) or not _at_feeder():
-			activity = ACTIVITY.HUNGRY
+func _ai_state() -> String:
+	if activity in [ACTIVITY.MOVING_TO_FOOD,ACTIVITY.EATING]:
+		return "feed"
+	if activity in [ACTIVITY.SEEKING_REST,ACTIVITY.MOVING_TO_REST,ACTIVITY.LEISURE]:
+		return "rest"
+	return "work"
+
+func _can_attack() -> bool:
+	return false
+
+func _try_aggression() -> bool:
+	return false
+
+func _ai_context() -> Dictionary:
+	return {"hungry":int(satiety <= _species.feeding_threshold),"needs_break":int(_work_cycles >= _cycles_until_leisure),"aggressive":int(happiness <= _species.aggression_threshold or (space_per_creature > 0.0 and space_per_creature < _species.preferred_area*0.5)),"can_attack":int(_can_attack()),"satiety":satiety,"happiness":happiness,"companions":companions,"crowding":crowding_stress*100.0,"noise":noise_stress*100.0,"neighbours":species_stress*100.0,"work_cycles":_work_cycles,"female":int(sex == SEX.FEMALE),"carrying_water":int(carrying_water),"swimming":int(_swimming),"dry_ground":int(_on_dry_ground()),"navigation_ready":int(_map.navigation.ready_for_paths)}
+
+func _tick_ai(delta: float) -> bool:
+	if activity in [ACTIVITY.MOVING_TO_FOOD,ACTIVITY.EATING]:
+		if _tick_hunger(delta,true):
+			return true
+	else:
+		_food_retry = maxf(0.0,_food_retry-delta)
+	for action: String in CreatureAiGraph.choices(_species.ai_graph,_ai_state(),_ai_context()):
+		match action:
+			"feed":
+				if _tick_hunger(0.0,true):
+					return true
+			"attack":
+				if _try_aggression():
+					return true
+			"rest":
+				if activity == ACTIVITY.SHAKING:
+					return false
+				if activity in [ACTIVITY.SEEKING_REST,ACTIVITY.MOVING_TO_REST,ACTIVITY.LEISURE]:
+					return false
+				if _map.navigation.ready_for_paths:
+					_begin_break()
+					return true
+			"work":
+				return false
+	if activity == ACTIVITY.SHAKING:
+		return false
+	interrupt_activity()
+	activity = ACTIVITY.RESTING
+	_play_animation(movement_animation() if _swimming else &"Idle")
+	return true
+
+func _tick_hunger(delta: float, policy_triggered: bool = false) -> bool:
+	_food_retry = maxf(0.0,_food_retry-delta)
+	if activity in [ACTIVITY.MOVING_TO_FOOD,ACTIVITY.EATING]:
+		if not is_instance_valid(_feeder) or _feeder.is_queued_for_deletion() or not _feeder.can_feed(_species):
+			interrupt_activity()
+			_food_retry = 1.0
+			return false
+		if activity == ACTIVITY.MOVING_TO_FOOD:
+			if not _path.is_empty():
+				_follow_path(delta)
+				if activity in [ACTIVITY.MOVING_TO_FOOD,ACTIVITY.EATING]:
+					return true
+			interrupt_activity()
+			_food_retry = 1.0
+			return false
+		if not _at_feeder():
+			interrupt_activity()
+			_food_retry = 1.0
+			return false
+		var eating := animation_player != null and animation_player.has_animation(&"Eat")
+		_play_animation(&"water/Swim" if _swimming else (&"Eat" if eating else &"Idle"))
+		_elapsed += delta
+		if _elapsed >= _species.feeding_seconds:
+			if not _feeder.eat(_species):
+				interrupt_activity()
+				_food_retry = 1.0
+				return false
+			restore_satiety(_species.satiety_per_meal)
 			_map.navigation.release_place(self)
-		elif _elapsed >= _species.feeding_seconds:
-			if _feeder.eat(_species):
-				restore_satiety(_species.satiety_per_meal)
-				activity = ACTIVITY.RESTING
-			else:
-				activity = ACTIVITY.HUNGRY
-			_map.navigation.release_place(self)
+			_feeder = null
+			activity = ACTIVITY.RESTING
 			_elapsed = 0.0
-		return
-	activity = ACTIVITY.HUNGRY
-	if _elapsed < 1.0:
-		return
-	_elapsed = 0.0
-	_map.navigation.release_place(self)
-	_path.clear()
+		return true
+	if activity == ACTIVITY.HUNGRY:
+		interrupt_activity()
+	if (not policy_triggered and satiety > _species.feeding_threshold) or _food_retry > 0.0 or not _map.navigation.ready_for_paths:
+		return false
+	_food_retry = 1.0
 	var route: Dictionary = _map.navigation.route_to_feeder(global_position,_species,self)
-	if not route.is_empty():
-		_feeder = route.feeder
-		_start_path(route.path,ACTIVITY.MOVING_TO_FOOD,ACTIVITY.HUNGRY)
+	if route.is_empty():
+		return false
+	interrupt_activity()
+	_feeder = route.feeder
+	_path_revision = _map.navigation.revision
+	_start_path(route.path,ACTIVITY.MOVING_TO_FOOD,ACTIVITY.HUNGRY)
+	if _path.is_empty():
+		interrupt_activity()
+		return false
+	return true
 
 func _at_feeder() -> bool:
 	for point in _feeder.feeding_positions():
@@ -346,11 +442,11 @@ func _on_navigation_changed() -> void:
 	_elapsed = 0.0
 	_bath_elapsed = 0.0
 	_stuck = 0.0
-	if activity in [ACTIVITY.SEEKING_REST,ACTIVITY.MOVING_TO_REST,ACTIVITY.LEISURE] and satiety > 0.0:
+	if activity in [ACTIVITY.SEEKING_REST,ACTIVITY.MOVING_TO_REST,ACTIVITY.LEISURE]:
 		if _on_dry_ground():
 			_settle_rest()
 		else:
 			activity = ACTIVITY.SEEKING_REST
 			_elapsed = 0.75
 		return
-	activity = ACTIVITY.HUNGRY if satiety <= 0.0 else (ACTIVITY.SEEKING_GROUND if carrying_water else ACTIVITY.SEEKING_WATER)
+	activity = ACTIVITY.SEEKING_GROUND if carrying_water else ACTIVITY.SEEKING_WATER

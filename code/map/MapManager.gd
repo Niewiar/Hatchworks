@@ -68,6 +68,7 @@ func _ready() -> void:
 	fances_controller.configure_inventory(inventory,discoveries)
 	brush_controller.configure_surface()
 	environment_controller.initialize(terrain_controller, water_controller)
+	vegetation_controller.sapling_found.connect(_on_sapling_found)
 	vegetation_controller.initialize(terrain_controller, environment_controller)
 	planting_controller.initialize(self)
 	rock_controller.initialize(terrain_controller,environment_controller,vegetation_controller)
@@ -92,6 +93,9 @@ func _ready() -> void:
 	InputManager.on_camera_turn.connect(_on_camera_turn)
 	get_window().focus_exited.connect(_on_focus_exited)
 	_last_pointer = get_viewport().get_mouse_position()
+
+func _on_sapling_found(id: StringName, world_position: Vector3) -> void:
+	items.add(id,1,world_position)
 
 func _apply_database() -> void:
 	if database == null:
@@ -233,13 +237,30 @@ func _on_rmb(pressed: bool) -> void:
 	if inspection_panel != null and inspection_panel.focused:
 		inspection_panel.close_focus()
 
+func cancel_active_interaction() -> bool:
+	if hatch_presentation != null and hatch_presentation.visible:
+		hatch_presentation.close_presentation()
+		return true
+	if _mode != MODE.NONE:
+		set_mode(MODE.NONE)
+		return true
+	if inspection_panel != null and inspection_panel.focused:
+		inspection_panel.close_focus()
+		return true
+	if is_instance_valid(_held_creature) or is_instance_valid(_pressed_actor):
+		_release_creature()
+		return true
+	return false
+
 func _on_mmb(pressed: bool) -> void:
-	if modal_active or (inspection_panel != null and inspection_panel.focused):
+	if modal_active:
 		return
 	if pressed:
 		if get_viewport().gui_get_hovered_control() != null or camera_controller == null:
 			return
 		_rotating = Input.is_key_pressed(KEY_ALT)
+		if not _rotating and inspection_panel != null and inspection_panel.focused:
+			return
 		if _rotating and not camera_controller.begin_orbit(terrain_controller):
 			_rotating = false
 			return
@@ -259,8 +280,10 @@ func _on_camera_turn(direction: float) -> void:
 
 func _tick_keyboard_navigation(delta: float) -> void:
 	var owner := get_viewport().gui_get_focus_owner()
-	var blocked := modal_active or (inspection_panel != null and inspection_panel.focused) or owner is LineEdit or owner is TextEdit
-	var moving := not blocked and (not _camera_direction.is_zero_approx() or not is_zero_approx(_camera_turn)) and camera_controller != null
+	var blocked := modal_active or owner is LineEdit or owner is TextEdit
+	var focused := inspection_panel != null and inspection_panel.focused
+	var translating := not focused and not _camera_direction.is_zero_approx()
+	var moving := not blocked and (translating or not is_zero_approx(_camera_turn)) and camera_controller != null
 	if moving != _keyboard_navigating:
 		_keyboard_navigating = moving
 		_on_navigation_changed(moving)
@@ -311,7 +334,7 @@ func _on_mouse_move(viewport_position: Vector2) -> void:
 		return
 
 func _on_mouse_scroll(direction: int) -> void:
-	if modal_active or (inspection_panel != null and inspection_panel.focused):
+	if modal_active:
 		return
 	if get_viewport().gui_get_hovered_control() != null:
 		return

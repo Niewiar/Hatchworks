@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" format=3]
+[ext_resource type="Shader" path="res://code/creatures/pebblit_cel.gdshader" id="shader"]
+[resource]
+shader = ExtResource("shader")
+shader_parameter/shadow_color = Vector3(0.052, 0.026, 0.011)
+shader_parameter/base_color = Vector3(0.052, 0.026, 0.011)
+shader_parameter/highlight_color = Vector3(0.052, 0.026, 0.011)

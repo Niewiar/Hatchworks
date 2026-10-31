@@ -62,7 +62,7 @@ A wooden trough with a brass supply inlet. Hungry creatures walk here to eat Pla
 Accept,Accept,Akceptuj
 All categories,All categories,Wszystkie kategorie
 An incubator for discovered eggs. Your creature will appear beside it after hatching.,An incubator for discovered eggs. Your creature will appear beside it after hatching.,Inkubator odkrytych jaj. Po wykluciu stworek pojawi się obok niego.
-Approaching the calling male,Approaching the calling male,Podchodzi do nawołującego samca
+Approaching the calling mate,Approaching the calling mate,Podchodzi do nawołującego partnera
 Assign a brush preview shader.,Assign a brush preview shader.,Przypisz shader podglądu pędzla.
 "Assign a terrain shader, a positive map size and pixel density.","Assign a terrain shader, a positive map size and pixel density.","Przypisz shader terenu, dodatni rozmiar mapy i gęstość pikseli."
 Backpack,Backpack,Plecak
@@ -83,8 +83,8 @@ Breeding - %d s remaining,Breeding - %d s remaining,Rozmnażanie — pozostało 
 Build structures,Build structures,Budowanie
 Buildings,Buildings,Budynki
 Buildings need more space,Buildings need more space,Budynki potrzebują więcej miejsca
-Call a mate,Call a mate,Zawołaj partnerkę
-Calling for a mate,Calling for a mate,Nawołuje partnerkę
+Start breeding,Start breeding,Rozpocznij rozmnażanie
+Calling for a mate,Calling for a mate,Nawołuje partnera
 Cancel,Cancel,Anuluj
 Cancel breeding,Cancel breeding,Anuluj rozmnażanie
 Choose a planting position,Choose a planting position,Wybierz miejsce sadzenia
@@ -152,7 +152,6 @@ Fern,Fern,Paproć
 Fern + Seed -> Herbs,Fern + Seed -> Herbs,Paproć + Nasiono → Zioła
 Fiber + Soil,Fiber + Soil,Włókno + Gleba
 Fill with Plant Fiber (%s available),Fill with Plant Fiber (%s available),Napełnij Włóknem roślinnym (dostępne: %s)
-Find a calling male,Find a calling male,Znajdź nawołującego samca
 Find mate and breed,Find mate and breed,Znajdź partnera i rozmnażaj
 Fine grains worn down from stone by water.,Fine grains worn down from stone by water.,Drobne ziarna powstałe z kamienia pod wpływem wody.
 First Tuftling breeding,First Tuftling breeding,Pierwszy rozród Tuftlingów
@@ -279,7 +278,7 @@ Quit without saving,Quit without saving,Zamknij bez zapisywania
 Raise terrain,Raise terrain,Podnoszenie terenu
 Raising the press,Raising the press,Podnoszenie prasy
 Ready,Ready,Gotowość
-Ready - A male will call one compatible female.,Ready - A male will call one compatible female.,Gotowość — samiec zawoła jedną zgodną samicę.
+Ready to call a mate.,Ready to call a mate.,Może rozpocząć rozmnażanie.
 Ready to hatch,Ready to hatch,Gotowe do wyklucia
 Recovering - %d s remaining,Recovering - %d s remaining,Odpoczywa — pozostało %d s
 Reeds,Reeds,Trzciny
@@ -483,3 +482,51 @@ Some company feels less welcome.
 Disturbed: %d%%","Sąsiedztwo
 Nie każde towarzystwo mu odpowiada.
 Niepokój: %d%%"
+Armored and stubborn. Males raise rocky ground; sandy females walk to rocks and rub against them to make sand. Give them room — a cornered Pebblit hits hard.,Armored and stubborn. Males raise rocky ground; sandy females walk to rocks and rub against them to make sand. Give them room — a cornered Pebblit hits hard.,"Uparty, opancerzony stworek. Samce wypiętrzają skały, a piaskowe samice podchodzą do nich i ocierają się, wytwarzając piasek. Daj im przestrzeń — osaczony Pebblit uderza mocno."
+Grinding sandy ground,Grinding sandy ground,Rozciera ziemię na piasek
+Enough sand nearby,Enough sand nearby,W okolicy jest już dość piasku
+Pebblit: First sandy clearing,Pebblit: First sandy clearing,Pebblit: pierwsza piaszczysta polana
+First one free,First one free,Pierwsza sztuka gratis
+Boulder,Boulder,Głaz
+Stone + Life → Incubator,Stone + Life → Incubator,Kamień + Życie → Inkubator
+Boulder + Life → Pebblit Egg,Boulder + Life → Pebblit Egg,Głaz + Życie → Jajo Pebblita
+Stone + Soil → Boulder,Stone + Soil → Boulder,Kamień + Gleba → Głaz
+Walking to a rock,Walking to a rock,Idzie do skały
+Rubbing against a rock to make sand,Rubbing against a rock to make sand,"Ociera się o skałę, wytwarzając piasek"
+Needs an accessible rock with dry ground beside it,Needs an accessible rock with dry ground beside it,Potrzebuje dostępnej skały z suchym podłożem obok
+Rubbing against a rock to relax,Rubbing against a rock to relax,Ociera się o skałę dla relaksu
+Shaking off sand,Shaking off sand,Otrzepuje się z piasku
+Charging at a structure,Charging at a structure,Szarżuje na konstrukcję
+Walking to a work site,Walking to a work site,Idzie do miejsca pracy
+Armored and stubborn. Males walk on four paws and charge on stone elbows when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard.,Armored and stubborn. Males walk on four paws and charge on stone elbows when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard.,"Opancerzone i uparte. Samce chodzą na czterech łapach, a rozzłoszczone szarżują na kamiennych łokciach. Piaskowe samice otrzepują się, wytwarzając piasek; ocieranie o skały służy im do relaksu. Daj im przestrzeń — osaczony Pebblit mocno uderza."
+Resting after a charge,Resting after a charge,Odpoczywa po szarży
+Continue,Continue,Kontynuuj
+New game,New game,Nowa gra
+Options,Options,Opcje
+Back,Back,Wstecz
+Start a new game?,Start a new game?,Rozpocząć nową grę?
+A little world. A new discovery.,A little world. A new discovery.,Mały świat. Nowe odkrycie.
+Could not start the game: %s,Could not start the game: %s,Nie udało się uruchomić gry: %s
+Catalog,Catalog,Katalog
+Discovery catalog,Discovery catalog,Katalog odkryć
+All,All,Wszystkie
+Name,Name,Nazwa
+Category,Category,Kategoria
+Newest,Newest,Najnowsze
+No discoveries found.,No discoveries found.,Nie znaleziono odkryć.
+Are you sure you want to leave the game?,Are you sure you want to leave the game?,Czy na pewno chcesz opuścić grę?
+Your game will be saved.,Your game will be saved.,Gra zostanie zapisana
+Unhappy,Unhappy,Nieszczęśliwy
+Neutral,Neutral,Neutralny
+Happy,Happy,Szczęśliwy
+Happiness: %d%% · %s,Happiness: %d%% · %s,Szczęście: %d%% · %s
+Unhappy: 0–39% · Neutral: 40–69% · Happy: 70–100%,Unhappy: 0–39% · Neutral: 40–69% · Happy: 70–100%,Nieszczęśliwy: 0–39% · Neutralny: 40–69% · Szczęśliwy: 70–100%
+Current conditions: %d%%,Current conditions: %d%%,Obecne warunki pozwalają na: %d%%
+Base comfort: +%.1f pts,Base comfort: +%.1f pts,Podstawowy poziom: +%.1f pkt
+Satiety: +%.1f pts (%d%%),Satiety: +%.1f pts (%d%%),Sytość: +%.1f pkt (%d%%)
+Company: +%.1f pts (%d companions),Company: +%.1f pts (%d companions),Towarzystwo: +%.1f pkt (stworki obok: %d)
+Crowding: %.1f pts,Crowding: %.1f pts,Tłok: %.1f pkt
+Noise: %.1f pts,Noise: %.1f pts,Hałas: %.1f pkt
+Unwanted neighbours: %.1f pts,Unwanted neighbours: %.1f pts,Niechciane sąsiedztwo: %.1f pkt
+Happiness gradually follows these conditions.,Happiness gradually follows these conditions.,Szczęście stopniowo dostosowuje się do tych warunków.
+Close focus - Esc / RMB,Close focus - Esc / RMB,Zamknij podgląd — Esc / PPM

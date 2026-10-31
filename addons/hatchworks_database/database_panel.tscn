@@ -1,63 +1,27 @@
 [gd_scene format=3]
-[ext_resource type="Script" path="res://addons/hatchworks_database/database_panel.gd" id="1"]
-[ext_resource type="PackedScene" path="res://addons/hatchworks_database/database_preview.tscn" id="2"]
+[ext_resource type="Script" path="res://addons/hatchworks_database/database_panel.gd" id="script"]
+[ext_resource type="Theme" path="res://addons/hatchworks_database/studio_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_database/database_preview.tscn" id="preview"]
 [ext_resource type="PackedScene" path="res://addons/hatchworks_database/recipe_editor.tscn" id="recipe_editor"]
 [ext_resource type="PackedScene" path="res://addons/hatchworks_database/discovery_recipes.tscn" id="discovery_recipes"]
 [ext_resource type="PackedScene" path="res://addons/hatchworks_database/discovery_graph.tscn" id="discovery_graph"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_database/studio_web_button.tscn" id="web"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_database/design_document.tscn" id="design"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_database/creature_ai_graph.tscn" id="ai_graph"]
 [sub_resource type="StyleBoxFlat" id="Background"]
-bg_color = Color(0, 0, 0, 1)
-content_margin_left = 16.0
-content_margin_top = 14.0
-content_margin_right = 16.0
-content_margin_bottom = 12.0
-[sub_resource type="StyleBoxFlat" id="Panel"]
-bg_color = Color(0.027, 0.035, 0.032, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.12, 0.17, 0.14, 1)
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_left = 6
-corner_radius_bottom_right = 6
-[sub_resource type="StyleBoxFlat" id="Input"]
-bg_color = Color(0.047, 0.061, 0.052, 1)
-content_margin_left = 8.0
-content_margin_top = 5.0
-content_margin_right = 8.0
-content_margin_bottom = 5.0
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_left = 4
-corner_radius_bottom_right = 4
-[sub_resource type="StyleBoxFlat" id="Focus"]
-bg_color = Color(0.105, 0.16, 0.12, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.44, 0.62, 0.4, 1)
-content_margin_left = 8.0
-content_margin_top = 5.0
-content_margin_right = 8.0
-content_margin_bottom = 5.0
-[sub_resource type="Theme" id="Theme"]
-default_font_size = 14
-Button/styles/normal = SubResource("Input")
-Button/styles/hover = SubResource("Focus")
-Button/styles/pressed = SubResource("Focus")
-LineEdit/styles/normal = SubResource("Input")
-TextEdit/styles/normal = SubResource("Input")
-Tree/styles/panel = SubResource("Input")
-ItemList/styles/panel = SubResource("Input")
-OptionButton/styles/normal = SubResource("Input")
-Label/colors/font_color = Color(0.82, 0.86, 0.8, 1)
+bg_color = Color(0.067,0.09,0.078,1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_left = 0
+corner_radius_bottom_right = 0
+content_margin_left = 18.0
+content_margin_top = 18.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
 
+[sub_resource type="ButtonGroup" id="Sections"]
+[sub_resource type="SystemFont" id="TitleFont"]
+font_names = PackedStringArray("Georgia")
 [node name="DatabasePanel" type="PanelContainer"]
 layout_mode = 3
 anchors_preset = 15
@@ -67,238 +31,385 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme = SubResource("Theme")
+theme = ExtResource("theme")
 theme_override_styles/panel = SubResource("Background")
-script = ExtResource("1")
+script = ExtResource("script")
+
 [node name="Layout" type="VBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
+
 [node name="Header" type="HBoxContainer" parent="Layout"]
 layout_mode = 2
-theme_override_constants/separation = 12
-[node name="Title" type="Label" parent="Layout/Header"]
+theme_override_constants/separation = 18
+
+[node name="Brand" type="VBoxContainer" parent="Layout/Header"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Layout/Header/Brand"]
+layout_mode = 2
 text = "HATCHWORKS"
-[node name="Subtitle" type="Label" parent="Layout/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "DATABASE / BALANCE"
-modulate = Color(0.53, 0.73, 0.57, 1)
-[node name="Dirty" type="Label" parent="Layout/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "All changes saved"
-[node name="GraphMode" type="Button" parent="Layout/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-text = "Discovery Graph"
-[node name="Undo" type="Button" parent="Layout/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Undo"
-[node name="Redo" type="Button" parent="Layout/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Redo"
-[node name="Reload" type="Button" parent="Layout/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Reload"
-[node name="Validate" type="Button" parent="Layout/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Validate"
-[node name="Save" type="Button" parent="Layout/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Save All"
-[node name="Body" type="HSplitContainer" parent="Layout"]
-layout_mode = 2
-size_flags_vertical = 3
-split_offset = 165
-[node name="Sidebar" type="VBoxContainer" parent="Layout/Body"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(145, 0)
-layout_mode = 2
-[node name="Label" type="Label" parent="Layout/Body/Sidebar"]
-layout_mode = 2
-text = "CATALOGS"
-modulate = Color(0.53, 0.73, 0.57, 1)
-[node name="Categories" type="ItemList" parent="Layout/Body/Sidebar"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 3
-fixed_icon_size = Vector2i(18, 18)
-[node name="Hint" type="Label" parent="Layout/Body/Sidebar"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Double-click a table cell to edit.
-Ctrl / Shift: multi-select.
-Ctrl+Z: undo."
-autowrap_mode = 3
-theme_override_font_sizes/font_size = 12
-[node name="Workspace" type="HSplitContainer" parent="Layout/Body"]
-layout_mode = 2
-size_flags_horizontal = 3
-split_offset = 0
-[node name="DiscoveryGraph" parent="Layout/Body/Workspace" instance=ExtResource("discovery_graph")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-[node name="TablePanel" type="VBoxContainer" parent="Layout/Body/Workspace"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 8
-[node name="Section" type="HBoxContainer" parent="Layout/Body/Workspace/TablePanel"]
-layout_mode = 2
-[node name="SectionTitle" type="Label" parent="Layout/Body/Workspace/TablePanel/Section"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-text = "Flora"
-[node name="Count" type="Label" parent="Layout/Body/Workspace/TablePanel/Section"]
+
+[node name="Subtitle" type="Label" parent="Layout/Header/Brand"]
+layout_mode = 2
+text = "WORLD STUDIO"
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.57,0.65,0.51,1)
+
+[node name="Navigation" type="HFlowContainer" parent="Layout/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="CreaturesTab" type="Button" parent="Layout/Header/Navigation"]
 unique_name_in_owner = true
 layout_mode = 2
-[node name="Search" type="LineEdit" parent="Layout/Body/Workspace/TablePanel"]
+text = "Creatures"
+toggle_mode = true
+button_group = SubResource("Sections")
+button_pressed = true
+
+[node name="DiscoveriesTab" type="Button" parent="Layout/Header/Navigation"]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "Search by name or stable ID…"
-[node name="Actions" type="HBoxContainer" parent="Layout/Body/Workspace/TablePanel"]
+text = "Discoveries"
+toggle_mode = true
+button_group = SubResource("Sections")
+
+[node name="DatabaseTab" type="Button" parent="Layout/Header/Navigation"]
+unique_name_in_owner = true
 layout_mode = 2
-[node name="New" type="Button" parent="Layout/Body/Workspace/TablePanel/Actions"]
+text = "Database"
+toggle_mode = true
+button_group = SubResource("Sections")
+
+[node name="DesignTab" type="Button" parent="Layout/Header/Navigation"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Design Doc"
+toggle_mode = true
+button_group = SubResource("Sections")
+
+[node name="AiTab" type="Button" parent="Layout/Header/Navigation"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Creature AI"
+toggle_mode = true
+button_group = SubResource("Sections")
+
+[node name="OpenWeb" parent="Layout/Header" instance=ExtResource("web")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Body" type="HBoxContainer" parent="Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="Catalog" type="PanelContainer" parent="Layout/Body"]
+layout_mode = 2
+custom_minimum_size = Vector2(190,0)
+custom_maximum_size = Vector2(250,-1)
+size_flags_horizontal = 1
+
+[node name="TablePanel" type="VBoxContainer" parent="Layout/Body/Catalog"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Categories" type="OptionButton" parent="Layout/Body/Catalog/TablePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_to_longest_item = false
+
+[node name="Section" type="HBoxContainer" parent="Layout/Body/Catalog/TablePanel"]
+layout_mode = 2
+
+[node name="SectionTitle" type="Label" parent="Layout/Body/Catalog/TablePanel/Section"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Field notes"
+theme_override_font_sizes/font_size = 19
+
+[node name="Count" type="Label" parent="Layout/Body/Catalog/TablePanel/Section"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="Search" type="LineEdit" parent="Layout/Body/Catalog/TablePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Find an entry…"
+
+[node name="Actions" type="HFlowContainer" parent="Layout/Body/Catalog/TablePanel"]
+layout_mode = 2
+
+[node name="New" type="Button" parent="Layout/Body/Catalog/TablePanel/Actions"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "+ New"
-[node name="Duplicate" type="Button" parent="Layout/Body/Workspace/TablePanel/Actions"]
+theme_override_font_sizes/font_size = 12
+
+[node name="Duplicate" type="Button" parent="Layout/Body/Catalog/TablePanel/Actions"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Duplicate"
-[node name="Remove" type="Button" parent="Layout/Body/Workspace/TablePanel/Actions"]
+theme_override_font_sizes/font_size = 12
+
+[node name="Remove" type="Button" parent="Layout/Body/Catalog/TablePanel/Actions"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Remove"
-[node name="SelectionCount" type="Label" parent="Layout/Body/Workspace/TablePanel/Actions"]
+theme_override_font_sizes/font_size = 12
+
+[node name="SelectionCount" type="Label" parent="Layout/Body/Catalog/TablePanel"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-horizontal_alignment = 2
-[node name="Entries" type="Tree" parent="Layout/Body/Workspace/TablePanel"]
+theme_override_font_sizes/font_size = 11
+
+[node name="Entries" type="Tree" parent="Layout/Body/Catalog/TablePanel"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
 size_flags_vertical = 3
+custom_minimum_size = Vector2(0,180)
 hide_root = true
 select_mode = 2
-column_titles_visible = true
+columns = 1
+column_titles_visible = false
 allow_reselect = true
-[node name="BulkTools" type="HBoxContainer" parent="Layout/Body/Workspace/TablePanel"]
+
+[node name="GraphMode" type="Button" parent="Layout/Body/Catalog/TablePanel"]
 unique_name_in_owner = true
 layout_mode = 2
-[node name="BulkField" type="OptionButton" parent="Layout/Body/Workspace/TablePanel/BulkTools"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-[node name="Times" type="Label" parent="Layout/Body/Workspace/TablePanel/BulkTools"]
-layout_mode = 2
-text = "×"
-[node name="BulkFactor" type="SpinBox" parent="Layout/Body/Workspace/TablePanel/BulkTools"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(92, 0)
-layout_mode = 2
-min_value = 0.0
-max_value = 100.0
-step = 0.05
-value = 1.0
-[node name="BulkApply" type="Button" parent="Layout/Body/Workspace/TablePanel/BulkTools"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Apply to selected"
-[node name="Validation" type="RichTextLabel" parent="Layout/Body/Workspace/TablePanel"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 82)
-layout_mode = 2
-selection_enabled = true
-text = "Validation"
-[node name="DetailsPanel" type="PanelContainer" parent="Layout/Body/Workspace"]
-custom_minimum_size = Vector2(400, 0)
-layout_mode = 2
-theme_override_styles/panel = SubResource("Panel")
-[node name="Details" type="VBoxContainer" parent="Layout/Body/Workspace/DetailsPanel"]
-layout_mode = 2
-theme_override_constants/separation = 8
-[node name="DetailsTitle" type="Label" parent="Layout/Body/Workspace/DetailsPanel/Details"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 19
-text = "Select an entry"
-[node name="EntryPath" type="Label" parent="Layout/Body/Workspace/DetailsPanel/Details"]
-unique_name_in_owner = true
-layout_mode = 2
-text_overrun_behavior = 3
-theme_override_font_sizes/font_size = 11
-[node name="Preview" parent="Layout/Body/Workspace/DetailsPanel/Details" instance=ExtResource("2")]
-unique_name_in_owner = true
-layout_mode = 2
-[node name="Metrics" type="RichTextLabel" parent="Layout/Body/Workspace/DetailsPanel/Details"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 92)
-layout_mode = 2
-selection_enabled = true
-[node name="Scroll" type="ScrollContainer" parent="Layout/Body/Workspace/DetailsPanel/Details"]
-layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
-[node name="DetailContent" type="VBoxContainer" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 18
-[node name="RecipeEditor" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll/DetailContent" instance=ExtResource("recipe_editor")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-[node name="DiscoveryRecipes" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll/DetailContent" instance=ExtResource("discovery_recipes")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-[node name="Fields" type="VBoxContainer" parent="Layout/Body/Workspace/DetailsPanel/Details/Scroll/DetailContent"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 12
-[node name="Usage" type="Label" parent="Layout/Body/Workspace/DetailsPanel/Details"]
+text = "Graph view"
+toggle_mode = true
+
+[node name="Hint" type="Label" parent="Layout/Body/Catalog/TablePanel"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
 theme_override_font_sizes/font_size = 11
+text = "Select an entry to explore its parameters."
+
+[node name="Validation" type="RichTextLabel" parent="Layout/Body/Catalog/TablePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+custom_minimum_size = Vector2(0,80)
+selection_enabled = true
+
+[node name="StageArea" type="VBoxContainer" parent="Layout/Body"]
+layout_mode = 2
+custom_minimum_size = Vector2(280,0)
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.15
+
+[node name="DiscoveryGraph" parent="Layout/Body/StageArea" instance=ExtResource("discovery_graph")]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+
+[node name="Specimen" type="VBoxContainer" parent="Layout/Body/StageArea"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Eyebrow" type="Label" parent="Layout/Body/StageArea/Specimen"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SPECIMEN"
+theme_override_font_sizes/font_size = 11
+
+[node name="DetailsTitle" type="Label" parent="Layout/Body/StageArea/Specimen"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "World Studio"
+theme_override_fonts/font = SubResource("TitleFont")
+theme_override_font_sizes/font_size = 32
+text_overrun_behavior = 3
+
+[node name="EntryPath" type="Label" parent="Layout/Body/StageArea/Specimen"]
+unique_name_in_owner = true
+layout_mode = 2
+text_overrun_behavior = 3
+theme_override_font_sizes/font_size = 10
+
+[node name="EntryDescription" type="Label" parent="Layout/Body/StageArea/Specimen"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.635,0.682,0.608,1)
+
+[node name="Preview" parent="Layout/Body/StageArea/Specimen" instance=ExtResource("preview")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Metrics" type="RichTextLabel" parent="Layout/Body/StageArea/Specimen"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_content = true
+scroll_active = false
+selection_enabled = true
+theme_override_font_sizes/normal_font_size = 12
+
+[node name="PreviewNote" type="Label" parent="Layout/Body/StageArea/Specimen"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Preview the real asset. Balance changes apply when you next start the game."
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.51,0.58,0.48,1)
+
+[node name="DetailsPanel" type="PanelContainer" parent="Layout/Body"]
+layout_mode = 2
+custom_minimum_size = Vector2(310,0)
+size_flags_horizontal = 3
+
+[node name="Details" type="VBoxContainer" parent="Layout/Body/DetailsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="EditorHeading" type="Label" parent="Layout/Body/DetailsPanel/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SPECIES BALANCE"
+theme_override_font_sizes/font_size = 11
+
+[node name="EditorTitle" type="Label" parent="Layout/Body/DetailsPanel/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Shape their nature"
+theme_override_fonts/font = SubResource("TitleFont")
+theme_override_font_sizes/font_size = 23
+
+[node name="ParameterSearch" type="LineEdit" parent="Layout/Body/DetailsPanel/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Find a parameter…"
+
+[node name="Scroll" type="ScrollContainer" parent="Layout/Body/DetailsPanel/Details"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="DetailContent" type="VBoxContainer" parent="Layout/Body/DetailsPanel/Details/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="RecipeEditor" parent="Layout/Body/DetailsPanel/Details/Scroll/DetailContent" instance=ExtResource("recipe_editor")]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+
+[node name="DiscoveryRecipes" parent="Layout/Body/DetailsPanel/Details/Scroll/DetailContent" instance=ExtResource("discovery_recipes")]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+
+[node name="Fields" type="VBoxContainer" parent="Layout/Body/DetailsPanel/Details/Scroll/DetailContent"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Usage" type="Label" parent="Layout/Body/DetailsPanel/Details/Scroll/DetailContent"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 10
+
+[node name="Dirty" type="Label" parent="Layout/Body/DetailsPanel/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "All changes saved"
+theme_override_font_sizes/font_size = 12
+
+[node name="SaveActions" type="HFlowContainer" parent="Layout/Body/DetailsPanel/Details"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 6
+
+[node name="Undo" type="Button" parent="Layout/Body/DetailsPanel/Details/SaveActions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Undo"
+
+[node name="Redo" type="Button" parent="Layout/Body/DetailsPanel/Details/SaveActions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Redo"
+
+[node name="Reload" type="Button" parent="Layout/Body/DetailsPanel/Details/SaveActions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reload"
+
+[node name="Save" type="Button" parent="Layout/Body/DetailsPanel/Details/SaveActions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Save All"
+theme_type_variation = &"PrimaryButton"
+
+[node name="Validate" type="Button" parent="Layout/Body/DetailsPanel/Details/SaveActions"]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+text = "Validate"
+
+[node name="DesignDoc" parent="Layout" instance=ExtResource("design")]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+
+[node name="AiGraph" parent="Layout" instance=ExtResource("ai_graph")]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+
 [node name="Status" type="Label" parent="Layout"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
 text = "Ready"
+theme_override_font_sizes/font_size = 12
+
+[node name="ExternalPoll" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 2.0
+autostart = true
+
 [node name="AssetDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
-size = Vector2i(900, 600)
+size = Vector2i(900,600)
 access = 0
 file_mode = 0
+
 [node name="ReloadDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true
 title = "Reload database"
-dialog_text = "Reload all definitions from disk? Unsaved changes in this panel will be discarded."
+dialog_text = "Reload saved data? Unsaved edits in this panel will be discarded."
+
 [node name="RemoveDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true
 title = "Remove database entries"
 
 [node name="RecipeDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true
-title = "Create combination recipe"
-size = Vector2i(620,500)
-min_size = Vector2i(560,480)
+title = "Create recipe"
+size = Vector2i(620,340)
+min_size = Vector2i(560,300)
 ok_button_text = "Create recipe"
+
 [node name="RecipeDraft" parent="RecipeDialog" instance=ExtResource("recipe_editor")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(520,390)
+custom_minimum_size = Vector2(520,240)

@@ -171,17 +171,11 @@ layout_mode = 2
 custom_minimum_size = Vector2(0,44)
 text = "Reset"
 
-[node name="SaveQuit" type="Button" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
+[node name="ConfirmQuit" type="Button" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(0,44)
-text = "Save and quit"
-
-[node name="QuitWithoutSaving" type="Button" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(0,44)
-text = "Quit without saving"
+text = "Quit game"
 
 [node name="Cancel" type="Button" parent="Margin/Center/Panel/Padding/Content/Confirmation"]
 unique_name_in_owner = true

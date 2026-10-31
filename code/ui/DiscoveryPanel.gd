@@ -7,6 +7,7 @@ extends Control
 const TOKEN = preload("res://scenes/ui/discovery_token.tscn")
 const RECIPE_ROW = preload("res://scenes/ui/discovery_recipe_row.tscn")
 var _selected_id: StringName
+var _archive_category := -1
 var _drag_source: DiscoveryToken
 var _drag_entry: DiscoveryDefinition
 var _drag_offset := Vector2.ZERO
@@ -14,9 +15,14 @@ var _drag_offset := Vector2.ZERO
 func _ready() -> void:
 	hide()
 	%Clear.pressed.connect(_clear_workspace)
-	for picker: OptionButton in [%Category,%ArchiveCategory,%Sort,%ArchiveSort]:
+	for picker: OptionButton in [%Category,%Sort,%ArchiveSort]:
 		picker.item_selected.connect(func(_index): _refresh_catalog())
-	%Tabs.tab_changed.connect(func(_index): _cancel_drag())
+	var category_group := ButtonGroup.new()
+	for tab: DiscoveryCategoryTab in %CategoryTabs.get_children():
+		tab.button_group = category_group
+		tab.pressed.connect(_select_category.bind(tab))
+	%Close.pressed.connect(func(): map_manager.set_mode(MapManager.MODE.NONE))
+	%Tabs.tab_changed.connect(_on_tab_changed)
 	map_manager.discoveries.seen.connect(_on_seen)
 	%Search.text_changed.connect(func(_text): _refresh_catalog())
 	%ArchiveSearch.text_changed.connect(func(_text): _refresh_catalog())
@@ -26,6 +32,18 @@ func _ready() -> void:
 	%Workspace.resized.connect(_clamp_tokens)
 	get_window().focus_exited.connect(_cancel_drag)
 	get_node("/root/GameManager").connect("pause_changed",_on_pause_changed)
+	_on_tab_changed(%Tabs.current_tab)
+
+func _on_tab_changed(index: int) -> void:
+	_cancel_drag()
+	tooltip_controller.hide_tooltip()
+	%Count.visible = index == 0
+
+func _select_category(tab: DiscoveryCategoryTab) -> void:
+	_archive_category = tab.category
+	%ArchiveScroll.scroll_vertical = 0
+	%DetailScroll.scroll_vertical = 0
+	_refresh_catalog()
 
 func _clamp_tokens() -> void:
 	for token: DiscoveryToken in %Workspace.get_children():
@@ -44,9 +62,12 @@ func _refresh_catalog() -> void:
 		for child in catalog.get_children():
 			catalog.remove_child(child)
 			child.queue_free()
-	for entry: DiscoveryDefinition in _filtered_entries(%Search,%Category,%Sort):
+	for entry: DiscoveryDefinition in _filtered_entries(%Search,%Category.selected-1,%Sort):
 		%Catalog.add_child(_make_token(entry,false))
-	for entry: DiscoveryDefinition in _filtered_entries(%ArchiveSearch,%ArchiveCategory,%ArchiveSort):
+	var entries := _filtered_entries(%ArchiveSearch,_archive_category,%ArchiveSort)
+	if not entries.any(func(entry): return entry.id == _selected_id):
+		_selected_id = entries[0].id if not entries.is_empty() else &""
+	for entry: DiscoveryDefinition in entries:
 		var archived := _make_token(entry,false)
 		archived.draggable = false
 		archived.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -55,16 +76,31 @@ func _refresh_catalog() -> void:
 		%Archive.add_child(archived)
 	var count := map_manager.discoveries.known_entries().size()
 	%Count.text = tr("Discoveries: %d") % count
-	var entries := _filtered_entries(%ArchiveSearch,%ArchiveCategory,%ArchiveSort)
-	if not entries.any(func(entry): return entry.id == _selected_id):
-		_selected_id = entries[0].id if not entries.is_empty() else &""
+	%ArchiveEmpty.visible = entries.is_empty()
+	_refresh_category_counts()
 	_refresh_recipe_details()
 
-func _filtered_entries(search: LineEdit, category: OptionButton, sorting: OptionButton) -> Array[DiscoveryDefinition]:
+func _refresh_category_counts() -> void:
+	for tab: DiscoveryCategoryTab in %CategoryTabs.get_children():
+		var total := 0
+		var known := 0
+		for entry: DiscoveryDefinition in map_manager.database.discoveries:
+			if tab.category >= 0 and entry.category != tab.category:
+				continue
+			total += 1
+			if map_manager.discoveries.knows(entry.id):
+				known += 1
+		tab.set_counts(known,total)
+	var total := map_manager.database.discoveries.size()
+	var known := map_manager.discoveries.known_entries().size()
+	%CatalogProgress.value = 100.0*known/total if total > 0 else 0.0
+	%CatalogPercent.text = "%d%%" % roundi(%CatalogProgress.value)
+
+func _filtered_entries(search: LineEdit, category: int, sorting: OptionButton) -> Array[DiscoveryDefinition]:
 	var result: Array[DiscoveryDefinition] = []
 	var query := search.text.strip_edges().to_lower()
 	for entry: DiscoveryDefinition in map_manager.discoveries.known_entries():
-		if category.selected > 0 and entry.category != category.selected-1:
+		if category >= 0 and entry.category != category:
 			continue
 		if not query.is_empty() and not entry.display_name.to_lower().contains(query):
 			continue
@@ -209,6 +245,7 @@ func _remove_token(token: DiscoveryToken) -> void:
 
 func _select_archive(token: DiscoveryToken) -> void:
 	_selected_id = token.entry.id
+	%DetailScroll.scroll_vertical = 0
 	_refresh_recipe_details()
 
 func _refresh_recipe_details() -> void:
@@ -239,7 +276,8 @@ func _refresh_recipe_details() -> void:
 			%Recipes.add_child(row)
 			var visible_part := 2 if recipe.result == entry.id else (0 if recipe.first == entry.id else 1)
 			row.configure(map_manager.database,recipe,discovered,visible_part)
-	%DetailCount.text = tr("%d / %d combinations discovered") % [known,matching.size()]
+	%DetailProgress.max_value = maxi(1,matching.size())
+	%DetailProgress.value = known
 
 func owns_secondary_action() -> bool:
 	if not visible:

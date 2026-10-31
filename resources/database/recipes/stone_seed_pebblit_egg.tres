@@ -1,10 +1,12 @@
 [gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
-[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="script"]
+
+[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="1_04lu8"]
+
 [resource]
-script = ExtResource("script")
-id = &"stone_seed_pebblit_egg"
-display_name = "Stone + Seed"
+script = ExtResource("1_04lu8")
 first = &"stone"
-second = &"seed"
-result = &"pebblit_egg"
-science_reward = 1
+second = &"rootle_egg"
+result = &"incubator"
+id = &"stone_seed_pebblit_egg"
+display_name = "Stone + Rootle Egg → Incubator"
+science_reward = 0

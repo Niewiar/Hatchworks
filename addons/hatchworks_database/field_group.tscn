@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[node name="FieldGroup" type="VBoxContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Header" type="Button" parent="."]
+layout_mode = 2
+text = "Parameters"
+toggle_mode = true
+button_pressed = true
+alignment = 0
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12

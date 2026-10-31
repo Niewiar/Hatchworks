@@ -7,15 +7,18 @@ signal focus_changed(focused: bool)
 
 @export var minimum_zoom := 4.0
 @export var maximum_zoom := 90.0
+@export var focus_minimum_zoom := 1.6
+@export var focus_maximum_zoom := 5.0
+@export var focus_start_zoom := 3.2
+@export_range(1.0, 2.0, 0.05) var focus_release_zoom_factor := 1.2
 @export_range(0.001, 0.02, 0.001) var orbit_sensitivity := 0.005
 
 var _world_size := Vector2(65.5, 65.5)
 var _orbit_center := Vector3.ZERO
 var _focused := false
-var _restoring := false
+var _releasing := false
 var _focus_point := Vector3.ZERO
-var _saved_transform := Transform3D.IDENTITY
-var _saved_size := 9.0
+var _release_size := 4.0
 var _focus_size := 5.0
 
 func configure(world_size: Vector2) -> void:
@@ -26,6 +29,7 @@ func configure(world_size: Vector2) -> void:
 func pan(previous: Vector2, current: Vector2, surface: Node3D) -> void:
 	if _focused:
 		return
+	begin_navigation()
 	var from = GroundPicker3D.from_screen(self, previous, surface)
 	var to = GroundPicker3D.from_screen(self, current, surface)
 	if from != null and to != null:
@@ -37,6 +41,7 @@ func pan(previous: Vector2, current: Vector2, surface: Node3D) -> void:
 func pan_direction(direction: Vector2, delta: float, surface: Node3D) -> void:
 	if _focused or direction.is_zero_approx():
 		return
+	begin_navigation()
 	var right := Vector3(global_basis.x.x,0,global_basis.x.z).normalized()
 	var down := Vector3(global_basis.z.x,0,global_basis.z.z).normalized()
 	var previous_position := global_position
@@ -46,7 +51,7 @@ func pan_direction(direction: Vector2, delta: float, surface: Node3D) -> void:
 
 func begin_orbit(surface: Node3D) -> bool:
 	if _focused:
-		return false
+		return true
 	var screen := get_viewport().get_visible_rect().size * 0.5
 	var focus = GroundPicker3D.from_screen(self, screen, surface)
 	if focus == null:
@@ -57,18 +62,21 @@ func begin_orbit(surface: Node3D) -> bool:
 	return true
 
 func orbit(horizontal_delta: float) -> void:
-	if _focused:
-		return
+	if not _focused:
+		begin_navigation()
 	var turn := Basis(Vector3.UP, -horizontal_delta * orbit_sensitivity)
-	global_position = _orbit_center + turn * (global_position - _orbit_center)
+	var center := _focus_point if _focused else _orbit_center
+	global_position = center + turn * (global_position - center)
 	global_basis = (turn * global_basis).orthonormalized()
 	rotated.emit(-horizontal_delta * orbit_sensitivity)
 
 func zoom(direction: int, screen_position: Vector2, surface: Node3D) -> void:
 	if _focused:
+		_focus_size = clampf(_focus_size * pow(0.9,direction),focus_minimum_zoom,focus_maximum_zoom)
 		return
+	begin_navigation()
 	var before = GroundPicker3D.from_screen(self, screen_position, surface)
-	size = clampf(size * pow(0.9, direction), minimum_zoom, maximum_zoom)
+	size = clampf(size * pow(0.9, direction), minf(size,minimum_zoom), maximum_zoom)
 	var after = GroundPicker3D.from_screen(self, screen_position, surface)
 	if before != null and after != null:
 		global_position += before - after
@@ -85,55 +93,55 @@ func _clamp_position(surface: Node3D) -> void:
 
 func focus_on(point: Vector3) -> void:
 	if not _focused:
-		_saved_transform = global_transform
-		_saved_size = size
-		_focus_size = clampf(minf(size,3.2),1.2,maximum_zoom)
+		_focus_size = clampf(focus_start_zoom,focus_minimum_zoom,focus_maximum_zoom)
 	_focused = true
 	focus_changed.emit(true)
-	_restoring = false
+	_releasing = false
 	_focus_point = point
+	global_position = _focus_point+global_basis.z*20.0
 	set_process(true)
 
 func track_focus(point: Vector3) -> void:
 	_focus_point = point
+	if _focused:
+		global_position = _focus_point+global_basis.z*20.0
 
 func release_focus() -> void:
 	if not _focused:
 		return
 	_focused = false
 	focus_changed.emit(false)
-	_restoring = true
+	_release_size = clampf(size*focus_release_zoom_factor,focus_minimum_zoom,maximum_zoom)
+	_releasing = true
 	set_process(true)
 
 func begin_navigation() -> void:
-	_restoring = false
+	_releasing = false
 	set_process(_focused)
 
 func _process(delta: float) -> void:
 	var weight := 1.0-exp(-8.0*delta)
 	if _focused:
-		global_position = global_position.lerp(_focus_point+global_basis.z*20.0+global_basis.x*0.55,weight)
+		global_position = _focus_point+global_basis.z*20.0
 		size = lerpf(size,_focus_size,weight)
-	elif _restoring:
-		global_position = global_position.lerp(_saved_transform.origin,weight)
-		global_basis = global_basis.slerp(_saved_transform.basis,weight).orthonormalized()
-		size = lerpf(size,_saved_size,weight)
-		if global_position.distance_to(_saved_transform.origin) < 0.01 and absf(size-_saved_size) < 0.01:
-			global_transform = _saved_transform
-			size = _saved_size
-			_restoring = false
+	elif _releasing:
+		size = lerpf(size,_release_size,weight)
+		if absf(size-_release_size) < 0.01:
+			size = _release_size
+			_releasing = false
 			set_process(false)
 	else:
 		set_process(false)
 
 func capture_view() -> Dictionary:
-	return {"transform":_saved_transform if _focused or _restoring else global_transform,"size":_saved_size if _focused or _restoring else size}
+	var saved_size := clampf(size*focus_release_zoom_factor,focus_minimum_zoom,maximum_zoom) if _focused else (_release_size if _releasing else size)
+	return {"transform":global_transform,"size":saved_size}
 
 func restore_view(value: Dictionary) -> void:
 	_focused = false
 	focus_changed.emit(false)
-	_restoring = false
+	_releasing = false
 	if value.get("transform") is Transform3D:
 		global_transform = value.transform
-	size = clampf(float(value.get("size",size)),minimum_zoom,maximum_zoom)
+	size = clampf(float(value.get("size",size)),focus_minimum_zoom,maximum_zoom)
 	set_process(false)

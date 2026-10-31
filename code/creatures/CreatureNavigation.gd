@@ -219,12 +219,12 @@ func path_to(from: Vector3, destination: Vector3) -> PackedVector3Array:
 		return PackedVector3Array()
 	return result
 
-func _live_point_clear(point: Vector3) -> bool:
+func _live_point_clear(point: Vector3, radius: float = 0.5) -> bool:
 	var terrain: TerrainController = _map.terrain_controller
 	if not terrain.contains_world_point(point) or _map.regions_controller.region_id_at(point) <= 0 or terrain.slope_at(point) > 1.0:
 		return false
 	var local := terrain.to_local(point)
-	return not _map.vegetation_controller.occupied(Vector2(local.x,local.z),0.65) and not _map.rock_controller.occupied(point,0.5) and not _map.building_controller.occupied(point,0.2)
+	return not _map.vegetation_controller.occupied(Vector2(local.x,local.z),0.65) and not _map.rock_controller.occupied(point,radius) and not _map.building_controller.occupied(point,0.2)
 
 func _live_path_clear(origin: Vector3, path: PackedVector3Array, region_id: int) -> bool:
 	var previous: Vector3 = _map.terrain_controller.surface_position(origin)+Vector3.UP*0.5
@@ -351,7 +351,7 @@ func _unregister_actor(actor: Creature) -> void:
 
 func reserve_place(actor: Creature, point: Vector3) -> bool:
 	var current := Vector2(point.x-actor.global_position.x,point.z-actor.global_position.z).length_squared() <= 0.0009
-	if not _live_point_clear(point) or (not current and not space_available(point,actor)):
+	if not _live_point_clear(point,actor.body_radius()) or (not current and not space_available(point,actor)):
 		return false
 	_claims[actor] = point
 	return true

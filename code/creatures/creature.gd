@@ -3,6 +3,9 @@ extends CharacterBody3D
 
 @export var terrain_controller: TerrainController
 @export var animation_player: AnimationPlayer
+@export var male_appearance: PackedScene
+@export var female_appearance: PackedScene
+@export_range(0.0, 0.2, 0.01) var landing_squash := 0.1
 @export var species_id: StringName = &"tuftling"
 
 var satiety := 100.0
@@ -27,7 +30,7 @@ var sex: SEX = SEX.MALE:
 	set(value):
 		sex = value
 		if is_node_ready():
-			_apply_sex_appearance()
+			prepare_appearance()
 
 enum STATE { GROUNDED, HELD, FALLING, LANDING }
 
@@ -44,6 +47,7 @@ var _landing_strength := 0.0
 var _airborne_elapsed := 0.0
 
 func _ready() -> void:
+	prepare_appearance()
 	var host := get_parent() if get_parent() is MapManager else get_parent().get_node_or_null("Map")
 	var database: GameDatabase = host.database if host is MapManager else load(GameDatabase.DEFAULT_PATH) as GameDatabase
 	_species = database.creature(species_id)
@@ -69,9 +73,9 @@ func _ready() -> void:
 		_model = animation_player.get_node(animation_player.root_node) as Node3D
 		if _model != null:
 			_model_scale = _model.scale
-		animation_player.animation_finished.connect(_on_animation_finished)
+		if not animation_player.animation_finished.is_connected(_on_animation_finished):
+			animation_player.animation_finished.connect(_on_animation_finished)
 		_play_animation(&"Idle")
-	_apply_sex_appearance()
 	_voice_wait = randf_range(8.0,18.0)
 	if _navigation != null:
 		_navigation.get_parent().wellbeing.invalidate()
@@ -107,7 +111,7 @@ func _physics_process(delta: float) -> void:
 		var duration := animation_player.get_animation(&"Land").length/maxf(absf(animation_player.speed_scale),0.01) if animation_player != null and animation_player.has_animation(&"Land") else 0.18
 		if _landing_elapsed >= duration+0.15:
 			_finish_landing()
-		var squash := sin(minf(_landing_elapsed / 0.18, 1.0) * PI) * 0.1 * _landing_strength
+		var squash := sin(minf(_landing_elapsed / 0.18, 1.0) * PI) * landing_squash * _landing_strength
 		if _model != null:
 			_model.scale = _model_scale * Vector3(1.0 + squash * 0.6, 1.0 - squash, 1.0 + squash * 0.6)
 
@@ -181,6 +185,7 @@ func _play_animation(name: StringName, blend: float = 0.12) -> bool:
 	if animation_player == null or not animation_player.has_animation(name):
 		return false
 	if animation_player.current_animation != name:
+		animation_player.speed_scale = 1.0
 		animation_player.play(name, blend)
 		if name == &"behaviour/Call":
 			SoundEffects.play_at(StringName(str(species_id)+"_voice"),global_position,self,0.9 if sex == SEX.MALE else 1.1)
@@ -203,8 +208,8 @@ func species_data() -> CreatureSpecies:
 	return _species
 
 func inspection_bounds() -> AABB:
-	var radius := body_radius()+0.12
-	return AABB(Vector3(-radius,-radius,-radius),Vector3(radius*2.0,radius*2.0+0.65,radius*2.0))
+	var radius := body_radius()+0.06
+	return AABB(Vector3(-radius,-radius,-radius),Vector3(radius*2.0,radius*2.0+0.325,radius*2.0))
 
 func _process(delta: float) -> void:
 	breeding_cooldown = maxf(0.0,breeding_cooldown-delta)
@@ -238,16 +243,43 @@ func _update_habitat_needs() -> void:
 	crowding_stress = (1.0-space_score)*_species.crowding_sensitivity
 	noise_stress = map.noise.level_at(global_position,self)*_species.noise_sensitivity
 	species_stress = sample.aversion
-	var company_score := 1.0 if companions > 0 else 0.0
-	_happiness_target = clampf(satiety*0.45+35.0+company_score*20.0-crowding_stress*35.0-noise_stress*25.0-species_stress*25.0,0.0,100.0)
+	_happiness_target = happiness_factors().target
+
+func happiness_factors() -> Dictionary:
+	var factors := {"base":35.0,"satiety":satiety*0.45,"company":20.0 if companions > 0 else 0.0,"crowding":-crowding_stress*35.0,"noise":-noise_stress*25.0,"neighbours":-species_stress*25.0}
+	var total := 0.0
+	for value: float in factors.values():
+		total += value
+	factors["target"] = clampf(total,0.0,100.0)
+	return factors
 
 func work_efficiency() -> float:
 	return lerpf(0.7,1.1,clampf(happiness/100.0,0.0,1.0))
 
-func _apply_sex_appearance() -> void:
-	var appearance := get_node_or_null("Model")
+func prepare_appearance() -> void:
+	var appearance := get_node_or_null("Model") as Node3D
 	if appearance == null:
-		appearance = get_node_or_null("mossling_v1")
+		appearance = get_node_or_null("mossling_v1") as Node3D
+	var variant := female_appearance if sex == SEX.FEMALE else male_appearance
+	if variant != null and (appearance == null or appearance.scene_file_path != variant.resource_path):
+		var initialized := is_node_ready()
+		if initialized:
+			interrupt_activity()
+		var replacement := variant.instantiate() as Node3D
+		replacement.name = appearance.name if appearance != null else &"Model"
+		if animation_player != null and animation_player.animation_finished.is_connected(_on_animation_finished):
+			animation_player.animation_finished.disconnect(_on_animation_finished)
+		if appearance != null:
+			remove_child(appearance)
+			appearance.queue_free()
+		add_child(replacement)
+		appearance = replacement
+		animation_player = replacement.find_child("AnimationPlayer", true, false) as AnimationPlayer
+		_model = replacement
+		_model_scale = replacement.scale
+		if initialized and animation_player != null:
+			animation_player.animation_finished.connect(_on_animation_finished)
+			_play_animation(&"HeldIdle" if _state == STATE.HELD else (&"Fall" if _state == STATE.FALLING else &"Idle"))
 	if appearance != null and appearance.has_method("apply_sex"):
 		appearance.apply_sex(sex)
 

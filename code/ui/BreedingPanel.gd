@@ -22,13 +22,13 @@ func configure(creature: Creature, map: Node3D) -> void:
 func refresh() -> void:
 	var active: bool = _map.breeding.is_breeding(_creature)
 	var status: String = _map.breeding.status(_creature)
-	_status = _message if not _message.is_empty() and status.begins_with(tr("Ready")) else status
-	%BreedStatus.visible = active or not _message.is_empty()
-	%BreedStatus.text = _message if not _message.is_empty() and status.begins_with(tr("Ready")) else (tr("Ready") if status.begins_with(tr("Ready")) else status)
+	var ready: bool = _map.breeding.can_call(_creature)
+	_status = _message if not _message.is_empty() and ready else status
+	%BreedStatus.text = _status
 	%BreedProgress.visible = active
 	%BreedProgress.value = _map.breeding.progress(_creature)*100.0
-	%Breed.text = tr("Cancel breeding") if active else (tr("Call a mate") if _creature.sex == Creature.SEX.MALE else tr("Find a calling male"))
-	%Breed.disabled = not active and not status.begins_with(tr("Ready"))
+	%Breed.text = tr("Cancel breeding") if active else tr("Start breeding")
+	%Breed.disabled = not active and not ready
 	var data := _creature.species_data()
 	var habitat := tr("dry ground")
 	if data.habitat_ground >= 0:

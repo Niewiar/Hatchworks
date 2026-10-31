@@ -7,3 +7,4 @@ display_name = "Life + Tuftling Egg → Life Workshop"
 first = &"life"
 second = &"tuftling_egg"
 result = &"life_workshop"
+science_reward = 0

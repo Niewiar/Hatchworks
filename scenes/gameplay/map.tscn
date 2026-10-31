@@ -32,7 +32,6 @@
 [ext_resource type="Script" path="res://code/discovery/DiscoveryController.gd" id="discoveries"]
 [ext_resource type="Script" path="res://code/resources/ItemInventory.gd" id="items"]
 
-[ext_resource type="PackedScene" path="res://scenes/incubation/incubator.tscn" id="starting_incubator"]
 
 [ext_resource type="Script" path="res://code/discovery/ScienceController.gd" id="science"]
 [ext_resource type="Script" path="res://code/creatures/BreedingController.gd" id="breeding"]
@@ -105,7 +104,6 @@ script = ExtResource("items")
 [node name="Discoveries" type="Node" parent="."]
 script = ExtResource("discoveries")
 
-[node name="Incubator" parent="Buildings" instance=ExtResource("starting_incubator")]
 
 [node name="Science" type="Node" parent="."]
 script = ExtResource("science")

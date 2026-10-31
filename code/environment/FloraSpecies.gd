@@ -20,6 +20,7 @@ enum KIND { TREE, SHRUB, FERN, REEDS, GRASS }
 @export_group("Harvesting")
 @export var harvest_resource: ResourceInventory.KIND = ResourceInventory.KIND.FIBER
 @export var harvest_amount := 1
+@export_range(0.0, 1.0, 0.01) var sapling_chance := 0.3
 
 @export_group("Habitat")
 @export var maximum_slope := 0.6

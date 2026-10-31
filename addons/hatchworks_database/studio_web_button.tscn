@@ -1,0 +1,43 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://addons/hatchworks_database/studio_web_button.gd" id="script"]
+[node name="OpenWeb" type="Button"]
+layout_mode = 2
+text = "Open Web Studio ↗"
+script = ExtResource("script")
+[node name="Request" type="HTTPRequest" parent="."]
+timeout = 2.0
+[node name="Retry" type="Timer" parent="."]
+wait_time = 2.0
+
+[node name="Settings" type="ConfirmationDialog" parent="."]
+title = "Web Studio connection"
+size = Vector2i(650,220)
+ok_button_text = "Save connection"
+[node name="Fields" type="VBoxContainer" parent="Settings"]
+theme_override_constants/separation = 12
+[node name="PortLabel" type="Label" parent="Settings/Fields"]
+layout_mode = 2
+text = "Local server port"
+[node name="Port" type="SpinBox" parent="Settings/Fields"]
+layout_mode = 2
+min_value = 1024.0
+max_value = 65535.0
+value = 8769.0
+[node name="LauncherLabel" type="Label" parent="Settings/Fields"]
+layout_mode = 2
+text = "Open Creature Editor.ps1 · leave blank to locate the sibling Studio"
+[node name="Launcher" type="HBoxContainer" parent="Settings/Fields"]
+layout_mode = 2
+[node name="Path" type="LineEdit" parent="Settings/Fields/Launcher"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Automatic"
+[node name="Browse" type="Button" parent="Settings/Fields/Launcher"]
+layout_mode = 2
+text = "Browse"
+[node name="LauncherDialog" type="FileDialog" parent="."]
+title = "Choose Studio launcher"
+size = Vector2i(800,500)
+access = 2
+file_mode = 0
+filters = PackedStringArray("*.ps1 ; PowerShell launcher")
