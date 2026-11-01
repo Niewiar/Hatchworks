@@ -1,14 +1,17 @@
 class_name HappinessMeter
 extends HBoxContainer
 
-const ICONS := [preload("res://assets/ui/happiness_unhappy.svg"),preload("res://assets/ui/happiness_neutral.svg"),preload("res://assets/ui/happiness_happy.svg")]
+const ICONS := [preload("res://assets/ui/illustrated/happiness_unhappy.svg"),preload("res://assets/ui/illustrated/happiness_neutral.svg"),preload("res://assets/ui/illustrated/happiness_happy.svg")]
 const STATES := ["Unhappy","Neutral","Happy"]
-const COLORS := [Color(0.9,0.45,0.35),Color(0.94,0.74,0.3),Color(0.45,0.78,0.4)]
+const COLORS := [Color(0.73,0.43,0.30),Color(0.82,0.65,0.32),Color(0.51,0.62,0.31)]
 var _creature: Creature
 var _tooltips: TooltipController
 var _hovered := false
+var _fill: StyleBoxFlat
 
 func _ready() -> void:
+	_fill = $Scale/Track/Bar.get_theme_stylebox("fill").duplicate() as StyleBoxFlat
+	$Scale/Track/Bar.add_theme_stylebox_override("fill",_fill)
 	mouse_entered.connect(_show_hint)
 	mouse_exited.connect(_hide_hint)
 
@@ -21,25 +24,25 @@ func configure(creature: Creature, tooltips: TooltipController) -> void:
 func refresh() -> void:
 	if not is_instance_valid(_creature):
 		return
-	var state := _state()
+	var state := _creature.mood()
 	$Icon.texture = ICONS[state]
 	$Scale/Track/Bar.value = _creature.happiness
-	$Scale/Track/Bar.modulate = COLORS[state]
+	_fill.bg_color = COLORS[state]
 	$Value.text = tr("%d%%") % floori(_creature.happiness)
 	if _hovered and is_visible_in_tree():
 		_show_hint()
-
-func _state() -> int:
-	return 0 if _creature.happiness < 40.0 else (1 if _creature.happiness < 70.0 else 2)
 
 func _show_hint() -> void:
 	if not is_instance_valid(_creature) or not is_instance_valid(_tooltips):
 		return
 	_hovered = true
 	var factors := _creature.happiness_factors()
+	var species := _creature.species_data()
+	var unhappy := String.num(species.unhappy_threshold,2)
+	var happy := String.num(species.happy_threshold,2)
 	var lines := PackedStringArray([
-		tr("Happiness: %d%% · %s") % [floori(_creature.happiness),tr(STATES[_state()])],
-		tr("Unhappy: 0–39% · Neutral: 40–69% · Happy: 70–100%"),
+		tr("Happiness: %d%% · %s") % [floori(_creature.happiness),tr(STATES[_creature.mood()])],
+		tr("Unhappy: below %s%% · Neutral: %s%% to below %s%% · Happy: from %s%%") % [unhappy,unhappy,happy,happy],
 		"",
 		tr("Current conditions: %d%%") % roundi(factors.target),
 		tr("Base comfort: +%.1f pts") % factors.base,

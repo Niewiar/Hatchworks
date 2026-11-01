@@ -1,12 +1,17 @@
+
 [gd_scene format=3]
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
 [ext_resource type="Script" path="res://code/ui/NewContentBadge.gd" id="script"]
+
 [sub_resource type="StyleBoxFlat" id="badge"]
-bg_color = Color(0.81,0.69,0.26,1)
+bg_color = Color(0.863, 0.655, 0.251, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.98,0.90,0.54,1)
+border_color = Color(0.224, 0.18, 0.125, 1)
 corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_left = 14
@@ -15,6 +20,7 @@ content_margin_left = 6.0
 content_margin_right = 6.0
 content_margin_top = 2.0
 content_margin_bottom = 2.0
+
 [node name="NewContent" type="PanelContainer"]
 visible = false
 layout_mode = 1
@@ -29,12 +35,14 @@ mouse_filter = 2
 z_index = 2
 theme_override_styles/panel = SubResource("badge")
 script = ExtResource("script")
+theme = ExtResource("world_theme")
+
 [node name="Count" type="Label" parent="."]
 layout_mode = 2
 custom_minimum_size = Vector2(16,20)
 mouse_filter = 2
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.04,0.07,0.045,1)
+theme_override_colors/font_color = Color(0.224, 0.18, 0.125, 1)
 theme_override_font_sizes/font_size = 17
 text = "1"

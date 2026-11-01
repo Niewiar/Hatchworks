@@ -36,7 +36,7 @@ func _refresh() -> void:
 		var slot := _add_slot(id,info.name,str(map_manager.items.amount(id)),info.icon,info.description)
 		var data := map_manager.database.sapling(id)
 		if data != null:
-			var use := slot.get_node("Content/Use") as Button
+			var use := slot.get_node("Content/Header/Use") as Button
 			use.show()
 			use.pressed.connect(_use_sapling.bind(data,id))
 	%Empty.visible = ids.is_empty()
@@ -45,10 +45,10 @@ func _refresh() -> void:
 func _add_slot(id: StringName, title: String, quantity: String, icon: Texture2D, description: String) -> PanelContainer:
 	var slot := SLOT.instantiate() as PanelContainer
 	slot.set_meta("item_id",id)
-	slot.get_node("Content/Header/Icon").texture = icon
-	slot.get_node("Content/Header/Quantity").text = quantity
-	slot.get_node("Content/Header/New").visible = map_manager.new_content.item_is_unread(id)
-	slot.get_node("Content/Name").text = title
+	slot.get_node("Content/Icon").texture = icon
+	slot.get_node("Content/Header/Amount/Quantity").text = "×" + quantity
+	slot.get_node("Content/Header/Amount/New").visible = map_manager.new_content.item_is_unread(id)
+	slot.get_node("Content/Header/Name").text = title
 	slot.mouse_entered.connect(_on_slot_hovered.bind(slot,id,title,description))
 	slot.mouse_exited.connect(tooltip_controller.hide_text.bind(slot))
 	%Grid.add_child(slot)
@@ -67,7 +67,7 @@ func _refresh_badges() -> void:
 		return
 	for slot: Control in %Grid.get_children():
 		var id := StringName(slot.get_meta("item_id",&""))
-		slot.get_node("Content/Header/New").visible = map_manager.new_content.item_is_unread(id)
+		slot.get_node("Content/Header/Amount/New").visible = map_manager.new_content.item_is_unread(id)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():

@@ -1,46 +1,59 @@
+
 [gd_scene format=3]
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
 [ext_resource type="Script" path="res://code/ui/GameNotification.gd" id="script"]
+
 [sub_resource type="StyleBoxFlat" id="normal"]
-bg_color = Color(0.035,0.065,0.05,0.99)
+bg_color = Color(0.969, 0.925, 0.816, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.48,0.55,0.29,1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
+border_color = Color(0.55,0.43,0.28,1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
 [sub_resource type="StyleBoxFlat" id="hover"]
-bg_color = Color(0.08,0.13,0.09,1)
+bg_color = Color(1,0.965,0.859,1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.83,0.78,0.4,1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
+border_color = Color(0.863, 0.655, 0.251, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
 [sub_resource type="StyleBoxEmpty" id="empty"]
+
 [sub_resource type="StyleBoxFlat" id="track"]
-bg_color = Color(0.12,0.18,0.1,1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_left = 2
-corner_radius_bottom_right = 2
+bg_color = Color(0.898, 0.843, 0.702, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+border_color = Color(0.66,0.56,0.38,1)
+
 [sub_resource type="StyleBoxFlat" id="fill"]
-bg_color = Color(0.77,0.76,0.38,1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_left = 2
-corner_radius_bottom_right = 2
+bg_color = Color(0.345, 0.416, 0.231, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
 [node name="Notification" type="PanelContainer"]
-custom_minimum_size = Vector2(280,72)
-custom_maximum_size = Vector2(300,-1)
+custom_minimum_size = Vector2(300,76)
+custom_maximum_size = Vector2(320,-1)
 layout_mode = 2
 theme_override_styles/panel = SubResource("normal")
 script = ExtResource("script")
+theme = ExtResource("world_theme")
+
 [node name="Hit" type="Button" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
@@ -48,6 +61,7 @@ mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("empty")
 theme_override_styles/hover = SubResource("hover")
 theme_override_styles/pressed = SubResource("hover")
+
 [node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
 mouse_filter = 2
@@ -55,42 +69,49 @@ theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
+
 [node name="Content" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 8
+
 [node name="Row" type="HBoxContainer" parent="Margin/Content"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 10
+
 [node name="Icon" type="TextureRect" parent="Margin/Content/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(32,32)
+custom_minimum_size = Vector2(40,40)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
 [node name="Text" type="VBoxContainer" parent="Margin/Content/Row"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 3
+
 [node name="Title" type="Label" parent="Margin/Content/Row/Text"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 autowrap_mode = 3
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.9,0.79,0.44,1)
+theme_type_variation = &"SectionLabel"
+
 [node name="Message" type="Label" parent="Margin/Content/Row/Text"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 autowrap_mode = 3
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.87,0.92,0.75,1)
+theme_override_colors/font_color = Color(0.224, 0.18, 0.125, 1)
+
 [node name="Close" type="Button" parent="Margin/Content/Row"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(26,26)
@@ -98,6 +119,7 @@ layout_mode = 2
 size_flags_vertical = 0
 text = "X"
 flat = true
+
 [node name="Lifetime" type="ProgressBar" parent="Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -108,6 +130,7 @@ max_value = 16.0
 value = 16.0
 theme_override_styles/background = SubResource("track")
 theme_override_styles/fill = SubResource("fill")
+
 [node name="Expiry" type="Timer" parent="."]
 unique_name_in_owner = true
 wait_time = 16.0

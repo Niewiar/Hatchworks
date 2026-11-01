@@ -1,16 +1,23 @@
+
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
 [ext_resource type="Script" path="res://code/ui/HappinessMeter.gd" id="script"]
-[ext_resource type="Texture2D" path="res://assets/ui/happiness_unhappy.svg" id="unhappy"]
-[ext_resource type="Texture2D" path="res://assets/ui/happiness_neutral.svg" id="neutral"]
-[ext_resource type="Texture2D" path="res://assets/ui/happiness_happy.svg" id="happy"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/happiness_unhappy.svg" id="unhappy"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/happiness_neutral.svg" id="neutral"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/happiness_happy.svg" id="happy"]
 
 [sub_resource type="StyleBoxFlat" id="background"]
-bg_color = Color(0.13, 0.16, 0.13, 1)
+bg_color = Color(0.898, 0.843, 0.702, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
+border_color = Color(0.66,0.56,0.38,1)
 
 [sub_resource type="StyleBoxFlat" id="fill"]
 bg_color = Color(1, 1, 1, 1)
@@ -23,6 +30,7 @@ corner_radius_bottom_right = 5
 layout_mode = 2
 theme_override_constants/separation = 10
 script = ExtResource("script")
+theme = ExtResource("world_theme")
 
 [node name="Icon" type="TextureRect" parent="."]
 custom_minimum_size = Vector2(28, 28)

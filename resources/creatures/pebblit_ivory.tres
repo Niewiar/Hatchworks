@@ -4,6 +4,6 @@
 [resource]
 shader = ExtResource("shader")
 next_pass = ExtResource("outline")
-shader_parameter/shadow_color = Vector3(0.34, 0.24, 0.12)
-shader_parameter/base_color = Vector3(0.78, 0.64, 0.36)
-shader_parameter/highlight_color = Vector3(0.98, 0.88, 0.64)
+shader_parameter/shadow_color = Vector3(0.29569980, 0.16264719, 0.04696420)
+shader_parameter/base_color = Vector3(0.76776876, 0.57048160, 0.24286681)
+shader_parameter/highlight_color = Vector3(0.97740193, 0.84808826, 0.52252155)

@@ -59,3 +59,12 @@ func _physics_process(delta: float) -> void:
 	if _elapsed >= DURATION:
 		set_physics_process(false)
 		hatching_finished.emit()
+
+func stop_hatching() -> void:
+	set_physics_process(false)
+	for body in _fragments:
+		body.freeze = true
+		body.linear_velocity = Vector3.ZERO
+		body.angular_velocity = Vector3.ZERO
+		body.collision_layer = 0
+		body.collision_mask = 0

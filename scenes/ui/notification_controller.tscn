@@ -1,5 +1,10 @@
+
 [gd_scene format=3]
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
 [ext_resource type="Script" path="res://code/ui/NotificationController.gd" id="script"]
+
 [node name="Notifications" type="MarginContainer"]
 propagate_maximum_size = true
 layout_mode = 3
@@ -15,17 +20,20 @@ theme_override_constants/margin_left = 18
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_top = 18
 theme_override_constants/margin_bottom = 18
+theme = ExtResource("world_theme")
+
 [node name="Scroll" type="ScrollContainer" parent="."]
 propagate_maximum_size = false
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(300,0)
-custom_maximum_size = Vector2(300,440)
+custom_minimum_size = Vector2(320,0)
+custom_maximum_size = Vector2(320,440)
 size_flags_horizontal = 0
 size_flags_vertical = 0
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 5
 mouse_filter = 1
+
 [node name="Stack" type="VBoxContainer" parent="Scroll"]
 propagate_maximum_size = true
 unique_name_in_owner = true

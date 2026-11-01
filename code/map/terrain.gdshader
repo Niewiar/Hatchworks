@@ -11,13 +11,13 @@ varying float ground_elevation;
 group_uniforms Appearance;
 uniform float terrain_seed = 17.0;
 uniform float terrain_scale : hint_range(0.5, 3.0, 0.1) = 1.0;
-uniform float detail_strength : hint_range(0.0, 1.0) = 0.65;
+uniform float detail_strength : hint_range(0.0, 1.0) = 0.42;
 uniform float edge_roughness : hint_range(0.0, 6.0) = 2.5;
 uniform float transition_width : hint_range(0.0, 24.0, 0.5) = 10.0;
-uniform vec4 grass_tint : source_color = vec4(0.36, 0.43, 0.255, 1.0);
-uniform vec4 dirt_tint : source_color = vec4(0.47, 0.365, 0.255, 1.0);
-uniform vec4 sand_tint : source_color = vec4(0.70, 0.615, 0.435, 1.0);
-uniform vec4 rock_tint : source_color = vec4(0.48, 0.465, 0.395, 1.0);
+uniform vec4 grass_tint : source_color = vec4(0.48, 0.52, 0.29, 1.0);
+uniform vec4 dirt_tint : source_color = vec4(0.55, 0.415, 0.275, 1.0);
+uniform vec4 sand_tint : source_color = vec4(0.77, 0.665, 0.445, 1.0);
+uniform vec4 rock_tint : source_color = vec4(0.49, 0.54, 0.525, 1.0);
 group_uniforms;
 
 float hash12(vec2 p) {
@@ -119,8 +119,8 @@ vec3 add_pebbles(vec3 color, vec2 p, float density) {
 }
 
 vec3 grass_surface(vec2 p, float macro, float middle) {
-	float carpet = ground_noise(p / 5.0 + 61.0);
-	float grain = hash12(floor(p));
+	float carpet = ground_noise(p / 12.0 + 61.0);
+	float grain = ground_noise(p / 2.8 + 49.0);
 	vec3 color = grass_tint.rgb * (0.78 + macro * 0.23 + middle * 0.13);
 	color *= 1.0 + (carpet - 0.5) * 0.15 * detail_strength;
 	color = mix(color, dirt_tint.rgb * 0.82, smoothstep(0.7, 0.9, middle) * 0.16);
@@ -131,7 +131,7 @@ vec4 grass_marks(vec2 p, float middle, float edge) {
 	vec2 cell = floor(p / 10.0);
 	vec2 local = mod(p, 10.0);
 	vec2 random = hash22(cell + 43.0);
-	float density = (0.16 + middle * 0.32 + edge * 0.22) * detail_strength;
+	float density = (0.10 + middle * 0.18 + edge * 0.15) * detail_strength;
 	float active = step(hash12(cell + 19.0), density);
 	vec2 base = vec2(3.0 + random.x * 3.5, 7.5);
 	float height = 2.0 + random.y * 3.0;
@@ -144,11 +144,11 @@ vec4 grass_marks(vec2 p, float middle, float edge) {
 }
 
 vec3 dirt_surface(vec2 p, float macro, float middle) {
-	float grain = hash12(floor(p));
+	float grain = ground_noise(p / 2.8 + 49.0);
 	float crumbs = ground_noise(p / 1.8 + 57.0);
 	float patches = ground_noise(p / 10.0 + 301.0);
 	vec3 color = dirt_tint.rgb * (0.77 + macro * 0.23 + middle * 0.12);
-	color *= 1.0 + ((crumbs - 0.5) * 0.24 + (grain - 0.5) * 0.15) * detail_strength;
+	color *= 1.0 + ((crumbs - 0.5) * 0.12 + (grain - 0.5) * 0.06) * detail_strength;
 	color = mix(color, dirt_tint.rgb * 0.67, smoothstep(0.64, 0.85, patches) * 0.25 * detail_strength);
 	float fleck = step(0.975, grain);
 	color = mix(color, sand_tint.rgb * 0.78, fleck * 0.45 * detail_strength);
@@ -156,7 +156,7 @@ vec3 dirt_surface(vec2 p, float macro, float middle) {
 }
 
 vec3 sand_surface(vec2 p, float macro, float middle) {
-	float grain = hash12(floor(p) + 83.0);
+	float grain = ground_noise(p / 3.4 + 83.0);
 	float waves = sin(p.x * 0.23 + p.y * 0.08 + ground_noise(p / 24.0) * 6.0);
 	vec3 color = sand_tint.rgb * (0.85 + macro * 0.12 + middle * 0.08);
 	color *= 1.0 + ((grain - 0.5) * 0.11 + waves * 0.018) * detail_strength;
@@ -165,12 +165,12 @@ vec3 sand_surface(vec2 p, float macro, float middle) {
 }
 
 vec3 rock_surface(vec2 p, float macro, float middle) {
-	float grain = hash12(floor(p));
+	float grain = ground_noise(p / 2.8 + 49.0);
 	float crumbs = ground_noise(p / 1.8 + 57.0);
 	float mineral = ground_noise(p / 5.0 + 61.0);
 	vec3 substrate = mix(dirt_tint.rgb, rock_tint.rgb, 0.72);
 	vec3 color = substrate * (0.78 + macro * 0.23 + middle * 0.13);
-	color *= 1.0 + ((mineral - 0.5) * 0.14 + (crumbs - 0.5) * 0.18 + (grain - 0.5) * 0.11) * detail_strength;
+	color *= 1.0 + ((mineral - 0.5) * 0.12 + (crumbs - 0.5) * 0.09 + (grain - 0.5) * 0.04) * detail_strength;
 	vec3 grit = ground_cells(p / 4.2 + 53.0);
 	float radius = 0.16 + grit.y * 0.2;
 	float chip = 1.0 - smoothstep(radius - 0.05, radius + 0.06, grit.x);
@@ -186,7 +186,7 @@ void vertex() {
 
 void fragment() {
 	vec2 size = max(map_size, vec2(1.0));
-	vec2 pixel = clamp(floor(UV * size), vec2(0.0), size - vec2(1.0));
+	vec2 pixel = clamp(UV * size, vec2(0.0), size - vec2(1.0));
 	vec2 p = pixel / max(terrain_scale, 0.1) + vec2(terrain_seed * 13.71, terrain_seed * 7.13);
 	vec2 warp = boundary_warp(p);
 	vec2 mask_uv = (pixel + vec2(0.5) + warp) / size;

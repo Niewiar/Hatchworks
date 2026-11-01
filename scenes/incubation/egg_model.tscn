@@ -63,7 +63,7 @@ bounce = 0.12
 [node name="EggModel" type="Node3D"]
 script = ExtResource("script")
 [node name="Shell_00" type="RigidBody3D" parent="."]
-position = Vector3(0.05151927, 0.54133794, 0.00259040)
+position = Vector3(0.0270159800, 0.3008351500, -0.0011703950)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -73,14 +73,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.492507
+metadata/release_time = 1.47
 [node name="Mesh" type="MeshInstance3D" parent="Shell_00"]
 mesh = ExtResource("mesh_0")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_00"]
 shape = ExtResource("shape_0")
 [node name="Shell_01" type="RigidBody3D" parent="."]
-position = Vector3(-0.09566814, 0.51072553, 0.05994915)
+position = Vector3(-0.0520542300, 0.2823425950, 0.0422653500)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -90,14 +90,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.546929
+metadata/release_time = 1.7026923076923077
 [node name="Mesh" type="MeshInstance3D" parent="Shell_01"]
 mesh = ExtResource("mesh_1")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_01"]
 shape = ExtResource("shape_1")
 [node name="Shell_02" type="RigidBody3D" parent="."]
-position = Vector3(0.01602365, 0.46945792, -0.16405666)
+position = Vector3(0.0005198850, 0.2615877000, -0.0955377700)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -107,14 +107,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.600617
+metadata/release_time = 1.9353846153846155
 [node name="Mesh" type="MeshInstance3D" parent="Shell_02"]
 mesh = ExtResource("mesh_2")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_02"]
 shape = ExtResource("shape_2")
 [node name="Shell_03" type="RigidBody3D" parent="."]
-position = Vector3(0.11144106, 0.40761824, 0.19386014)
+position = Vector3(0.0725824550, 0.2343781750, 0.1016733450)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -124,14 +124,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.661582
+metadata/release_time = 1.596923076923077
 [node name="Mesh" type="MeshInstance3D" parent="Shell_03"]
 mesh = ExtResource("mesh_3")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_03"]
 shape = ExtResource("shape_3")
 [node name="Shell_04" type="RigidBody3D" parent="."]
-position = Vector3(-0.23117554, 0.38925153, -0.05272413)
+position = Vector3(-0.1313492700, 0.2207317000, -0.0326769600)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -141,14 +141,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.710644
+metadata/release_time = 1.8296153846153846
 [node name="Mesh" type="MeshInstance3D" parent="Shell_04"]
 mesh = ExtResource("mesh_4")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_04"]
 shape = ExtResource("shape_4")
 [node name="Shell_05" type="RigidBody3D" parent="."]
-position = Vector3(0.25316578, 0.33326931, -0.10467620)
+position = Vector3(0.1354217600, 0.1924041250, -0.0785632950)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -158,14 +158,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.769818
+metadata/release_time = 1.491153846153846
 [node name="Mesh" type="MeshInstance3D" parent="Shell_05"]
 mesh = ExtResource("mesh_5")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_05"]
 shape = ExtResource("shape_5")
 [node name="Shell_06" type="RigidBody3D" parent="."]
-position = Vector3(-0.11966682, 0.29815032, 0.26572482)
+position = Vector3(-0.0471680450, 0.1697727850, 0.1638498950)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -175,14 +175,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.671636
+metadata/release_time = 1.7238461538461538
 [node name="Mesh" type="MeshInstance3D" parent="Shell_06"]
 mesh = ExtResource("mesh_6")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_06"]
 shape = ExtResource("shape_6")
 [node name="Shell_07" type="RigidBody3D" parent="."]
-position = Vector3(-0.12381234, 0.25680378, -0.28490324)
+position = Vector3(-0.0829242250, 0.1496345650, -0.1609852800)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -192,14 +192,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.719967
+metadata/release_time = 1.9565384615384616
 [node name="Mesh" type="MeshInstance3D" parent="Shell_07"]
 mesh = ExtResource("mesh_7")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_07"]
 shape = ExtResource("shape_7")
 [node name="Shell_08" type="RigidBody3D" parent="."]
-position = Vector3(0.30016460, 0.21652561, 0.13434338)
+position = Vector3(0.1787862150, 0.1303820850, 0.0638876300)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -209,14 +209,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.769965
+metadata/release_time = 1.6180769230769232
 [node name="Mesh" type="MeshInstance3D" parent="Shell_08"]
 mesh = ExtResource("mesh_8")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_08"]
 shape = ExtResource("shape_8")
 [node name="Shell_09" type="RigidBody3D" parent="."]
-position = Vector3(-0.33740243, 0.15684145, 0.09124045)
+position = Vector3(-0.1838082100, 0.1077723250, 0.0772690000)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -226,14 +226,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.825151
+metadata/release_time = 1.8507692307692307
 [node name="Mesh" type="MeshInstance3D" parent="Shell_09"]
 mesh = ExtResource("mesh_9")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_09"]
 shape = ExtResource("shape_9")
 [node name="Shell_10" type="RigidBody3D" parent="."]
-position = Vector3(0.15946950, 0.15360757, -0.31451424)
+position = Vector3(0.0862565500, 0.0848830150, -0.1887701450)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -243,14 +243,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.878367
+metadata/release_time = 1.5123076923076924
 [node name="Mesh" type="MeshInstance3D" parent="Shell_10"]
 mesh = ExtResource("mesh_10")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_10"]
 shape = ExtResource("shape_10")
 [node name="Shell_11" type="RigidBody3D" parent="."]
-position = Vector3(0.10407543, 0.07311906, 0.35712050)
+position = Vector3(0.0653090850, 0.0632894800, 0.2035235650)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -260,14 +260,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.793647
+metadata/release_time = 1.745
 [node name="Mesh" type="MeshInstance3D" parent="Shell_11"]
 mesh = ExtResource("mesh_11")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_11"]
 shape = ExtResource("shape_11")
 [node name="Shell_12" type="RigidBody3D" parent="."]
-position = Vector3(-0.31090781, 0.04806363, -0.21046492)
+position = Vector3(-0.1892802700, 0.0406508850, -0.1099980700)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -277,14 +277,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.839577
+metadata/release_time = 1.9776923076923079
 [node name="Mesh" type="MeshInstance3D" parent="Shell_12"]
 mesh = ExtResource("mesh_12")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_12"]
 shape = ExtResource("shape_12")
 [node name="Shell_13" type="RigidBody3D" parent="."]
-position = Vector3(0.37262863, 0.00190341, -0.08890704)
+position = Vector3(0.2173151900, 0.0202862450, -0.0486323300)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -294,14 +294,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.889367
+metadata/release_time = 1.6392307692307693
 [node name="Mesh" type="MeshInstance3D" parent="Shell_13"]
 mesh = ExtResource("mesh_13")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_13"]
 shape = ExtResource("shape_13")
 [node name="Shell_14" type="RigidBody3D" parent="."]
-position = Vector3(-0.21114537, -0.02513611, 0.32359958)
+position = Vector3(-0.1305950900, -0.0030614150, 0.1835865700)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -311,14 +311,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.943880
+metadata/release_time = 1.871923076923077
 [node name="Mesh" type="MeshInstance3D" parent="Shell_14"]
 mesh = ExtResource("mesh_14")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_14"]
 shape = ExtResource("shape_14")
 [node name="Shell_15" type="RigidBody3D" parent="."]
-position = Vector3(-0.00155735, -0.08203408, -0.39223667)
+position = Vector3(-0.0277015550, -0.0240446750, -0.2240721150)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -328,14 +328,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.008427
+metadata/release_time = 1.5334615384615384
 [node name="Mesh" type="MeshInstance3D" parent="Shell_15"]
 mesh = ExtResource("mesh_15")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_15"]
 shape = ExtResource("shape_15")
 [node name="Shell_16" type="RigidBody3D" parent="."]
-position = Vector3(0.29060735, -0.12589804, 0.25560485)
+position = Vector3(0.1705940700, -0.0469347800, 0.1471714400)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -345,14 +345,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.054797
+metadata/release_time = 1.7661538461538462
 [node name="Mesh" type="MeshInstance3D" parent="Shell_16"]
 mesh = ExtResource("mesh_16")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_16"]
 shape = ExtResource("shape_16")
 [node name="Shell_17" type="RigidBody3D" parent="."]
-position = Vector3(-0.37922975, -0.17912426, 0.00638939)
+position = Vector3(-0.2225612100, -0.0707170700, 0.0060527350)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -362,14 +362,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 1.955534
+metadata/release_time = 1.998846153846154
 [node name="Mesh" type="MeshInstance3D" parent="Shell_17"]
 mesh = ExtResource("mesh_17")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_17"]
 shape = ExtResource("shape_17")
 [node name="Shell_18" type="RigidBody3D" parent="."]
-position = Vector3(0.27078183, -0.21254699, -0.26049380)
+position = Vector3(0.1559881500, -0.0921423550, -0.1524176650)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -379,14 +379,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.009629
+metadata/release_time = 1.6603846153846153
 [node name="Mesh" type="MeshInstance3D" parent="Shell_18"]
 mesh = ExtResource("mesh_18")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_18"]
 shape = ExtResource("shape_18")
 [node name="Shell_19" type="RigidBody3D" parent="."]
-position = Vector3(-0.03886569, -0.26598645, 0.36101264)
+position = Vector3(-0.0097761500, -0.1104895100, 0.2130727350)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -396,14 +396,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.066662
+metadata/release_time = 1.893076923076923
 [node name="Mesh" type="MeshInstance3D" parent="Shell_19"]
 mesh = ExtResource("mesh_19")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_19"]
 shape = ExtResource("shape_19")
 [node name="Shell_20" type="RigidBody3D" parent="."]
-position = Vector3(-0.20530047, -0.26971126, -0.29504333)
+position = Vector3(-0.1347590800, -0.1307643700, -0.1559746600)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -413,14 +413,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.116983
+metadata/release_time = 1.5546153846153845
 [node name="Mesh" type="MeshInstance3D" parent="Shell_20"]
 mesh = ExtResource("mesh_20")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_20"]
 shape = ExtResource("shape_20")
 [node name="Shell_21" type="RigidBody3D" parent="."]
-position = Vector3(0.33303499, -0.33231653, 0.01910648)
+position = Vector3(0.1940323200, -0.1536006350, 0.0176400200)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -430,14 +430,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.184193
+metadata/release_time = 1.7873076923076923
 [node name="Mesh" type="MeshInstance3D" parent="Shell_21"]
 mesh = ExtResource("mesh_21")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_21"]
 shape = ExtResource("shape_21")
 [node name="Shell_22" type="RigidBody3D" parent="."]
-position = Vector3(-0.22685699, -0.39077753, 0.18396995)
+position = Vector3(-0.1361456950, -0.1807536700, 0.1095524300)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -447,14 +447,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.085757
+metadata/release_time = 2.02
 [node name="Mesh" type="MeshInstance3D" parent="Shell_22"]
 mesh = ExtResource("mesh_22")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_22"]
 shape = ExtResource("shape_22")
 [node name="Shell_23" type="RigidBody3D" parent="."]
-position = Vector3(0.06314925, -0.41107546, -0.27844897)
+position = Vector3(0.0297635250, -0.1941467100, -0.1622748300)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -464,14 +464,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.127734
+metadata/release_time = 1.6815384615384614
 [node name="Mesh" type="MeshInstance3D" parent="Shell_23"]
 mesh = ExtResource("mesh_23")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_23"]
 shape = ExtResource("shape_23")
 [node name="Shell_24" type="RigidBody3D" parent="."]
-position = Vector3(0.11161877, -0.45916551, 0.20259407)
+position = Vector3(0.0549909600, -0.2215016500, 0.1184076500)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -481,14 +481,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.189018
+metadata/release_time = 1.9142307692307692
 [node name="Mesh" type="MeshInstance3D" parent="Shell_24"]
 mesh = ExtResource("mesh_24")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_24"]
 shape = ExtResource("shape_24")
 [node name="Shell_25" type="RigidBody3D" parent="."]
-position = Vector3(-0.15566302, -0.50351696, -0.05175784)
+position = Vector3(-0.0908631000, -0.2422005000, -0.0234356750)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -498,14 +498,14 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.246569
+metadata/release_time = 1.5757692307692308
 [node name="Mesh" type="MeshInstance3D" parent="Shell_25"]
 mesh = ExtResource("mesh_25")
 material_override = ExtResource("shell_material")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Shell_25"]
 shape = ExtResource("shape_25")
 [node name="Shell_26" type="RigidBody3D" parent="."]
-position = Vector3(0.06186336, -0.54249238, -0.02325386)
+position = Vector3(0.0319776300, -0.2619876100, -0.0130901950)
 freeze = true
 collision_layer = 0
 collision_mask = 0
@@ -515,7 +515,7 @@ gravity_scale = 0.85
 linear_damp = 0.35
 angular_damp = 0.65
 physics_material_override = SubResource("ShellPhysics")
-metadata/release_time = 2.301200
+metadata/release_time = 1.8084615384615383
 [node name="Mesh" type="MeshInstance3D" parent="Shell_26"]
 mesh = ExtResource("mesh_26")
 material_override = ExtResource("shell_material")

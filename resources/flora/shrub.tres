@@ -4,7 +4,7 @@
 [ext_resource type="ArrayMesh" path="res://assets/flora/meshes/shrub_01.res" id="2"]
 [ext_resource type="ArrayMesh" path="res://assets/flora/meshes/shrub_02.res" id="3"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/shrub.png" id="sapling_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/shrub.svg" id="sapling_icon"]
 
 [resource]
 script = ExtResource("1")

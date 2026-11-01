@@ -40,7 +40,7 @@ func _ready() -> void:
 					material.set_shader_parameter("color_texture", texture)
 				var accent := name.contains("pupil") or name.contains("glint") or name.contains("mouth") or name.contains("crease") or name.contains("vein")
 				material.set_shader_parameter("flat_color", accent)
-				if not accent and not wing:
+				if not accent and not wing and not name.contains("eyelid"):
 					material.next_pass = outline
 				variants[outline_width] = material
 			mesh.set_surface_override_material(surface, variants[outline_width])

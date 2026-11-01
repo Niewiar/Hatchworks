@@ -25,6 +25,7 @@ var _navigation: CreatureNavigation
 var _normal_collision_layer := 8
 
 enum SEX { MALE, FEMALE }
+enum MOOD { UNHAPPY, NEUTRAL, HAPPY }
 
 var sex: SEX = SEX.MALE:
 	set(value):
@@ -253,6 +254,11 @@ func happiness_factors() -> Dictionary:
 	factors["target"] = clampf(total,0.0,100.0)
 	return factors
 
+func mood() -> MOOD:
+	if happiness < _species.unhappy_threshold:
+		return MOOD.UNHAPPY
+	return MOOD.NEUTRAL if happiness < _species.happy_threshold else MOOD.HAPPY
+
 func work_efficiency() -> float:
 	return lerpf(0.7,1.1,clampf(happiness/100.0,0.0,1.0))
 
@@ -333,3 +339,17 @@ func _apply_avoidance(delta: float) -> void:
 	velocity.z = movement.y
 	if movement.length_squared() > 0.01:
 		_rest_rotation.y = atan2(movement.x,movement.y)
+
+func activity_text() -> String:
+	return activity_presentation().description
+
+func activity_presentation() -> Dictionary:
+	match _state:
+		STATE.HELD:
+			return _present_activity("Being carried","status_walk","Being carried")
+		STATE.FALLING,STATE.LANDING:
+			return _present_activity("On the move","status_walk","On the move")
+	return _present_activity("Resting","status_rest","Resting")
+
+func _present_activity(label: String, icon: String, description: String) -> Dictionary:
+	return {"label":tr(label),"icon":icon,"description":tr(description)}

@@ -1,63 +1,100 @@
+
+
 [gd_scene format=3]
+
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
+
 [sub_resource type="StyleBoxFlat" id="style"]
-bg_color = Color(0.08,0.12,0.09,1)
+bg_color = Color(0.969, 0.925, 0.816, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.3,0.4,0.25,1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
+border_color = Color(0.55,0.43,0.28,1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
 content_margin_left = 14.0
 content_margin_right = 14.0
 content_margin_top = 12.0
 content_margin_bottom = 12.0
+
+
 [node name="InventorySlot" type="PanelContainer"]
 propagate_maximum_size = true
-custom_minimum_size = Vector2(210,100)
+custom_minimum_size = Vector2(310,174)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("style")
-[node name="Content" type="VBoxContainer" parent="."]
+theme = ExtResource("world_theme")
+
+
+[node name="Content" type="HBoxContainer" parent="."]
 propagate_maximum_size = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 8
-[node name="Header" type="HBoxContainer" parent="Content"]
-propagate_maximum_size = true
-layout_mode = 2
-mouse_filter = 2
-[node name="Icon" type="TextureRect" parent="Content/Header"]
-custom_minimum_size = Vector2(36,36)
+theme_override_constants/separation = 14
+
+
+[node name="Icon" type="TextureRect" parent="Content"]
+custom_minimum_size = Vector2(90,120)
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-[node name="New" type="Label" parent="Content/Header"]
-visible = false
-layout_mode = 2
-mouse_filter = 2
-text = "!"
-theme_override_colors/font_color = Color(0.95,0.79,0.29,1)
-theme_override_font_sizes/font_size = 22
+size_flags_vertical = 3
 
-[node name="Quantity" type="Label" parent="Content/Header"]
+
+[node name="Header" type="VBoxContainer" parent="Content"]
+propagate_maximum_size = true
 layout_mode = 2
-size_flags_horizontal = 3
 mouse_filter = 2
-horizontal_alignment = 2
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.9,0.8,0.46,1)
-[node name="Name" type="Label" parent="Content"]
+size_flags_horizontal = 3
+alignment = 1
+
+
+[node name="Name" type="Label" parent="Content/Header"]
 layout_mode = 2
 mouse_filter = 2
 autowrap_mode = 3
-theme_override_font_sizes/font_size = 17
-theme_override_colors/font_color = Color(0.87,0.92,0.75,1)
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.224, 0.18, 0.125, 1)
 
-[node name="Use" type="Button" parent="Content"]
+
+[node name="Amount" type="HBoxContainer" parent="Content/Header"]
+layout_mode = 2
+
+
+[node name="Quantity" type="Label" parent="Content/Header/Amount"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.224, 0.18, 0.125, 1)
+
+
+[node name="New" type="Label" parent="Content/Header/Amount"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+text = "1"
+theme_type_variation = &"NewEntryBadge"
+custom_minimum_size = Vector2(26,26)
+horizontal_alignment = 1
+vertical_alignment = 1
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.224, 0.18, 0.125, 1)
+theme_override_font_sizes/font_size = 15
+size_flags_horizontal = 8
+
+
+[node name="Use" type="Button" parent="Content/Header"]
 visible = false
 layout_mode = 2
 text = "Plant"
+theme_type_variation = &"PrimaryButton"
+custom_minimum_size = Vector2(0,40)

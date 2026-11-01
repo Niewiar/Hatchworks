@@ -4,6 +4,7 @@ extends Camera3D
 signal moved(distance: float)
 signal rotated(angle: float)
 signal focus_changed(focused: bool)
+signal zoom_changed(visible_world_height: float)
 
 @export var minimum_zoom := 4.0
 @export var maximum_zoom := 90.0
@@ -25,6 +26,7 @@ func configure(world_size: Vector2) -> void:
 	_world_size = world_size
 	maximum_zoom = maxf(minimum_zoom, maxf(world_size.x, world_size.y) * 1.4)
 	size = clampf(size, minimum_zoom, maximum_zoom)
+	zoom_changed.emit(size)
 
 func pan(previous: Vector2, current: Vector2, surface: Node3D) -> void:
 	if _focused:
@@ -77,6 +79,7 @@ func zoom(direction: int, screen_position: Vector2, surface: Node3D) -> void:
 	begin_navigation()
 	var before = GroundPicker3D.from_screen(self, screen_position, surface)
 	size = clampf(size * pow(0.9, direction), minf(size,minimum_zoom), maximum_zoom)
+	zoom_changed.emit(size)
 	var after = GroundPicker3D.from_screen(self, screen_position, surface)
 	if before != null and after != null:
 		global_position += before - after
@@ -120,6 +123,7 @@ func begin_navigation() -> void:
 	set_process(_focused)
 
 func _process(delta: float) -> void:
+	var previous_size := size
 	var weight := 1.0-exp(-8.0*delta)
 	if _focused:
 		global_position = _focus_point+global_basis.z*20.0
@@ -133,6 +137,9 @@ func _process(delta: float) -> void:
 	else:
 		set_process(false)
 
+	if not is_equal_approx(previous_size,size):
+		zoom_changed.emit(size)
+
 func capture_view() -> Dictionary:
 	var saved_size := clampf(size*focus_release_zoom_factor,focus_minimum_zoom,maximum_zoom) if _focused else (_release_size if _releasing else size)
 	return {"transform":global_transform,"size":saved_size}
@@ -144,4 +151,5 @@ func restore_view(value: Dictionary) -> void:
 	if value.get("transform") is Transform3D:
 		global_transform = value.transform
 	size = clampf(float(value.get("size",size)),focus_minimum_zoom,maximum_zoom)
+	zoom_changed.emit(size)
 	set_process(false)

@@ -1,9 +1,11 @@
 [gd_resource type="Resource" script_class="CreatureSpecies" format=3]
 [ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="script"]
 [ext_resource type="PackedScene" path="res://scenes/creatures/bloomlet.tscn" id="scene"]
-[ext_resource type="Texture2D" path="res://assets/ui/bloomlet.png" id="icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/bloomlet_portrait.png" id="icon"]
 [resource]
 script = ExtResource("script")
+unhappy_threshold = 40.0
+happy_threshold = 70.0
 id = &"bloomlet"
 display_name = "Bloomlet"
 description = "A winged woodland gardener that scatters herbs across grassy ground. New green shoots follow its fluttering wings."

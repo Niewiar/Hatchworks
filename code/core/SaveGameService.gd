@@ -146,9 +146,7 @@ func _capture(map: MapManager) -> Dictionary:
 	var tutorial := map.get_parent().get_node_or_null("CanvasLayer/CameraTutorial")
 	if tutorial != null:
 		result["camera_tutorial_step"] = tutorial.step
-	for plant: FloraPlant in map.vegetation_controller._plants:
-		if not plant.removed:
-			result.flora.append({"id":plant.species.id,"point":plant.point,"variant":plant.variant,"scale":plant.scale,"yaw":plant.yaw,"growth":plant.growth,"hits":plant.tree_view._hits if is_instance_valid(plant.tree_view) else 0})
+	result.flora = map.vegetation_controller.capture_state()
 	for rock: HarvestableDeposit in map.rock_controller._rocks:
 		if not is_instance_valid(rock) or rock.exhausted or rock.is_queued_for_deletion():
 			continue
@@ -176,7 +174,7 @@ func _capture(map: MapManager) -> Dictionary:
 		result.buildings.append(record)
 	for actor: Creature in actors:
 		var record := {"id":actor.species_id,"sex":actor.sex,"position":actor.global_position,"rotation":actor._rest_rotation,"values":_capture_fields(actor,CREATURE_FIELDS)}
-		if actor is TuftlingController:
+		if actor is CreatureActivityController:
 			record["activity"] = actor.activity
 			record["activity_values"] = _capture_fields(actor,ACTIVITY_FIELDS)
 			record["feeder"] = buildings.find(actor._feeder)
@@ -229,16 +227,7 @@ func _clear_world(map: MapManager) -> void:
 	for building in map.building_controller.get_buildings():
 		building.free()
 	map.building_controller._build_counts.clear()
-	var vegetation := map.vegetation_controller
-	for child in vegetation.get_children():
-		child.free()
-	vegetation._plants.clear()
-	vegetation._trees.clear()
-	vegetation._batches.clear()
-	vegetation._batch_plants.clear()
-	vegetation._buckets.clear()
-	vegetation._growing.clear()
-	vegetation._dirty_batches.clear()
+	map.vegetation_controller.clear()
 	for child in map.rock_controller.get_children():
 		child.free()
 	map.rock_controller._rocks.clear()
@@ -309,40 +298,7 @@ func _restore_terrain(map: MapManager, state: Dictionary) -> void:
 	environment.set_process(false)
 
 func _restore_flora(map: MapManager, records: Array) -> void:
-	var vegetation := map.vegetation_controller
-	for record: Dictionary in records:
-		var data := map.database.plant(record.id)
-		var plant := FloraPlant.new()
-		plant.species = data
-		plant.point = record.point
-		plant.variant = record.variant
-		plant.scale = record.scale
-		plant.yaw = record.yaw
-		plant.growth = record.growth
-		var chunk := Vector2i(((plant.point+map.terrain_controller.world_size*0.5)/vegetation.chunk_size).floor())
-		plant.batch_key = "%d:%d:%d:%d" % [vegetation.species.find(data),plant.variant,chunk.x,chunk.y]
-		vegetation._plants.append(plant)
-		if data.kind == FloraSpecies.KIND.TREE:
-			vegetation._trees.append(plant)
-		else:
-			var batch: Array = vegetation._batch_plants.get(plant.batch_key,[])
-			batch.append(plant)
-			vegetation._batch_plants[plant.batch_key] = batch
-		var key := Vector2i((plant.point/2.0).floor())
-		var bucket: Array = vegetation._buckets.get(key,[])
-		bucket.append(plant)
-		vegetation._buckets[key] = bucket
-		if plant.growth < 1.0:
-			vegetation._growing.append(plant)
-	vegetation._create_batches()
-	vegetation._upload_batches()
-	vegetation._update_tree_views()
-	for index in vegetation._plants.size():
-		var plant: FloraPlant = vegetation._plants[index]
-		if is_instance_valid(plant.tree_view):
-			_restore_hits(plant.tree_view,records[index].hits)
-	vegetation.set_process(not vegetation._growing.is_empty())
-	vegetation.obstacles_changed.emit()
+	map.vegetation_controller.restore_state(records)
 
 func _restore_rocks(map: MapManager, records: Array) -> void:
 	for record: Dictionary in records:
@@ -424,10 +380,8 @@ func _restore_buildings(map: MapManager, records: Array, counts: Dictionary = {}
 
 func _restore_inventory(map: MapManager, state: Dictionary) -> void:
 	map.inventory._amounts.clear()
-	map.discoveries._stocks.clear()
 	for kind in state.resources:
 		map.inventory._amounts[int(kind)] = float(state.resources[kind])
-		map.discoveries._stocks[int(kind)] = float(state.resources[kind])
 	map.items._amounts.clear()
 	for id in state.items:
 		map.items._amounts[StringName(id)] = int(state.items[id])
@@ -454,7 +408,7 @@ func _restore_creatures(map: MapManager, records: Array, buildings: Array[Node3D
 	return result
 
 func _restore_activity(actor: Creature, record: Dictionary, buildings: Array[Node3D], map: MapManager) -> void:
-	if not actor is TuftlingController:
+	if not actor is CreatureActivityController:
 		return
 	_restore_fields(actor,record.activity_values)
 	actor._path.clear()
@@ -465,7 +419,7 @@ func _restore_activity(actor: Creature, record: Dictionary, buildings: Array[Nod
 		actor._effect_done = record.get("effect_done",false)
 		actor._aggression_wait = record.get("aggression_wait",0.0)
 		var job: Dictionary = record.get("job",{})
-		if not job.is_empty() and activity == TuftlingController.ACTIVITY.SHAKING:
+		if not job.is_empty() and activity == CreatureActivityController.ACTIVITY.SHAKING:
 			actor._job = {"kind":job.kind,"point":job.point}
 			if job.kind == "quarry" and not actor._effect_done and actor.species_data().production_for(actor.sex == Creature.SEX.FEMALE) == CreatureSpecies.PRODUCTION.SAND_MAKER:
 				actor._job.kind = "sand"
@@ -484,20 +438,20 @@ func _restore_activity(actor: Creature, record: Dictionary, buildings: Array[Nod
 				else:
 					actor._job["target"] = target
 			if not actor._job.is_empty():
-				actor.activity = TuftlingController.ACTIVITY.SHAKING
+				actor.activity = CreatureActivityController.ACTIVITY.SHAKING
 				var animation: StringName = actor.work_animation()
 				actor._play_animation(animation)
 				if actor.animation_player != null and actor.animation_player.has_animation(animation):
 					var clip: Animation = actor.animation_player.get_animation(animation)
 					actor.animation_player.seek(fmod(actor._elapsed,maxf(clip.length,0.001)) if clip.loop_mode != Animation.LOOP_NONE else minf(actor._elapsed,clip.length),true)
 				return
-	if activity in [TuftlingController.ACTIVITY.LEISURE]:
+	if activity in [CreatureActivityController.ACTIVITY.LEISURE]:
 		actor.activity = activity
 		actor._play_animation(&"behaviour/Rest")
-	elif activity == TuftlingController.ACTIVITY.EATING and actor._feeder != null:
+	elif activity == CreatureActivityController.ACTIVITY.EATING and actor._feeder != null:
 		actor.activity = activity
 		actor._play_animation(&"Eat")
-	elif activity == TuftlingController.ACTIVITY.SHAKING and not actor is EcosystemCreatureController:
+	elif activity == CreatureActivityController.ACTIVITY.SHAKING and not actor is EcosystemCreatureController:
 		actor.activity = activity
 		actor._play_animation(&"Work")
 		if actor._model is CreatureCelAppearance and actor.animation_player != null and actor.animation_player.has_animation(&"Work"):
@@ -506,7 +460,7 @@ func _restore_activity(actor: Creature, record: Dictionary, buildings: Array[Nod
 			actor._update_skeletal_animation_speed()
 	else:
 		actor._elapsed = 0.8
-		actor.activity = TuftlingController.ACTIVITY.SEEKING_GROUND if actor is EcosystemCreatureController or actor.carrying_water else TuftlingController.ACTIVITY.SEEKING_WATER
+		actor.activity = CreatureActivityController.ACTIVITY.SEEKING_GROUND if actor is EcosystemCreatureController or actor.carrying_water else CreatureActivityController.ACTIVITY.SEEKING_WATER
 
 func _restore_loose_eggs(map: MapManager, records: Array) -> void:
 	for record: Dictionary in records:
@@ -566,9 +520,7 @@ func _restore_fields(node: Object, values: Dictionary) -> void:
 		node.set(name,values[name])
 
 func _restore_hits(deposit: HarvestableDeposit, hits: int) -> void:
-	deposit._hits = hits
-	deposit._progress.text = "%d / %d" % [hits,deposit.hits_required]
-	deposit._progress.hide()
+	deposit.restore_hits(hits)
 
 func _building(database: GameDatabase, id: StringName) -> BuildingDefinition:
 	for entry: BuildingDefinition in database.buildings:
@@ -645,7 +597,7 @@ func _read_file(path: String) -> Dictionary:
 			if record.get("activity_values") is Dictionary:
 				record.activity_values.erase("_recovering")
 			if record.get("activity",-1) == 16:
-				record.activity = TuftlingController.ACTIVITY.LEISURE
+				record.activity = CreatureActivityController.ACTIVITY.LEISURE
 	return value
 
 func _validate(state: Dictionary, map: MapManager) -> String:
@@ -791,7 +743,7 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 		for key in CREATURE_FIELDS:
 			if not _number(record.values.get(key),0,100 if key in ["satiety","happiness","_happiness_target"] else 86400):
 				return "The saved creatures are invalid."
-		if record.values.size() != CREATURE_FIELDS.size() or not record.get("activity_values") is Dictionary or record.activity_values.size() != ACTIVITY_FIELDS.size() or not _integer(record.get("activity"),0,TuftlingController.ACTIVITY.size()-1) or not _integer(record.get("feeder"),-1,state.buildings.size()-1):
+		if record.values.size() != CREATURE_FIELDS.size() or not record.get("activity_values") is Dictionary or record.activity_values.size() != ACTIVITY_FIELDS.size() or not _integer(record.get("activity"),0,CreatureActivityController.ACTIVITY.size()-1) or not _integer(record.get("feeder"),-1,state.buildings.size()-1):
 			return "The saved creature activities are invalid."
 		if record.get("feeder",-1) >= 0 and state.buildings[record.feeder].kind != "feeder":
 			return "The saved creature activities are invalid."

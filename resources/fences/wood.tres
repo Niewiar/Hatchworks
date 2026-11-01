@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="FanceData" format=3 uid="uid://g2oij465idsk"]
 
 [ext_resource type="Script" uid="uid://pa7841vgmt2" path="res://code/contructions/fances/FenceData.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/ui/wood_fence.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/wood_fence.svg" id="2"]
 
 [resource]
 script = ExtResource("1")

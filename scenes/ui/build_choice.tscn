@@ -1,28 +1,29 @@
+
+
 [gd_scene format=3]
-[ext_resource type="Texture2D" path="res://assets/ui/buttons.png" id="1_qv1gk"]
+
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
+
 [ext_resource type="PackedScene" path="res://scenes/ui/new_content_badge.tscn" id="new_badge"]
-[sub_resource type="AtlasTexture" id="AtlasTexture_lg3ar"]
-atlas = ExtResource("1_qv1gk")
-region = Rect2(128, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_oqoow"]
-atlas = ExtResource("1_qv1gk")
-region = Rect2(128, 0, 128, 128)
 
-[node name="BuildChoice" type="CheckButton"]
+[node name="BuildChoice" type="Button"]
 layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.3832,0.3832,0.3832,1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
 icon_alignment = 1
+theme = ExtResource("world_theme")
+toggle_mode = true
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(128,100)
+
+
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -31,4 +32,23 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
+
 [node name="NewContent" parent="." instance=ExtResource("new_badge")]
+
+
+[node name="Caption" type="Label" parent="."]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = ""
+horizontal_alignment = 1
+text_overrun_behavior = 3

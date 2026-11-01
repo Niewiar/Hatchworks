@@ -8,10 +8,13 @@ var _previous_modal := false
 var _busy := false
 var _skip_load_once := false
 var _presentation_mode := -1
+var start_error := ""
 
 func start_game(new_game: bool) -> Error:
 	if _busy:
 		return ERR_BUSY
+	if not validate_database(load(GameDatabase.DEFAULT_PATH) as GameDatabase):
+		return ERR_INVALID_DATA
 	if new_game:
 		var error: Error = SaveGame.reset_save()
 		if error != OK:
@@ -23,6 +26,13 @@ func start_game(new_game: bool) -> Error:
 	if scene_error != OK:
 		_skip_load_once = false
 	return scene_error
+
+func validate_database(database: GameDatabase) -> bool:
+	var errors := PackedStringArray(["GameDatabase resource could not be loaded."]) if database == null else database.validation_errors()
+	start_error = "\n".join(errors)
+	if not errors.is_empty():
+		push_error("Invalid game database:\n"+start_error)
+	return errors.is_empty()
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS

@@ -105,7 +105,7 @@ func _process(delta: float) -> void:
 	_glow.emission_energy_multiplier = 1.5+sin(_phase*3.0)*0.7 if state == STATE.READY else 0.45+sin(_phase*2.0)*0.2
 
 func inspection_bounds() -> AABB:
-	return AABB(Vector3(-1.27,0,-1.05),Vector3(2.36,2.45,2.13))
+	return AABB(Vector3(-1.3857,-0.0593,-1.1273),Vector3(2.6809,2.6401,2.2600))
 
 func cancel_hatch() -> bool:
 	if state != STATE.PRESENTING:

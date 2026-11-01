@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="DiscoveryDefinition" format=3 uid="uid://cd77pg3mmqo6r"]
 
-[ext_resource type="Texture2D" uid="uid://cbp6mr5fspt74" path="res://assets/ui/egg.png" id="icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/egg.svg" id="icon"]
 [ext_resource type="Script" uid="uid://btt4tn8jtjgi2" path="res://code/database/DiscoveryDefinition.gd" id="script"]
 
 [resource]

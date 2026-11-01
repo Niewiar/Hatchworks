@@ -1,5 +1,5 @@
 class_name EcosystemCreatureController
-extends TuftlingController
+extends CreatureActivityController
 
 var _job: Dictionary = {}
 var _effect_done := false
@@ -8,48 +8,23 @@ var _aggression_wait := 0.0
 var _curl_remaining := 0.0
 var _uncurl_remaining := 0.0
 
-func _ready() -> void:
-	prepare_appearance()
-	if animation_player == null:
-		animation_player = find_child("AnimationPlayer",true,false) as AnimationPlayer
-	super._ready()
-	activity = ACTIVITY.SEEKING_GROUND
-
-func _tick_activity(delta: float) -> void:
-	velocity.x = 0.0
-	velocity.z = 0.0
+func _advance_activity_timers(delta: float) -> void:
 	_aggression_wait = maxf(0.0,_aggression_wait-delta)
-	if _map.breeding.is_breeding(self):
-		_map.breeding.move_creature(self,delta)
-		return
-	if _tick_ai(delta):
-		return
-	if activity == ACTIVITY.LEISURE:
-		_tick_rest(delta)
-		return
-	if activity == ACTIVITY.SHAKING and not _job.is_empty():
-		_tick_work(delta)
-		return
-	if not _map.navigation.ready_for_paths:
-		return
-	if _path_revision != _map.navigation.revision:
-		_on_navigation_changed()
-	if activity == ACTIVITY.SEEKING_REST:
-		if _on_dry_ground():
-			_settle_rest()
-		else:
-			_elapsed += delta
-			if _elapsed >= 0.75:
-				_start_path(_map.navigation.route_to_resting_ground(global_position,self),ACTIVITY.MOVING_TO_REST,ACTIVITY.SEEKING_REST)
-		return
-	if not _path.is_empty():
-		if _curl_remaining > 0.0:
-			_curl_remaining -= delta
-			_play_animation(&"Curl")
-			return
-		_follow_path(delta)
-		return
-	_elapsed += delta
+
+func _tick_work_activity(delta: float) -> bool:
+	if activity != ACTIVITY.SHAKING or _job.is_empty():
+		return false
+	_tick_work(delta)
+	return true
+
+func _path_ready_to_move(delta: float) -> bool:
+	if _curl_remaining <= 0.0:
+		return true
+	_curl_remaining -= delta
+	_play_animation(&"Curl")
+	return false
+
+func _select_work() -> void:
 	if activity == ACTIVITY.RESTING and _elapsed < _species.resting_seconds:
 		_play_animation(&"Idle")
 		return
@@ -68,9 +43,6 @@ func _tick_activity(delta: float) -> void:
 	_job = chosen
 	_effect_done = false
 	_start_path(chosen.path,ACTIVITY.MOVING_TO_GROUND,ACTIVITY.NO_GROUND)
-
-func _try_aggression() -> bool:
-	return false
 
 func _ai_state() -> String:
 	return "attack" if _job.get("kind","") == "damage" else super._ai_state()
@@ -190,20 +162,17 @@ func _damage_job() -> Dictionary:
 			return {"kind":"damage","target":target,"point":target.global_position,"path":path}
 	return {}
 
-func _start_path(path: PackedVector3Array, moving: ACTIVITY, failure: ACTIVITY) -> void:
+func _on_path_started(moving: ACTIVITY) -> void:
 	if moving == ACTIVITY.MOVING_TO_FOOD:
 		_job.clear()
-	super._start_path(path,moving,failure)
 	_curl_remaining = 0.667 if not _path.is_empty() and moving == ACTIVITY.MOVING_TO_GROUND and _rolling_worker() else 0.0
 	_uncurl_remaining = 0.0
 
-func _follow_path(delta: float) -> void:
-	var previous := activity
-	super._follow_path(delta)
-	if previous == ACTIVITY.MOVING_TO_GROUND and activity == ACTIVITY.SHAKING:
-		_uncurl_remaining = 0.75 if _rolling_worker() and _job.get("kind","") != "sand" else 0.0
-		if _uncurl_remaining > 0.0:
-			_play_animation(&"Uncurl")
+func _complete_work_path() -> void:
+	super._complete_work_path()
+	_uncurl_remaining = 0.75 if _rolling_worker() and _job.get("kind","") != "sand" else 0.0
+	if _uncurl_remaining > 0.0:
+		_play_animation(&"Uncurl")
 
 func _tick_work(delta: float) -> void:
 	if _uncurl_remaining > 0.0:
@@ -330,9 +299,6 @@ func _can_hit_from(origin: Vector3, target: Node3D) -> bool:
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	return hit.is_empty() or hit.collider == target or target.is_ancestor_of(hit.collider)
 
-func work_cycle_seconds() -> float:
-	return _species.production_seconds
-
 func _update_visual_activity() -> void:
 	if _model != null:
 		_model.rotation = _model_rotation
@@ -348,37 +314,23 @@ func movement_animation() -> StringName:
 		return &"water/Swim"
 	return &"Roll" if _rolling_worker() and activity == ACTIVITY.MOVING_TO_GROUND else &"Walk"
 
-func activity_text() -> String:
-	if _state == STATE.HELD or (_map != null and _map.breeding.is_breeding(self)) or activity in [ACTIVITY.LEISURE,ACTIVITY.MOVING_TO_FOOD,ACTIVITY.EATING,ACTIVITY.HUNGRY,ACTIVITY.SEEKING_REST,ACTIVITY.MOVING_TO_REST]:
-		return super.activity_text()
+func _work_presentation() -> Dictionary:
+	var kind: String = _job.get("kind","")
+	if kind == "damage":
+		return _present_activity("Attacking","happiness_unhappy","Upset: striking a nearby structure" if activity == ACTIVITY.SHAKING else "Charging at a structure")
 	if activity == ACTIVITY.SHAKING:
-		if _job.get("kind","") == "damage":
-			return tr("Upset: striking a nearby structure")
-		if _job.get("kind","") == "sand":
-			return tr("Grinding sandy ground")
-		return tr("Planting a sapling") if _production() == CreatureSpecies.PRODUCTION.GARDENER else (tr("Stomping rocky ground") if _production() == CreatureSpecies.PRODUCTION.QUARRY else tr("Sowing herbs"))
+		var description := "Grinding sandy ground" if kind == "sand" else ("Planting a sapling" if _production() == CreatureSpecies.PRODUCTION.GARDENER else ("Stomping rocky ground" if _production() == CreatureSpecies.PRODUCTION.QUARRY else "Sowing herbs"))
+		return _present_activity("Working","status_work",description)
 	if activity == ACTIVITY.MOVING_TO_GROUND:
-		return tr("Rolling to a work site") if _rolling_worker() else tr("Moving to a planting site")
+		return _present_activity("On the move","status_walk","Rolling to a work site" if _rolling_worker() else "Moving to a planting site")
 	if activity == ACTIVITY.NO_GROUND:
-		return tr(_job_message)
-	return tr("Taking a short break") if activity == ACTIVITY.RESTING else tr("Looking for a place to work")
+		return _present_activity("Needs space","status_space",_job_message)
+	return super._work_presentation()
 
-func interrupt_activity() -> void:
+func _reset_work_state() -> void:
 	_job.clear()
 	_curl_remaining = 0.0
 	_uncurl_remaining = 0.0
-	super.interrupt_activity()
-	activity = ACTIVITY.SEEKING_GROUND
 
-func _on_navigation_changed() -> void:
-	if _map == null or not _map.navigation.ready_for_paths or _state == STATE.HELD or _map.breeding.is_breeding(self):
-		return
-	if activity == ACTIVITY.SHAKING and not _job.is_empty():
-		_path_revision = _map.navigation.revision
-		return
-	_job.clear()
-	_curl_remaining = 0.0
-	_uncurl_remaining = 0.0
-	super._on_navigation_changed()
-	if activity == ACTIVITY.SEEKING_WATER:
-		activity = ACTIVITY.SEEKING_GROUND
+func _preserve_work_on_navigation_changed() -> bool:
+	return activity == ACTIVITY.SHAKING and not _job.is_empty()

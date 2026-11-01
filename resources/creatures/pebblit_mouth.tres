@@ -3,6 +3,7 @@
 [ext_resource type="Material" path="res://resources/creatures/pebblit_outline.tres" id="outline"]
 [resource]
 shader = ExtResource("shader")
-shader_parameter/shadow_color = Vector3(0.005, 0.008, 0.018)
-shader_parameter/base_color = Vector3(0.005, 0.008, 0.018)
-shader_parameter/highlight_color = Vector3(0.005, 0.008, 0.018)
+next_pass = ExtResource("outline")
+shader_parameter/shadow_color = Vector3(0.01164543, 0.00542287, 0.00270898)
+shader_parameter/base_color = Vector3(0.01164543, 0.00542287, 0.00270898)
+shader_parameter/highlight_color = Vector3(0.01164543, 0.00542287, 0.00270898)

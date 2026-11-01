@@ -30,16 +30,9 @@ Egg models use an EggShell root with separately shaped rigid shell fragments and
 - The book button toggles Discoveries. Its centered window leaves the base toolbar accessible. Hold LMB to carry cards from the exact grabbed point; release one over another to combine. RMB removes a card from the board without forgetting the discovery or spending an item. The book button pulses for new discoveries received outside the panel, until the panel is opened. There is no tutorial overlay or close button.
 - Underlined keywords and habitat/food icons use the shared custom tooltip scenes.
 
-## Hatchworks Database
+## Runtime data
 
-Open the **Database** tab above the main viewport or **Project > Tools > Hatchworks Database**. The addon is enabled in Project Settings > Plugins. Its interface is authored in scene files below `addons/hatchworks_database/`.
-
-- Catalogs cover discoveries, combination recipes, creatures, creature research, eggs, flora, resources, deposits, fences, buildings, glossary terms and world balance.
-- Creature definitions control movement, bathing, shaking, resting, grass output, food, satiety duration, feeding threshold and satiety restored by a meal. Egg definitions control species, breakable shell model and incubation duration. Discovery definitions control one-time item rewards. Recipes reference discovery IDs and work in either ingredient order. Building definitions include unlock discoveries, material costs and feeder storage capacity.
-- Glossary terms provide shared keyword and icon descriptions. The Tuftling's habitat is reachable water and free dry soil.
-- Search by name or stable ID. Edit cells or detail fields; Ctrl/Shift selects rows for bulk numeric changes. New and Duplicate create independent definitions.
-- Save All validates native `.tres` resources. Undo/Redo supports edits, creation and removal. Remove protects referenced definitions. Reload discards unsaved changes. Saving is blocked when a watched file changed outside the panel.
-- Start a new game to apply database changes.
+Edit native Resource files through the Godot Inspector. Stable IDs and references are shared by gameplay and saved worlds.
 
 The runtime catalog is `resources/database/game_database.tres`. Flora and fence definitions keep their existing locations. New definitions are created below `resources/database/`.
 
@@ -53,11 +46,9 @@ UI icons are 64Ä‚â€”64 transparent PNGs with matching line work and padd
 
 Discovery messages stack at the top left, with at most ten entries and a 16-second visible lifetime. Click a discovery message to open Discoveries, or X to dismiss it. Opening the matching panel removes its messages; unread counters still require hovering or using individual entries. Resource, science and item gains use flying icon/text rewards rather than message cards. Focus and hatch presentation retain the existing message visibility rules; hidden message clocks pause.
 
-In Database Ă˘â€ â€™ Recipes, select a row and choose Ingredient A, Ingredient B and Result from named lists with icons. + New opens a recipe composer; duplicate ingredient pairs are rejected in either order. Save All persists the definitions and Undo/Redo includes recipe edits and creation. In Discoveries, Created by / Used in lists show related recipes; double-click one to edit it, or use + Recipe to prefill that discovery as a result. First-discovery reward items are also selected from a list.
-
 Panel sizing belongs to the Control scenes: PanelContainer, MarginContainer, native scrolling and flow containers fit their contents. Scripts bind data, visibility and events without changing panel geometry. The discovery archive scrolls its entire details column, including the description and both recipe sections, within the available window height. Tooltip scenes have separate button and description layouts; TooltipController positions them above their anchor or beside the cursor without changing their sizes or wrapping settings.
 
-Discovery definitions have editable categories: Nature, Materials, Plants, Concepts, Eggs, Creatures and Buildings. Both discovery tabs offer independent category filters, name searches and sorting by name, category or newest discovery. The Database addon exposes the same Category field.
+Discovery definitions have editable categories: Nature, Materials, Plants, Concepts, Eggs, Creatures and Buildings. Both discovery tabs offer independent category filters, name searches and sorting by name, category or newest discovery.
 
 The Tuftling egg uses a pale green leaf-patterned albedo texture on its outer shell and a separate pale inner-shell color. The existing curved fragments and their physics remain part of the hatching model.
 
@@ -73,7 +64,7 @@ Click a creature and scroll its information panel to Breeding. The highlighted S
 
 Successful breeding lays a matching egg on free dry ground nearby. It stays on the map until clicked, follows sculpted ground and can be collected only once. Clicking it adds it to Backpack and starts an item reward flight to the Backpack icon. It can then be selected in an Incubator. Sex is randomly selected at hatching, including for the first creatures; there is no forced opposite-sex starter pair.
 
-The Database addon exposes per-recipe science rewards, Creature Research entries, egg crafting times and material/science costs, and creature breeding duration, recovery and satiety settings. Science is finite under these rules; start costs and random-sex progression still need gameplay balancing.
+Native resources define per-recipe science rewards, Creature Research entries, egg crafting times and material/science costs, and creature breeding duration, recovery and satiety settings. Science is finite under these rules; start costs and random-sex progression still need gameplay balancing.
 
 ## Creature movement, swimming and discovery archive
 
@@ -95,9 +86,9 @@ The Discoveries and Backpack windows share the same scene-authored outer dimensi
 
 ## Leisure and creature wellbeing
 
-Satiety and Contentment appear below the creature's name and sex in the inspection panel, with short custom tooltips. Low satiety lowers contentment. Hungry creatures prioritize a reachable feeder that has their food, including at zero satiety. When food, a free feeding spot or a route is unavailable, they continue their normal behaviour and retry feeding periodically. Empty or removed feeders release the creature back to its ordinary activities. Zero satiety does not disable work, leisure, swimming or Pebblit aggression. Creatures begin at 75 contentment. Energy is no longer a creature statistic, work cost or breeding requirement.
+Satiety and Contentment appear below the creature's name and sex in the inspection panel, with short custom tooltips. Low satiety lowers contentment. Hungry creatures prioritize a reachable feeder that has their food, including at zero satiety. When food, a free feeding spot or a route is unavailable, they continue their normal behaviour and retry feeding periodically. Empty or removed feeders release the creature back to its ordinary activities. Zero satiety is not a hard activity lock; current mood permissions still apply. Creatures begin at 75 contentment. Energy is no longer a creature statistic, work cost or breeding requirement.
 
-Tuftlings take 8Ă˘â‚¬â€ś16 seconds of leisure after 1Ă˘â‚¬â€ś2 successful grass-sowing cycles. They rest on dry ground with a breathing, closed-eye animation. The other species use their own configured leisure intervals and durations. Breaks depend on completed work cycles rather than an energy meter. A swimmer leaves the water before resting. Hunger can interrupt rest, and navigation changes preserve a rest already in progress.
+All species take the configured leisure duration (8-16 seconds by default) on dry ground. Happy creatures complete 2-3 successful work cycles before leisure; Neutral creatures complete one. Unhappy creatures stop work and can eat or rest; Pebblit can also attack. Breaks depend on completed work cycles rather than an energy meter. A swimmer leaves the water before resting. Hunger can interrupt ordinary rest, and navigation changes preserve a rest already in progress.
 
 Contentment follows a target gradually, with a default 30-second response setting. The baseline combines satiety (45%), the dry-space allowance (35%) and nearby company of the same species (20%), then applies species sensitivities to crowding, noise and other species as described below. The preferred area is 12 square meters per creature, shared among creatures in the same fence-defined region and excluding water. A companion counts within 6 meters in that region. Held creatures do not count as occupants. Space, preferred area and company counts are shown in the panel. Contentment changes bathing and shaking speed from 70% to 110%; its initial 75% corresponds to the original work pace.
 
@@ -105,7 +96,7 @@ Local movement uses shared position and movement snapshots, gentle separation an
 
 Females use the same rig with a broader leaf rosette and cream flowers attached to the central frond, plus an amber coat and fronds distinct from the fresh green male. The palette material preserves the original albedo detail, normals and roughness while keeping brown feet, eyes and cream flowers unchanged. This appearance is applied both in the world and during the hatch reveal. The separate behaviour library supplies looping Rest and Call skeletal animations. Male calling selects exactly one female; breeding remains an explicit panel action.
 
-The Database addon exposes leisure intervals and durations, preferred area, companion radius, contentment response and breeding call/cooldown/satiety settings. These defaults are an initial gameplay balance.
+CreatureSpecies resources expose leisure intervals and durations, preferred area, companion radius, contentment response and breeding call/cooldown/satiety settings. These defaults are an initial gameplay balance.
 
 Building discoveries unlock construction without granting inventory items. Each type has one free first placement by default, then paid copies. BuildingController.placement_costs uses the recorded total number placed to calculate the next price; every placement checks and spends that same price. Eggs and saplings retain their one-time discovery rewards.
 
@@ -118,12 +109,12 @@ First eggs are discovered through Oak + Life -> Rootle Egg, Boulder + Life -> Pe
 
 Rootle plants oak and shrubs on free grassy ground. Bloomlet sows ferns that can be gathered for Herbs. They approach planting sites, complete a work animation and leave growing specimens; trees yield Wood through chopping. All species eat Plant Fiber through the existing Feeder. Local output caps stop production when the surroundings are full, and harvesting frees room for more. Existing hunger, leisure, contentment, navigation reservations and creature separation apply to these species.
 
-Male Pebblits work on dry soil, grass or rock. Their timed landing gently ripples terrain heights, converts ground to rock and can create a mineable stone deposit. Sand is preserved throughout the impact footprint. Female Pebblits curl up and roll while grinding soil, grass or rock into small sandy clearings. They create no deposits and preserve terrain heights. Sand production pauses once nearby dry-ground coverage reaches the configured limit (30% by default), and both site selection and the effect recheck this cap. Existing deposits are retained. Both sexes keep their hunger, leisure, rocky breeding habitat and aggression rules. At low contentment or insufficient shared space, either sex automatically interrupts ordinary work, travel or leisure to charge a reachable wooden fence or building. Each completed charge is followed by a mandatory rest animation for the configured aggression_cooldown (12 seconds by default), exposed as Rest after each charge (s) in both database editors. If it is still upset after resting, it can charge again. Walls still block routes and attacks. Hunger affects contentment without disabling aggression. Reachable food is checked before choosing a new charge; a completed charge still requires its configured rest. Breeding and being carried keep their existing priority. Remaining recovery is persisted in world saves.
+Male Pebblits work on dry soil, grass or rock. Their timed landing gently ripples terrain heights, converts ground to rock and can create a mineable stone deposit. Sand is preserved throughout the impact footprint. Female Pebblits curl up and roll while grinding soil, grass or rock into small sandy clearings. They create no deposits and preserve terrain heights. Sand production pauses once nearby dry-ground coverage reaches the configured limit (30% by default), and both site selection and the effect recheck this cap. Existing deposits are retained. Both sexes keep their hunger, leisure, rocky breeding habitat and aggression rules. Only in Unhappy mood can either sex interrupt ordinary leisure to charge a reachable wooden fence or building. Crowding lowers happiness through the wellbeing calculation; it no longer independently enables attacks in Neutral or Happy mood. Each completed charge is followed by a mandatory rest animation for the configured aggression_cooldown (12 seconds by default), exposed as Rest after each charge (s) in the species resources. If it is still upset after resting, it can charge again. Walls still block routes and attacks. Hunger affects contentment without disabling aggression. Reachable food is checked before choosing a new charge; a completed charge still requires its configured rest. Breeding and being carried keep their existing priority. Remaining recovery is persisted in world saves.
 
 
 Buildings and built fence elements have durability. Clicking one shows condition and a Repair button in its information panel. Repair currently costs zero. An element at zero durability is removed; any incubating egg, workshop job or stored food is lost without a refund. Destroying an incubator during its hatch presentation closes that presentation and does not spawn a creature. Fence destruction updates the navigation opening.
 
-First accepted hatches, first successful species work and first completed breeding award science once per species and action across all individuals. Rootle's work action is planting, Pebblit's observations are creating a stone deposit and making a sandy clearing, and Bloomlet's is growing herbs. Repeated work does not award more science. The Database addon exposes each species' habitat, water requirement, production timings, output radius/cap, impact settings and aggression settings, along with building maximum health and the new egg and discovery definitions.
+First accepted hatches, first successful species work and first completed breeding award science once per species and action across all individuals. Rootle's work action is planting, Pebblit's observations are creating a stone deposit and making a sandy clearing, and Bloomlet's is growing herbs. Repeated work does not award more science. Species and building resources define habitat, water requirement, production timings, output limits, impact settings, health and egg references.
 
 
 ## Pause menu, persistent worlds and languages
@@ -165,23 +156,17 @@ A scene-authored CameraTutorial replaces the permanent input panel. A new world 
 
 Ask the user whenever the intended meaning or behavior is not completely clear. This collaboration rule is recorded in AGENTS.md.
 
-## Discovery graph and concise interface
-
-Open Project > Tools > Discovery Graph, or use Discovery Graph in the Database main-screen toolbar. The graph contains only discovery cards. Select a discovery and choose one of its related recipes to see the two ingredients and the result; Show all displays the overview. Edit recipes in the side panel with A + B -> Result and a science reward. Graph positions are stored as editor metadata. The addon remains English.
-
-The Database main screen uses Creatures / Discoveries / Database / Design Doc tabs, a catalog list on the left, a large asset preview or discovery graph in the middle, and grouped searchable parameters on the right. Database retains the category selector for all twelve catalogs. All twelve catalogs use this layout. Save All validates native resources, recipe references and duplicate unordered ingredient pairs. Deletions require confirmation and preserve resources still referenced by other entries. The UI is built from native Control/Container scenes. Only graph-card placement is dynamic.
-
-Saved changes from the HTML Studio or another resource editor reload automatically when the native addon has no pending edits. Unsaved field values and incomplete text remain in the native editor when an external change arrives. A conflict blocks saving until the saved version is reloaded and the draft reconciled.
+## Concise interface
 
 Runtime tooltips and database descriptions use short in-world PL/EN copy. The Life Workshop retains egg selection, crafting duration, real material/science costs, working progress and collection, while omitting incubation time, sex explanation, repeated cost headings and idle explanatory paragraphs. Creature Energy and its database fields are removed; the version-1 save reader discards legacy energy/recovery fields and restores a former energy-recovery activity as ordinary leisure.
 
-## Creature sensitivities, compact inspection and local studio
+## Creature sensitivities and compact inspection
 
 Sensitivities belong to CreatureSpecies, not individual randomized creatures. noise_sensitivity and crowding_sensitivity range from 0 to 1. species_aversions is a directed Dictionary[StringName,float] of other species IDs and strengths from 0 to 1. Aversion applies whenever a disliked species shares the region, regardless of proximity; reverse relations are independent. Several present aversions add up and clamp to 1. Undiscovered species remain anonymous in the game panel.
 
 The contentment target is clamp(satiety * 0.45 + 35 + company * 20 - crowding_stress * 35 - noise_stress * 25 - species_stress * 25, 0, 100). Crowding is the missing fraction of preferred dry space times crowding sensitivity, replacing the previous space term rather than adding a second penalty. Noise stress is the sampled local noise level times noise sensitivity. Contentment still approaches the target at the configured response rate. Preferred space and companion range remain editable. A shared regional snapshot refreshes once per second and is invalidated when regions change or a world loads.
 
-Initial values (noise / crowding / aversion) are Tuftling 0.75 / 0.65 / Pebblit 0.65; Rootle 0.40 / 0.85 / Pebblit 0.35; Pebblit 0.10 / 1.00 / Bloomlet 0.30; Bloomlet 1.00 / 0.50 / Pebblit 0.85. These are starting balance values, editable in the native database and local studio.
+Initial values (noise / crowding / aversion) are Tuftling 0.75 / 0.65 / Pebblit 0.65; Rootle 0.40 / 0.85 / Pebblit 0.35; Pebblit 0.10 / 1.00 / Bloomlet 0.30; Bloomlet 1.00 / 0.50 / Pebblit 0.85. These are starting balance values, editable through species resources in the Godot Inspector.
 
 NoiseController belongs to the map. Working incubators and workshops are continuous sources; chopping, mining and Pebblit impacts create transient pulses. Distance attenuates noise across fences and regions. An idle feeder is quiet. A creature ignores its own pulses. Noise fades with simulation time and pauses with the world; load clears transient sources and rebuilds machine sources from active states. Derived stress values are recomputed rather than added to the strict creature save record, retaining existing save compatibility.
 
@@ -189,15 +174,7 @@ The creature inspection panel uses PNG icons, satiety/contentment bars, a short 
 
 SoundEffects is a spatial-audio autoload with an Effects bus and a separately persisted volume slider in the pause menu. Fifteen original baked mono WAV effects cover four creature voices, grass/plant/herb work, water, chopping, mining, Pebblit impacts, machine start/ready and the two working-machine loops. Female and male voices use mild pitch variation; ambient voices are spaced apart and playback is bounded. Machine loops stop when work ends, and deleting their source stops its audio. Sound volume does not change simulated noise or creature stress. Offline synthesis sources and audio previews remain outside the game.
 
-The HTML Database Studio lives in ../Hatchworks-workbench/creature-editor. Open Open Creature Editor.cmd for local access at http://127.0.0.1:8769/. Creatures provides animated 3D previews and grouped balance controls. Discoveries provides the simplified discovery graph and recipe forms. Database exposes all twelve native catalogs, including asset and reference fields. All three pages edit the same Godot resource database as the addon, without a second JSON balance store.
-
-Open Open WiFi Editor.cmd for password-protected access from the same private network. Choose a temporary password locally at launch, then open one of the printed LAN URLs, normally on port 8768. The password is not stored in source files or passed on the command line. See the Studio README for launching, authentication, backups and conflict handling. No firewall rules or router forwarding are added automatically.
-
-Clean pages automatically refresh saved external changes; unsaved drafts remain in place and stale writes are rejected. Saves validate candidates through Godot and back up replaced files outside the game. Restart gameplay to apply changed balance to an active game session. New names and descriptions are English source text; translation CSV editing remains separate.
-
-Model previews, browser modules, native bridge scripts, caches, server files, launchers and test artifacts stay outside the game. The game project retains only its runtime resources, native editor addon and project documentation. Render hosting and bidirectional Git publishing are future setup work; the local Studio does not publish commits or expose a public service.
-
-Pebblit sex-specific production is configured in CreatureSpecies using the shared/male production and female override fields. A Shared female override keeps the same behaviour for both sexes; Tuftling, Rootle and Bloomlet currently use it. Both the native database addon and HTML Studio expose the override and nearby sand coverage limit. Sand creation discovers the existing Sand idea and awards 3 science once for its first observed occurrence. Active sand work and its applied-effect marker persist in world saves. Pending female quarry work in older saves resumes as sand work.
+Pebblit sex-specific production is configured in CreatureSpecies using the shared/male production and female override fields. A Shared female override keeps the same behaviour for both sexes; Tuftling, Rootle and Bloomlet currently use it. The species resource defines the override and nearby sand coverage limit. Sand creation discovers the existing Sand idea and awards 3 science once for its first observed occurrence. Active sand work and its applied-effect marker persist in world saves. Pending female quarry work in older saves resumes as sand work.
 
 
 ## Building prices and discovery-first start
@@ -212,7 +189,7 @@ The first Incubator, Feeder and Life Workshop are independently free after disco
 | Feeder | 5 | 0 | 2 |
 | Life Workshop | 15 | 20 | 10 |
 
-Buildings expose First placement is free, Price growth type (Linear / Multiplicative) and Price increase per copy (%) in the native addon and the HTML Database catalog, under Price progression. Default growth is linear at 50% of the base price per additional paid copy: free, 100%, 150%, 200%, etc. Multiplicative growth at 50% uses free, 100%, 150%, 225%, etc. Resource quantities round up. Zero growth keeps paid copies at the base price. Changing these settings affects future placement prices.
+BuildingDefinition resources expose first_placement_free, cost_scaling (Linear / Multiplicative) and cost_growth_percent. Default growth is linear at 50% of the base price per additional paid copy: free, 100%, 150%, 200%, etc. Multiplicative growth at 50% uses free, 100%, 150%, 225%, etc. Resource quantities round up. Zero growth keeps paid copies at the base price. Changing these settings affects future placement prices.
 
 Price history is tracked separately by building type and counts successful placements, including buildings later destroyed. Failed or cancelled placement spends nothing and changes no count. The history is saved with the world and restored independently of current building count. Older saves without history infer it from standing buildings; already destroyed buildings from before this update cannot be reconstructed. Existing saved worlds retain their structures. Reset/new game uses the empty start.
 
@@ -220,34 +197,33 @@ Building-recipe rewards are zero in the data and enforced by ScienceController, 
 
 The full-screen hatch presentation is ordered above toolbar badges, notifications and reward flights, with the pause menu and custom tooltips above it. Entering the presentation dismisses any previous tooltip. Static layout and breeding button styles remain in their Control scenes.
 
-## Native World Studio and shared Design Doc
-
-The Database main screen now matches the web Studio's three-column layout and dark
-forest palette. Creature previews show the actual male/female appearances and their
-animation clips, with play/pause, drag orbit, reset view and wheel zoom. Preview models
-do not run gameplay AI or edit their source scene. All panel dimensions and layouts are
-authored in Control/Container scenes; only 3D camera orbit and graph cards are dynamic.
-
-**Open Web Studio**, also available under **Project / Tools**, opens the corresponding
-page for this project. It reuses a matching localhost service or starts the existing
-PowerShell launcher. Right-click the button to configure this project's port or launcher
-path. Defaults are **8769** and the sibling workbench creature-editor launcher.
-
-**Design Doc** in Godot and **design.html** in the web Studio edit the same
-**docs/DESIGN.md**. The document describes current game rules, detailed creature AI and
-separately marked future ideas. Changing its text does not change database parameters.
-Godot has Write/Read views and the browser has an outline, reading preview and Markdown
-editor. Both provide explicit Save and Reload saved actions. Clean views pick up external
-saves; drafts remain intact on conflict and stale saves are blocked. Saves use a shared
-lock, revision checks, atomic replacement and backups outside the game under the
-project parent's **Hatchworks-workbench/design-doc-data/<project-key>** folder.
-
 ## Focus, happiness and editable creature AI
 
 Esc dismisses the current panel, tool mode or inspected creature/building before opening the pause menu. It also returns an unfinished hatch presentation to its incubator without losing the egg. A subsequent Esc opens the pause menu. While inspecting an actor, its inspection-bounds center stays in the camera center, including during movement and orbiting. Leaving focus preserves the current camera position and rotation and smoothly increases orthographic size by 20%. The factor is exported as `focus_release_zoom_factor`; saved camera views preserve this resulting location and zoom.
 
 The happiness meter has face icons and boundaries at 40% and 70%: Unhappy below 40%, Neutral below 70%, Happy from 70%. Its custom cursor tooltip displays current happiness, the level and actual contributions from base comfort, satiety, company, crowding, noise and unwanted neighbours. These contributions come from the same calculation used by the creature, and happiness still approaches its target gradually.
 
-**Database / Creature AI** and **Web Studio / Creature AI** (`ai.html`) edit the same `CreatureSpecies.ai_graph` data. Each species has a graph of its existing Eat, Attack, Rest and Work behaviours, plus an Any state source for global checks. Drag nodes, connect states, select a transition and edit numeric/boolean conditions, AND/OR matching and priority. Higher priorities are tried first; an unavailable action falls through to the next matching action. The graph can inspect hunger, happiness, work cycles, sex, company, stress, carried water, swimming, dry ground and navigation readiness. Attack remains a Pebblit capability. The Hungry and Unhappy-or-cramped predicates use the existing species thresholds; explicit numeric conditions can replace those activation thresholds.
+CreatureSpecies.ai_graph stores the runtime action rules: Eat, Attack, Rest and Work, with an Any source for global checks. Conditions and priorities are validated by CreatureAiGraph. Mood restrictions apply independently of graph rules.
 
-An empty graph uses the existing default behaviour ordering. An explicitly authored graph with no matching enabled action waits. Movement, swimming, safe landings, breeding, ongoing work completion and mandatory attack cooldowns retain their existing controllers. Native edits support Undo/Redo and Save All; the web editor saves one species with revision checks. Both validate the shared graph schema before writing. Restart gameplay to apply saved rules.
+An empty graph uses the existing default behaviour ordering. An explicitly authored graph with no matching enabled action waits. Movement, swimming, safe landings, breeding, ongoing work completion and mandatory attack cooldowns retain their existing controllers. Edit the resource through the Godot Inspector and restart gameplay to apply saved rules.
+
+## Mood-dependent creature AI
+
+Mood is derived from saved happiness using per-species unhappy_threshold (default40)
+and happy_threshold (default70). Unhappy is below40, Neutral is40 to below70, Happy
+is70 or above. There is no separate aggression_threshold. The inspection meter and AI
+share Creature.mood(). CreatureSpecies resources expose the two thresholds and happy/neutral
+work-cycle ranges. leisure_cycles_min/max are the Happy range (2-3); the new
+neutral_leisure_cycles_min/max default to1-1. Leisure duration and happiness-based work
+speed keep their existing settings. Breeding remains the separate player-initiated action.
+
+Mood restrictions run before species-specific animation phases and graph decisions.
+Unhappy mood interrupts pending production, releases its reservation and goes to food,
+rest or a supported attack. Happy/Neutral mood cancels an active attack. Completed
+effects are retained. Pebblit rests after completed charges and after an attack cancelled
+by mood recovery. With no reachable food or attack target, an Unhappy creature rests;
+it cannot fall through to Work, including with an old/custom graph or a resumed job.
+Existing activity numbers and save version remain unchanged.
+
+Feeder approach markers now sit outside the building's circular navigation exclusion
+and physical body so creatures can actually reach an eating destination.

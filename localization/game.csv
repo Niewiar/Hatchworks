@@ -518,9 +518,9 @@ Are you sure you want to leave the game?,Are you sure you want to leave the game
 Your game will be saved.,Your game will be saved.,Gra zostanie zapisana
 Unhappy,Unhappy,Nieszczęśliwy
 Neutral,Neutral,Neutralny
-Happy,Happy,Szczęśliwy
+Happy,Happy,Zadowolony
 Happiness: %d%% · %s,Happiness: %d%% · %s,Szczęście: %d%% · %s
-Unhappy: 0–39% · Neutral: 40–69% · Happy: 70–100%,Unhappy: 0–39% · Neutral: 40–69% · Happy: 70–100%,Nieszczęśliwy: 0–39% · Neutralny: 40–69% · Szczęśliwy: 70–100%
+Unhappy: below %s%% · Neutral: %s%% to below %s%% · Happy: from %s%%,Unhappy: below %s%% · Neutral: %s%% to below %s%% · Happy: from %s%%,Nieszczęśliwy: poniżej %s%% · Neutralny: od %s%% do poniżej %s%% · Zadowolony: od %s%%
 Current conditions: %d%%,Current conditions: %d%%,Obecne warunki pozwalają na: %d%%
 Base comfort: +%.1f pts,Base comfort: +%.1f pts,Podstawowy poziom: +%.1f pkt
 Satiety: +%.1f pts (%d%%),Satiety: +%.1f pts (%d%%),Sytość: +%.1f pkt (%d%%)
@@ -530,3 +530,21 @@ Noise: %.1f pts,Noise: %.1f pts,Hałas: %.1f pkt
 Unwanted neighbours: %.1f pts,Unwanted neighbours: %.1f pts,Niechciane sąsiedztwo: %.1f pkt
 Happiness gradually follows these conditions.,Happiness gradually follows these conditions.,Szczęście stopniowo dostosowuje się do tych warunków.
 Close focus - Esc / RMB,Close focus - Esc / RMB,Zamknij podgląd — Esc / PPM
+Build,Build,Budowanie
+Terrain,Terrain,Teren
+Gather,Gather,Zbieranie
+Raise,Raise,Podnieś
+Lower,Lower,Obniż
+Smooth,Smooth,Wygładź
+Flatten,Flatten,Wyrównaj
+Axe,Axe,Topór
+Pickaxe,Pickaxe,Kilof
+"A new life is stirring…
+LMB / RMB / Esc — skip","A new life is stirring…
+LMB / RMB / Esc — skip","Budzi się nowe życie…
+LPM / PPM / Esc — pomiń"
+"Welcome to Hatchworks
+LMB / RMB / Esc — confirm","Welcome to Hatchworks
+LMB / RMB / Esc — confirm","Witaj w Hatchworks
+LPM / PPM / Esc — zatwierdź"
+Attacking,Attacking,Atakuje

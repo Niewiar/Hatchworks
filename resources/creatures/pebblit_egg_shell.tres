@@ -1,7 +1,12 @@
-[gd_resource type="ShaderMaterial" format=3]
+[gd_resource type="ShaderMaterial" load_steps=4 format=3]
 [ext_resource type="Shader" path="res://code/incubation/egg_shell.gdshader" id="shader"]
-[ext_resource type="Texture2D" path="res://assets/creatures/pebblit/pebblit_egg_albedo.png" id="texture"]
+[ext_resource type="Shader" path="res://code/environment/nature_outline.gdshader" id="ink"]
+[sub_resource type="ShaderMaterial" id="Outline"]
+shader = ExtResource("ink")
+shader_parameter/width = 0.00090000
+shader_parameter/wind_strength = 0.0
 [resource]
 shader = ExtResource("shader")
-shader_parameter/shell_texture = ExtResource("texture")
-shader_parameter/inner_color = Color(0.67,0.64,0.55,1)
+shader_parameter/species = 2
+shader_parameter/inner_color = Color(0.89,0.83,0.65,1)
+next_pass = SubResource("Outline")

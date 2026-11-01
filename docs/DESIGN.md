@@ -24,7 +24,7 @@ Ogrodzenia wyznaczają połączone regiony i blokują przejścia. Region przecho
 
 Nowe rośliny nie wyrastają samoczynnie. Pojawiają się przez sadzenie, działalność stworków lub ustawienie początkowego świata. Posadzone rośliny mogą następnie rosnąć do pełnej wielkości.
 
-Każda zebrana roślina i każde całkowicie ścięte drzewo ma niezależnie 30 procent szans na jedną sadzonkę tego samego gatunku. Częściowe uderzenia w drzewo, niedojrzałe lub już zebrane rośliny oraz rośliny zgniecione przez Pebblita nie dają sadzonek. Sadzonka trafia do plecaka z animacją zdobycia. Parametr `sapling_chance` jest ustawiany osobno dla gatunku w katalogu Flora w Godocie i na stronie; zakres 0–1 odpowiada 0–100 procent.
+Każda zebrana roślina i każde całkowicie ścięte drzewo ma niezależnie 30 procent szans na jedną sadzonkę tego samego gatunku. Częściowe uderzenia w drzewo, niedojrzałe lub już zebrane rośliny oraz rośliny zgniecione przez Pebblita nie dają sadzonek. Sadzonka trafia do plecaka z animacją zdobycia. Parametr `sapling_chance` jest ustawiany osobno dla gatunku w katalogu Flora w zasobie gatunku przez Inspektor Godota; zakres 0–1 odpowiada 0–100 procent.
 
 
 ## Odkrycia i plecak
@@ -70,29 +70,32 @@ Budynki i elementy drewnianego ogrodzenia mają wytrzymałość. Zniszczenie usu
 
 **Pebblit samica** tworzy piaszczyste polany na glebie, trawie i skałach, bez tworzenia złóż kamienia i bez zmiany wysokości. Praca zatrzymuje się po osiągnięciu lokalnego limitu pokrycia piaskiem, domyślnie 30 procent. W czasie wolnym samica może podejść do skały i się o nią ocierać.
 
-Obie płcie Pebblita mogą niszczyć pobliskie drewniane płoty i budynki, gdy są niezadowolone albo mają za mało miejsca.
+Obie płcie Pebblita mogą niszczyć pobliskie drewniane płoty i budynki wyłącznie w stanie Nieszczęśliwy. Tłok wpływa na zadowolenie; nie uruchamia ataku z pominięciem nastroju.
 
 ## Jak działa AI kreatur
 
 ### Konstrukcja kontrolerów
 
-AI jest maszyną stanów ze stałą kolejnością decyzji. Nie wybiera zachowań za pomocą modelu językowego, drzewa zachowań ani losowania pomiędzy wszystkimi możliwymi zadaniami.
+AI ma dwie warstwy: nastrój wynikający z bieżącego zadowolenia oraz graf wyboru dostępnych zachowań. Nastrój wyznacza dozwolone działania. Zadowolony i Neutralny mogą jeść, pracować i odpoczywać. Nieszczęśliwy może jeść i odpoczywać; spośród obecnych gatunków tylko Pebblit może wtedy atakować. Graf nie może zezwolić na pracę w stanie Nieszczęśliwy ani na atak poza tym stanem.
 
 - `Creature` obsługuje ciało, kolizje, podnoszenie, spadanie i lądowanie, wygląd płci, podstawowe statystyki oraz prędkość pracy wynikającą z zadowolenia.
-- `TuftlingController` dodaje szukanie jedzenia, wody i miejsca wysiewu, pływanie, pracę oraz odpoczynek.
-- `EcosystemCreatureController` korzysta ze wspólnych zasad Tuftlinga, ale wybiera zadania sadzenia roślin, tworzenia skał lub piasku.
+- `CreatureActivityController` ma jeden wspólny przebieg aktywności: ruch rozrodu, fazy specjalne, odświeżenie nawigacji, decyzję AI, jedzenie, odpoczynek i prowadzenie trasy. Jest wspólnym rodzicem kontrolerów gatunków.
+- `TuftlingController` wybiera wodę i miejsce wysiewu oraz wykonuje kąpiel i wysiew trawy.
+- `EcosystemCreatureController` jest drugim potomkiem wspólnego kontrolera. Wybiera i wykonuje zadania sadzenia roślin, tworzenia skał lub piasku.
 - `PebblitController` dodaje własne pozy ciała, szarże, agresję i odpoczynek po szarży.
 - `CreatureNavigation` planuje ścieżki, rezerwuje miejsca i pomaga stworkom omijać się nawzajem.
 - `CreatureWellbeingController` przygotowuje wspólne informacje o mieszkańcach regionów, a `NoiseController` zlicza hałas.
 - `BreedingController` steruje aktywną parą rozmnażających się stworków.
 
+Kontroler zwraca `activity_presentation` z krótką nazwą, identyfikatorem ikony i opisem szczegółowym. Panel inspekcji i tooltip korzystają z tego samego opisu aktywności; UI nie interpretuje ponownie stanów pracy ani szarży. Numery aktywności i zapisane pola pozostają zgodne z wcześniejszym formatem zapisu.
+
 ### Kolejność zachowań
 
 Podniesiony stworek podąża za dłonią gracza. Spadanie i lądowanie obsługuje fizyka. Po bezpiecznym postawieniu wraca do swoich decyzji.
 
-Aktywne rozmnażanie przejmuje ruch i orientację pary. Pebblit wykonujący zwijanie, uderzenie lub rozwijanie kończy odpowiednią fazę animacji. Po zakończonej szarży musi odbyć osobny odpoczynek.
+Aktywne rozmnażanie przejmuje ruch i orientację pary. Fazy zwijania, uderzenia i rozwijania sterują szarżą Pebblita. Zmiana nastroju może przerwać niedozwolone zachowanie także w tych fazach. Po zakończonej lub przerwanej zmianą nastroju szarży Pebblit musi odbyć osobny odpoczynek.
 
-Przy zwykłym podejmowaniu decyzji stworek najpierw sprawdza możliwość jedzenia. Następnie Pebblit może rozpocząć nowy atak. Dalej wykonywane są czas wolny, rozpoczęta praca, przejście po ścieżce albo wybór następnego zadania. Rozpoczęte fazy animacji mogą czasowo opóźnić wybór kolejnej czynności.
+Przy zwykłym podejmowaniu decyzji graf sprawdza pasujące reguły według priorytetu, w granicach aktualnego nastroju. Domyślnie pierwszeństwo ma dostępne jedzenie, później atak nieszczęśliwego Pebblita, odpoczynek i praca. Jeśli akcja jest niedostępna, sprawdzana jest następna pasująca reguła. Zmiana nastroju zatrzymuje niedozwoloną pracę lub atak, zwalniając drogę i rezerwację miejsca. Wykonane już efekty nie są cofane ani powtarzane.
 
 ### Najedzenie i jedzenie
 
@@ -107,6 +110,8 @@ Zero najedzenia nie jest stanem śmierci i nie wyłącza AI. Głód wpływa na z
 ### Zadowolenie i wrażliwości
 
 `happiness` to obecne zadowolenie, początkowo 75. `_happiness_target` to wartość, do której stworek stopniowo dochodzi. Mniej więcej raz na sekundę pobiera informacje o swoim regionie i otoczeniu.
+
+Bieżące `happiness` wyznacza wspólny dla AI i panelu inspekcji nastrój: Nieszczęśliwy poniżej `unhappy_threshold` (domyślnie 40), Neutralny od tego progu do wartości poniżej `happy_threshold` (domyślnie 70), Zadowolony od górnego progu. Progi ustawia się osobno dla gatunku w zasobach gry przez Inspektor Godota. Wartość 40 należy do stanu Neutralny, a 70 do Zadowolony. Nastrój jest wyliczany z zapisanego zadowolenia i nie potrzebuje osobnego pola zapisu.
 
 Docelowe zadowolenie liczymy tak:
 
@@ -130,7 +135,7 @@ Wrażliwości są cechami gatunku. Obie płcie korzystają z tych samych ustawie
 
 `happiness_response_seconds` określa tempo zmiany zadowolenia: `100 / happiness_response_seconds` punktów na sekundę. Przy wartości 30 różnica 10 punktów wyrównuje się w około 3 sekundy, a różnica pełnych 100 punktów w 30 sekund. Nie jest to sztywny czas oczekiwania na każdą zmianę.
 
-Tempo wybranych prac wynosi od 70 procent przy zerowym zadowoleniu do 110 procent przy pełnym zadowoleniu. Nie ma statystyki energii.
+Zadowolenie nadal wpływa na tempo pracy. Pracę dopuszczają tylko stany Neutralny i Zadowolony; stan Nieszczęśliwy ją blokuje. Nie ma statystyki energii.
 
 ### Wybieranie pracy i odpoczynek
 
@@ -138,20 +143,15 @@ Kontroler szuka miejsca w pobliżu, sprawdzając grunt, wodę, nachylenie, woln�
 
 Sadzenie, uderzenie lub tworzenie piasku jest związane z określonym momentem animacji. `_effect_done` zapobiega wielokrotnemu wykonaniu tego samego efektu w trakcie jednej pracy i pomaga zachować poprawny stan po wczytaniu gry.
 
-Po pracy może wystąpić krótka przerwa `resting_seconds`. Niezależnie od niej, po losowo wybranej liczbie cykli od `leisure_cycles_min` do `leisure_cycles_max` stworek wybiera czas wolny. Trwa on od `leisure_seconds_min` do `leisure_seconds_max`, domyślnie 8–16 sekund po 1–2 cyklach. Odpoczynek ma własną animację. Napełnienie okolicy roślinami lub złożami może zatrzymać dalszą produkcję do czasu zwolnienia miejsca; nie jest to blokada głodu.
+Po pracy może wystąpić krótka przerwa `resting_seconds`. Niezależnie od niej stworek wybiera czas wolny po ukończeniu liczby prac właściwej dla nastroju. Zadowolony domyślnie wykonuje 2–3 udane prace, zgodnie z `leisure_cycles_min` i `leisure_cycles_max`. Neutralny odpoczywa po jednej, zgodnie z `neutral_leisure_cycles_min` i `neutral_leisure_cycles_max`. Nieudana próba nie jest ukończoną pracą. Wszystkie zakresy ustawia się osobno dla gatunku. Czas wolny nadal trwa od `leisure_seconds_min` do `leisure_seconds_max`, domyślnie 8–16 sekund, i ma własną animację. Nieszczęśliwy nie pracuje: po niedostępnym posiłku i ewentualnym ataku odpoczywa. Napełnienie okolicy roślinami lub złożami może zatrzymać dalszą produkcję do czasu zwolnienia miejsca; nie jest to blokada głodu.
 
 ### Agresja Pebblita
 
-Decyzja o rozpoczęciu nowego ataku ma dwa niezależne warunki:
+Pebblit może rozpocząć atak tylko w nastroju Nieszczęśliwy, czyli domyślnie przy `happiness < 40`. Neutralny i Zadowolony nie atakują. Nie ma osobnego progu agresji ani bezpośredniego wyzwalacza ataku od małej powierzchni. Brak miejsca obniża zadowolenie przez zwykły system wrażliwości.
 
-- `happiness <= aggression_threshold`, domyślnie 40;
-- albo dodatnia sucha powierzchnia na osobnika jest mniejsza niż `preferred_area × 0.5`.
+Nowa szarża wymaga suchego gruntu, gotowej nawigacji, zakończonego odpoczynku i dostępnego celu. Kontroler sprawdza budynki oraz drewniane płoty w zasięgu `production_radius + 2` metry i szuka najbliższego celu, do którego może podejść i uderzyć bez trafiania przez przeszkodę. Gdy nie ma celu, nieszczęśliwy Pebblit odpoczywa zamiast wracać do pracy. Próby wyboru agresywnego celu są ograniczone odstępem około 0.8 sekundy.
 
-Pebblit ma obecnie `preferred_area = 24`, więc mniej niż 12 metrów kwadratowych suchego terenu na osobnika może wywołać agresję nawet przy wyższym zadowoleniu. Podniesienie `aggression_threshold` powoduje łatwiejsze wywołanie agresji.
-
-Nowa szarża wymaga suchego gruntu, gotowej nawigacji, zakończonego odpoczynku i dostępnego celu. Kontroler sprawdza budynki oraz drewniane płoty w zasięgu `production_radius + 2` metry i szuka najbliższego celu, do którego może podejść i uderzyć bez trafiania przez przeszkodę. Gdy nie ma celu, Pebblit może wybrać zwykłą pracę. Próby wyboru agresywnego celu są ograniczone odstępem około 0.8 sekundy.
-
-Domyślne obrażenia `impact_damage` wynoszą 25. Każda ukończona szarża kończy się obowiązkowym odpoczynkiem `aggression_cooldown`, domyślnie 12 sekund. Po nim Pebblit sprawdza warunki ponownie. Jeśli nadal jest niezadowolony albo ma za ciasno, może znowu zaatakować. Jest to cykl szarży i odpoczynku, a nie zużywanie paska energii.
+Domyślne obrażenia `impact_damage` wynoszą 25. Każda ukończona szarża kończy się obowiązkowym odpoczynkiem `aggression_cooldown`, domyślnie 12 sekund. Po nim Pebblit sprawdza warunki ponownie. Jeśli nadal jest nieszczęśliwy, może znowu zaatakować. Jest to cykl szarży i odpoczynku, a nie zużywanie paska energii.
 
 ### Nawigacja i wspólne miejsca
 
@@ -183,11 +183,11 @@ Nauka pochodzi z pierwszego poznania receptur oraz pierwszych zaobserwowanych dz
 
 Kolejne jaja z warsztatu zużywają surowce i naukę. Surowce mogą być odnawiane przez ekosystem, natomiast obecne nagrody nauki są związane z pierwszymi zdarzeniami. Ta różnica ogranicza masową produkcję jaj i wymaga dalszego balansu.
 
-## Narzędzia projektu
+## Dane projektu
 
-Godot Database oraz przeglądarkowy World Studio korzystają ze wspólnych zasobów bazy. Zakładki Creatures, Discoveries i Database służą do zmiany danych. Design Doc służy do opisu decyzji. Zapis w jednym edytorze odświeża czysty widok drugiego. Niezapisane szkice nie są automatycznie zastępowane.
+Gra korzysta z natywnych zasobów Godota. Katalog główny znajduje się w `resources/database/game_database.tres`, a parametry gatunków, flory, budynków i odkryć edytuje się przez Inspektor Godota. Ten dokument pozostaje opisem zasad i decyzji projektu; edycja tekstu nie zmienia parametrów rozgrywki.
 
-Interfejsy dodatku budujemy jako sceny Control i Container. Skrypty wiążą dane, widoczność i zdarzenia. Parametry silnika i przebieg AI mają czytelne nazwy, a techniczne pola nie są wystawiane w interfejsie gracza.
+Interfejs gry jest zbudowany ze scen Control i Container. Skrypty wiążą dane, widoczność i zdarzenia.
 
 ## Pomysły wymagające dalszych decyzji
 

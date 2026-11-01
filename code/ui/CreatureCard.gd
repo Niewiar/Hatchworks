@@ -34,13 +34,13 @@ func configure(data: CreatureSpecies, sex: int, database: GameDatabase, tooltips
 		control.visible = not compact
 	$Name.text = data.display_name
 	$Sex/Text.text = tr("Male") if sex == Creature.SEX.MALE else tr("Female")
-	$Sex/Icon.texture = load("res://assets/ui/male.png" if sex == Creature.SEX.MALE else "res://assets/ui/female.png")
+	$Sex/Icon.texture = load("res://assets/ui/illustrated/male.svg" if sex == Creature.SEX.MALE else "res://assets/ui/illustrated/female.svg")
 	$Description.text = database.rich_description(data.description)
 	$Requirements/Water.visible = data.requires_water
 	$Requirements/WaterText.visible = data.requires_water
 	var ground_id := _habitat_id()
 	var ground := database.discovery(ground_id)
-	$Requirements/Soil.texture = ground.icon if ground != null else load("res://assets/ui/gather_ground.png")
+	$Requirements/Soil.texture = ground.icon if ground != null else load("res://assets/ui/illustrated/gather_ground.svg")
 	$Requirements/SoilText.text = tr("Soil / rock") if data.production == CreatureSpecies.PRODUCTION.QUARRY else (tr("Grass") if ground_id == &"grass" else tr("Dry soil"))
 	var food: ResourceDefinition
 	for resource in database.resources:

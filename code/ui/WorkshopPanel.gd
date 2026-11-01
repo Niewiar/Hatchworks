@@ -48,9 +48,9 @@ func refresh() -> void:
 			var cost: int = egg.costs()[kind]
 			row.visible = cost > 0
 			row.get_node("Quantity").text = "%d / %s" % [cost,_map.inventory.quantity_text(kind)]
-			row.modulate = Color.WHITE if _map.inventory.can_afford(kind,cost) else Color(1,0.57,0.45)
+			row.modulate = Color.WHITE if _map.inventory.can_afford(kind,cost) else Color(0.72,0.38,0.26)
 		%ScienceCost.text = "%d / %d" % [egg.science_cost,_map.science.amount]
-		%ScienceRow.modulate = Color.WHITE if _map.science.can_afford(egg.science_cost) else Color(1,0.57,0.45)
+		%ScienceRow.modulate = Color.WHITE if _map.science.can_afford(egg.science_cost) else Color(0.72,0.38,0.26)
 	else:
 		%CreationTime.text = tr("Discover an egg recipe to begin.")
 	match _target.state:

@@ -1,10 +1,12 @@
-[gd_resource type="ShaderMaterial" format=3]
-
-[ext_resource type="Shader" path="res://code/incubation/egg_shell.gdshader" id="1_g0r12"]
-[ext_resource type="Texture2D" path="res://assets/creatures/bloomlet/bloomlet_egg_albedo.res" id="2_rdrdq"]
-
+[gd_resource type="ShaderMaterial" load_steps=4 format=3]
+[ext_resource type="Shader" path="res://code/incubation/egg_shell.gdshader" id="shader"]
+[ext_resource type="Shader" path="res://code/environment/nature_outline.gdshader" id="ink"]
+[sub_resource type="ShaderMaterial" id="Outline"]
+shader = ExtResource("ink")
+shader_parameter/width = 0.00090000
+shader_parameter/wind_strength = 0.0
 [resource]
-render_priority = 0
-shader = ExtResource("1_g0r12")
-shader_parameter/shell_texture = ExtResource("2_rdrdq")
-shader_parameter/inner_color = Color(0.94, 0.88, 0.74, 1)
+shader = ExtResource("shader")
+shader_parameter/species = 3
+shader_parameter/inner_color = Color(0.89,0.83,0.65,1)
+next_pass = SubResource("Outline")

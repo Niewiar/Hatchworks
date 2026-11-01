@@ -1,9 +1,11 @@
-[gd_resource type="ShaderMaterial" format=3]
+[gd_resource type="ShaderMaterial" load_steps=4 format=3]
 [ext_resource type="Shader" path="res://code/creatures/pebblit_sand.gdshader" id="shader"]
+[ext_resource type="Material" path="res://resources/creatures/pebblit_female_outline.tres" id="outline"]
 [ext_resource type="Texture2D" path="res://assets/creatures/pebblit/pebblit_female_sand.png" id="sand"]
 [resource]
 shader = ExtResource("shader")
+next_pass = ExtResource("outline")
 shader_parameter/sand_texture = ExtResource("sand")
-shader_parameter/shadow_color = Vector3(0.29, 0.15, 0.047)
-shader_parameter/base_color = Vector3(0.72, 0.405, 0.12)
-shader_parameter/highlight_color = Vector3(0.98, 0.7, 0.33)
+shader_parameter/shadow_color = Vector3(0.34239164, 0.17064494, 0.04696420)
+shader_parameter/base_color = Vector3(0.72934709, 0.47699978, 0.17886750)
+shader_parameter/highlight_color = Vector3(0.97740193, 0.72934709, 0.35469206)

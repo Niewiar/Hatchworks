@@ -5,6 +5,7 @@ extends Control
 @export var tooltip_controller: TooltipController
 
 const TOKEN = preload("res://scenes/ui/discovery_token.tscn")
+const BOARD_TOKEN = preload("res://scenes/ui/discovery_board_token.tscn")
 const RECIPE_ROW = preload("res://scenes/ui/discovery_recipe_row.tscn")
 var _selected_id: StringName
 var _archive_category := -1
@@ -115,7 +116,7 @@ func _filtered_entries(search: LineEdit, category: int, sorting: OptionButton) -
 	return result
 
 func _make_token(entry: DiscoveryDefinition, on_board: bool) -> DiscoveryToken:
-	var token := TOKEN.instantiate() as DiscoveryToken
+	var token := (BOARD_TOKEN if on_board else TOKEN).instantiate() as DiscoveryToken
 	token.configure(entry,map_manager.discoveries.is_unread(entry.id))
 	token.in_workspace = on_board
 	token.drag_started.connect(_begin_drag)
@@ -137,7 +138,7 @@ func _begin_drag(token: DiscoveryToken, offset: Vector2) -> void:
 	_cancel_drag()
 	_drag_source = token
 	_drag_entry = token.entry
-	_drag_offset = token.get_global_transform().basis_xform(offset)
+	_drag_offset = token.get_global_transform().basis_xform(offset if token.in_workspace else Vector2(68,72))
 	%DragPreview.configure(_drag_entry,false)
 	if token.in_workspace:
 		token.hide()

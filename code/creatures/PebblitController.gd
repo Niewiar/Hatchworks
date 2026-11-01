@@ -1,9 +1,9 @@
 class_name PebblitController
 extends EcosystemCreatureController
 
-const RIDE_DISTANCE := 0.9081823
-const FEMALE_WALK_DISTANCE := 0.34285715
-const MALE_WALK_DISTANCE := 0.2
+const RIDE_DISTANCE := 0.590318495
+const FEMALE_WALK_DISTANCE := 0.22285714750000002
+const MALE_WALK_DISTANCE := 0.13
 const FEMALE_MODEL = preload("res://scenes/creatures/pebblit_female_model.tscn")
 const MALE_MODEL = preload("res://scenes/creatures/pebblit_model.tscn")
 
@@ -52,36 +52,43 @@ func _select_model() -> void:
 		animation_player.animation_finished.connect(_on_animation_finished)
 		_play_animation(&"HeldIdle" if _state == STATE.HELD else (&"Fall" if _state == STATE.FALLING else &"Idle"))
 
-func _tick_activity(delta: float) -> void:
-	velocity.x = 0.0
-	velocity.z = 0.0
+func _advance_activity_timers(delta: float) -> void:
+	super._advance_activity_timers(delta)
 	_aggression_retry = maxf(0.0,_aggression_retry-delta)
-	if _job.get("kind", "") == "damage":
+
+func _tick_priority_activity(delta: float) -> bool:
+	if _job.get("kind","") == "damage":
 		var target = _job.get("target")
 		if not _effect_done and (not is_instance_valid(target) or target.is_queued_for_deletion()):
 			interrupt_activity()
-	if _pose in [POSE.CURLING, POSE.IMPACT, POSE.UNCURLING]:
-		velocity.x = 0.0
-		velocity.z = 0.0
+	if _pose in [POSE.CURLING,POSE.IMPACT,POSE.UNCURLING]:
 		if _pose == POSE.IMPACT:
 			_elapsed += delta
 			if not _effect_done and _elapsed >= 0.18:
 				_effect_done = true
 				if _apply_effect():
 					_work_cycles += 1
-		return
-	if not _map.breeding.is_breeding(self) and _job.get("kind", "") != "damage":
-		if _aggression_wait > 0.0 and _on_dry_ground():
-			if activity != ACTIVITY.LEISURE:
-				interrupt_activity()
-				_begin_break()
-				_leisure_duration = _aggression_wait
-			_aggression_wait = maxf(0.0,_aggression_wait-delta)
-			_tick_rest(delta)
-			return
-	super._tick_activity(delta)
+		return true
+	if _job.get("kind","") != "damage" and _aggression_wait > 0.0 and _on_dry_ground():
+		if activity != ACTIVITY.LEISURE:
+			interrupt_activity()
+			_begin_break()
+			_leisure_duration = _aggression_wait
+		_tick_rest(delta)
+		return true
+	return false
+
+func _enforce_mood() -> void:
+	var ended_attack := _ai_state() == "attack" and not _mood_allows("attack")
+	if ended_attack:
+		_aggression_wait = maxf(_aggression_wait,_species.aggression_cooldown)
+	super._enforce_mood()
+	if ended_attack:
+		_leisure_duration = _aggression_wait
 
 func _try_aggression() -> bool:
+	if not _mood_allows("attack"):
+		return false
 	if _job.get("kind", "") == "damage" or _aggression_wait > 0.0 or _aggression_retry > 0.0 or not _map.navigation.ready_for_paths or not _on_dry_ground():
 		return false
 	_aggression_retry = 0.8
@@ -106,46 +113,35 @@ func _finish_work() -> void:
 		_begin_break()
 		_leisure_duration = _aggression_wait
 
-func _start_path(path: PackedVector3Array, moving: ACTIVITY, failure: ACTIVITY) -> void:
+func _on_path_started(moving: ACTIVITY) -> void:
 	if moving != ACTIVITY.MOVING_TO_REST:
 		_rubbing_job.clear()
-	super._start_path(path, moving, failure)
+	super._on_path_started(moving)
 	_curl_remaining = 0.0
 	_uncurl_remaining = 0.0
 	if _path.is_empty():
 		_pose = POSE.OPEN
 		_play_animation(&"Idle")
-	elif sex == SEX.MALE and moving == ACTIVITY.MOVING_TO_GROUND and _job.get("kind", "") == "damage":
-		face_point(_path[0], &"Idle")
+	elif sex == SEX.MALE and moving == ACTIVITY.MOVING_TO_GROUND and _job.get("kind","") == "damage":
+		face_point(_path[0],&"Idle")
 		_pose = POSE.CURLING
 		_show_animation(&"Curl")
 
-func _follow_path(delta: float) -> void:
-	if _pose != POSE.RIDING:
-		super._follow_path(delta)
+func _path_tolerance() -> float:
+	return 0.07 if _pose == POSE.RIDING else super._path_tolerance()
+
+func _path_speed() -> float:
+	return _species.walk_speed*6.0 if _pose == POSE.RIDING else super._path_speed()
+
+func _complete_work_path() -> void:
+	if _pose == POSE.RIDING:
+		activity = ACTIVITY.SHAKING
+		_pose = POSE.IMPACT
+		_show_animation(&"Impact",0.04)
+	else:
+		super._complete_work_path()
 		_uncurl_remaining = 0.0
-		if activity == ACTIVITY.SHAKING:
-			$Splash.emitting = false
-		return
-	var target := _path[_path_index]
-	var difference := Vector2(target.x - global_position.x, target.z - global_position.z)
-	if difference.length() < 0.07:
-		_path_index += 1
-		if _path_index >= _path.size():
-			_path.clear()
-			activity = ACTIVITY.SHAKING
-			_elapsed = 0.0
-			_pose = POSE.IMPACT
-			_show_animation(&"Impact", 0.04)
-		return
-	walk_direction(difference.normalized(), minf(_species.walk_speed * 6.0, difference.length() / maxf(delta, 0.001)))
-	_stuck += delta
-	if _stuck >= 2.0:
-		if Vector2(global_position.x - _last_position.x, global_position.z - _last_position.z).length() < 0.12:
-			_map.navigation.avoid_blocked_route(self, target)
-			interrupt_activity()
-		_last_position = global_position
-		_stuck = 0.0
+	$Splash.emitting = false
 
 func movement_animation() -> StringName:
 	return &"water/Swim" if _swimming else (&"Ride" if _pose == POSE.RIDING else &"Walk")
@@ -240,12 +236,6 @@ func _tick_work(delta: float) -> void:
 func work_animation() -> StringName:
 	return &"ShakeSand" if _job.get("kind", "") == "sand" else (&"Attack" if _job.get("kind", "") == "damage" else &"Work")
 
-func _tick_hunger(delta: float, policy_triggered: bool = false) -> bool:
-	var feeding: bool = super._tick_hunger(delta,policy_triggered)
-	if feeding and activity == ACTIVITY.EATING and not _swimming:
-		_play_animation(&"Eat")
-	return feeding
-
 func _settle_rest() -> void:
 	if _aggression_wait > 0.0:
 		super._settle_rest()
@@ -282,28 +272,15 @@ func _tick_rest(delta: float) -> void:
 		_leisure_elapsed += delta
 		if _leisure_elapsed >= _leisure_duration:
 			_rubbing_job.clear()
-			_work_cycles = 0
-			_choose_leisure_interval()
-			_map.navigation.release_place(self)
-			activity = ACTIVITY.SEEKING_GROUND
-			_elapsed = 0.0
-	if activity == ACTIVITY.SEEKING_WATER:
-		activity = ACTIVITY.SEEKING_GROUND
+			_finish_break()
 
-func interrupt_activity() -> void:
+func _reset_work_state() -> void:
 	_pose = POSE.OPEN
 	_rubbing_job.clear()
-	super.interrupt_activity()
-	_play_animation(&"Idle")
+	super._reset_work_state()
 
-func _on_navigation_changed() -> void:
-	if _map == null or not _map.navigation.ready_for_paths or _state == STATE.HELD:
-		return
-	if activity != ACTIVITY.SHAKING:
-		_pose = POSE.OPEN
-		_rubbing_job.clear()
-	super._on_navigation_changed()
-	if _path.is_empty() and _state == STATE.GROUNDED and _pose == POSE.OPEN:
+func _after_activity_interrupted() -> void:
+	if _state == STATE.GROUNDED and _pose == POSE.OPEN:
 		_play_animation(&"Idle")
 
 func _find_rubbing_rock() -> Dictionary:
@@ -368,14 +345,16 @@ func _valid_rubbing_rock() -> bool:
 	var target = _rubbing_job.get("target")
 	return is_instance_valid(target) and target is HarvestableDeposit and not target.exhausted and not target.is_queued_for_deletion()
 
-func activity_text() -> String:
-	if _state == STATE.GROUNDED:
-		if _aggression_wait > 0.0 and activity == ACTIVITY.LEISURE:
-			return tr("Resting after a charge")
-		if not _rubbing_job.is_empty():
-			return tr("Rubbing against a rock to relax") if activity == ACTIVITY.LEISURE else tr("Walking to a rock")
-		if activity == ACTIVITY.SHAKING and _job.get("kind", "") == "sand":
-			return tr("Shaking off sand")
-		if activity == ACTIVITY.MOVING_TO_GROUND:
-			return tr("Charging at a structure") if _job.get("kind", "") == "damage" and sex == SEX.MALE else tr("Walking to a work site")
-	return super.activity_text()
+func _rest_presentation() -> Dictionary:
+	if _aggression_wait > 0.0 and activity == ACTIVITY.LEISURE:
+		return _present_activity("Resting","status_rest","Resting after a charge")
+	if not _rubbing_job.is_empty():
+		return _present_activity("Resting","status_rest","Rubbing against a rock to relax" if activity == ACTIVITY.LEISURE else "Walking to a rock")
+	return super._rest_presentation()
+
+func _work_presentation() -> Dictionary:
+	if activity == ACTIVITY.SHAKING and _job.get("kind","") == "sand":
+		return _present_activity("Working","status_work","Shaking off sand")
+	if activity == ACTIVITY.MOVING_TO_GROUND and _job.get("kind","") != "damage":
+		return _present_activity("On the move","status_walk","Walking to a work site")
+	return super._work_presentation()

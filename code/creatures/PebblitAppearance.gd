@@ -11,7 +11,8 @@ const FEMALE_MATERIALS = {
 	"Amber": preload("res://resources/creatures/pebblit_female_eyes.tres"),
 	"Sandlid": preload("res://resources/creatures/pebblit_female_eyelid.tres"),
 	"Mouth": preload("res://resources/creatures/pebblit_female_mouth.tres"),
-	"Sandgrain": preload("res://resources/creatures/pebblit_female_grain.tres")
+	"Sandgrain": preload("res://resources/creatures/pebblit_female_grain.tres"),
+	"Cream": preload("res://resources/creatures/pebblit_female_muzzle.tres")
 }
 
 const MATERIALS = {
@@ -21,7 +22,10 @@ const MATERIALS = {
 	"Amber": preload("res://resources/creatures/pebblit_eyes.tres"),
 	"Mouth": preload("res://resources/creatures/pebblit_mouth.tres"),
 	"Obsidian": preload("res://resources/creatures/pebblit_black.tres"),
-	"Drawn": preload("res://resources/creatures/pebblit_glint.tres")
+	"Drawn": preload("res://resources/creatures/pebblit_glint.tres"),
+	"Moss": preload("res://resources/creatures/pebblit_moss.tres"),
+	"Crevice": preload("res://resources/creatures/pebblit_crevice.tres"),
+	"Claw": preload("res://resources/creatures/pebblit_claw.tres")
 }
 
 func _ready() -> void:

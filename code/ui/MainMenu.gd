@@ -20,6 +20,8 @@ func _ready() -> void:
 	InputManager.on_esc.connect(_show_main)
 	_refresh_language()
 	_show_main()
+	if not GameManager.start_error.is_empty():
+		_show_start_error(GameManager.start_error)
 
 func _show_main() -> void:
 	if _starting:
@@ -53,10 +55,13 @@ func _start(new_game: bool) -> void:
 	if error == OK:
 		return
 	_starting = false
-	%Status.text = tr("Could not start the game: %s") % error_string(error)
-	%Status.show()
+	_show_start_error(GameManager.start_error if not GameManager.start_error.is_empty() else error_string(error))
 	%Continue.disabled = not SaveGame.has_save()
 	_show_main()
+
+func _show_start_error(message: String) -> void:
+	%Status.text = tr("Could not start the game: %s") % message
+	%Status.show()
 
 func _select_language(index: int) -> void:
 	Localization.set_language("en" if index == 0 else "pl")

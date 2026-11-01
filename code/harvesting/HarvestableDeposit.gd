@@ -51,6 +51,11 @@ func hover_distance(screen: Vector2, camera: Camera3D) -> float:
 func set_hovered(active: bool) -> void:
 	_progress.visible = active and not exhausted and _hits > 0
 
+func restore_hits(hits: int) -> void:
+	_hits = hits
+	_progress.text = "%d / %d" % [hits,hits_required]
+	_progress.hide()
+
 func strike() -> int:
 	if exhausted or not visible:
 		return 0

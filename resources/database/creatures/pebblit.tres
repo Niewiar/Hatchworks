@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://dw6tqt3iikt1a"]
 
-[ext_resource type="Texture2D" uid="uid://b2jhh7ovwr7ow" path="res://assets/ui/pebblit.png" id="1_oxhof"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/pebblit_portrait.png" id="1_oxhof"]
 [ext_resource type="PackedScene" path="res://scenes/creatures/pebblit.tscn" id="2_30why"]
 [ext_resource type="Script" uid="uid://c3sw6o85wjpeg" path="res://code/database/CreatureSpecies.gd" id="3_y2v01"]
 
@@ -21,7 +21,8 @@ habitat_ground = 4
 production = 2
 female_production = 4
 production_limit = 5
-aggression_threshold = 50.0
+unhappy_threshold = 40.0
+happy_threshold = 70.0
 id = &"pebblit"
 display_name = "Pebblit"
 description = "Armored and stubborn. Males walk on four paws and charge on stone elbows when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard."

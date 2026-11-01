@@ -25,14 +25,14 @@ func _ready() -> void:
 	if _rewards != null:
 		_rewards.connect("item_arrived",_on_item_arrived)
 		_rewards.connect("presentation_reset",_on_presentation_reset)
-	for button: CheckButton in _base_buttons_content.get_children():
+	for button: Button in _base_buttons_content.get_children():
 		button.pressed.connect(_on_base_button_toggled.bind(button,int(button.get_meta("mode"))))
-	for button: CheckButton in _sculpt_buttons_content.get_children():
+	for button: Button in _sculpt_buttons_content.get_children():
 		button.pressed.connect(_on_sculpt_selected.bind(int(button.get_meta("sculpt_tool"))))
-	for button: CheckButton in _gather_buttons_content.get_children():
+	for button: Button in _gather_buttons_content.get_children():
 		button.pressed.connect(_on_gather_selected.bind(int(button.get_meta("harvest_tool"))))
 	for container in [_building_buttons_content,_base_buttons_content,_sculpt_buttons_content,_gather_buttons_content]:
-		for button: CheckButton in container.get_children():
+		for button: Button in container.get_children():
 			button.mouse_entered.connect(_on_button_hovered.bind(button))
 			button.mouse_exited.connect(tooltip_controller.hide_text.bind(button))
 	map_manager.fances_controller.preview_cost_changed.connect(_on_fence_cost_changed)
@@ -60,16 +60,17 @@ func _setup_building_buttons() -> void:
 		button.set_meta("fence_index",index)
 		button.pressed.connect(_on_fence_selected.bind(index))
 
-func _build_choice(title: String, icon: Texture2D) -> CheckButton:
-	var button := BUILD_CHOICE.instantiate() as CheckButton
+func _build_choice(title: String, icon: Texture2D) -> Button:
+	var button := BUILD_CHOICE.instantiate() as Button
 	button.name = title.to_pascal_case()
 	button.button_group = build_button_group
 	button.set_meta("tooltip_title",title)
 	button.get_node("TextureRect").texture = icon
+	button.get_node("Caption").text = title
 	_building_buttons_content.add_child(button)
 	return button
 
-func _on_base_button_toggled(button: CheckButton, mode: MapManager.MODE) -> void:
+func _on_base_button_toggled(button: Button, mode: MapManager.MODE) -> void:
 	if not button.button_pressed:
 		map_manager.set_mode(MapManager.MODE.NONE)
 	elif mode == MapManager.MODE.BUILD and _mode == MapManager.MODE.FANCE:
@@ -86,7 +87,7 @@ func _on_mode_changed(mode: MapManager.MODE) -> void:
 	_sculpt_buttons_content.visible = mode == MapManager.MODE.SCULPT
 	_gather_buttons_content.visible = mode == MapManager.MODE.HARVEST
 	var base_mode := MapManager.MODE.BUILD if mode in [MapManager.MODE.FANCE,MapManager.MODE.PLANT] else mode
-	for other: CheckButton in _base_buttons_content.get_children():
+	for other: Button in _base_buttons_content.get_children():
 		other.set_pressed_no_signal(int(other.get_meta("mode")) == base_mode)
 	_sync_building_selection()
 	_refresh_building_cost()
@@ -109,7 +110,7 @@ func _on_building_selection_changed(_index: int) -> void:
 	_refresh_building_cost()
 
 func _sync_building_selection() -> void:
-	for button: CheckButton in _building_buttons_content.get_children():
+	for button: Button in _building_buttons_content.get_children():
 		var selected := false
 		if button.has_meta("fence_index"):
 			selected = _mode == MapManager.MODE.FANCE and int(button.get_meta("fence_index")) == map_manager.fances_controller.selected_fance
@@ -147,7 +148,7 @@ func _refresh_building_cost() -> void:
 	_set_build_cost(tr("First one free") if first_free else ("   ".join(parts) if not parts.is_empty() else tr("Free")))
 
 func _resource_cost(kind: int, cost: int) -> String:
-	var color := "#ffffff" if map_manager.inventory.can_afford(kind,cost) else "#f45e4b"
+	var color := "#392e20" if map_manager.inventory.can_afford(kind,cost) else "#9d4931"
 	return "[color=%s]%s/%d %s[/color]" % [color,map_manager.inventory.quantity_text(kind),cost,map_manager.inventory.resource_name(kind)]
 
 func _set_build_cost(text: String) -> void:
@@ -160,7 +161,7 @@ func _on_fence_cost_changed(kind: int, cost: int, _affordable: bool) -> void:
 	if _mode == MapManager.MODE.FANCE:
 		_refresh_building_cost()
 
-func _on_button_hovered(button: CheckButton) -> void:
+func _on_button_hovered(button: Button) -> void:
 	var title := str(button.get_meta("tooltip_title",button.name))
 	if button.has_meta("building_index"):
 		title = map_manager.database.buildings[int(button.get_meta("building_index"))].display_name
@@ -185,7 +186,7 @@ func _on_gather_selected(tool: HarvestController.TOOL) -> void:
 	map_manager.select_harvest_tool(tool)
 
 func _refresh_unlocks() -> void:
-	for button: CheckButton in _building_buttons_content.get_children():
+	for button: Button in _building_buttons_content.get_children():
 		if button.has_meta("fence_index"):
 			button.visible = map_manager.fances_controller.unlocked(int(button.get_meta("fence_index")))
 		else:
@@ -209,7 +210,8 @@ func _on_presentation_reset() -> void:
 	_refresh_badges()
 
 func _refresh_badges() -> void:
-	for button: CheckButton in _base_buttons_content.get_children():
+	_refresh_captions()
+	for button: Button in _base_buttons_content.get_children():
 		var mode: MapManager.MODE = int(button.get_meta("mode"))
 		var count := map_manager.new_content.unread_count(mode)
 		if mode == MapManager.MODE.BACKPACK:
@@ -217,12 +219,12 @@ func _refresh_badges() -> void:
 				if _rewards != null and _rewards.item_in_transit(id) and not _presented_items.has(id):
 					count -= 1
 		button.get_node("NewContent").set_count(count)
-	for button: CheckButton in _building_buttons_content.get_children():
+	for button: Button in _building_buttons_content.get_children():
 		var unread := map_manager.new_content.fence_is_unread(map_manager.database.construction.fances[int(button.get_meta("fence_index"))].id) if button.has_meta("fence_index") else map_manager.new_content.building_is_unread(map_manager.database.buildings[int(button.get_meta("building_index"))].id)
 		button.get_node("NewContent").set_count(1 if unread and button.visible else 0)
-	for button: CheckButton in _sculpt_buttons_content.get_children():
+	for button: Button in _sculpt_buttons_content.get_children():
 		button.get_node("NewContent").set_count(1 if map_manager.new_content.tool_is_unread(MapManager.MODE.SCULPT,int(button.get_meta("sculpt_tool"))) else 0)
-	for button: CheckButton in _gather_buttons_content.get_children():
+	for button: Button in _gather_buttons_content.get_children():
 		button.get_node("NewContent").set_count(1 if map_manager.new_content.tool_is_unread(MapManager.MODE.HARVEST,int(button.get_meta("harvest_tool"))) else 0)
 	if map_manager.new_content.unread_count(MapManager.MODE.DISCOVERIES) > 0 and _mode != MapManager.MODE.DISCOVERIES:
 		if not $DiscoveryFlash.is_playing():
@@ -234,3 +236,8 @@ func _refresh_badges() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
 		_refresh_building_cost()
+
+func _refresh_captions() -> void:
+	for container in [_building_buttons_content,_base_buttons_content,_sculpt_buttons_content,_gather_buttons_content]:
+		for button: Button in container.get_children():
+			button.get_node("Caption").add_theme_color_override("font_color",Color(1,0.96,0.84) if button.button_pressed else Color(0.22,0.18,0.13))

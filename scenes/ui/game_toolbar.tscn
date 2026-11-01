@@ -1,46 +1,79 @@
+
+
+
 [gd_scene format=3 uid="uid://ram2uck0nfvg"]
-
-[ext_resource type="Script" uid="uid://qy8tgo14100w" path="res://code/ui/GameToolbar.gd" id="1_n1sdo"]
-[ext_resource type="Texture2D" path="res://assets/ui/buttons.png" id="1_qv1gk"]
+[ext_resource type="Script" path="res://code/ui/GameToolbar.gd" id="1_n1sdo"]
 
 
-[ext_resource type="Texture2D" path="res://assets/ui/raise.png" id="sculpt_raise"]
-[ext_resource type="Texture2D" path="res://assets/ui/lower.png" id="sculpt_lower"]
-[ext_resource type="Texture2D" path="res://assets/ui/smooth.png" id="sculpt_smooth"]
-[ext_resource type="Texture2D" path="res://assets/ui/flatten.png" id="sculpt_flatten"]
-[ext_resource type="Texture2D" path="res://assets/ui/sculpt.png" id="sculpt_base"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/harvest.png" id="harvest_harvest"]
-[ext_resource type="Texture2D" path="res://assets/ui/gather_plants.png" id="harvest_gather_plants"]
-[ext_resource type="Texture2D" path="res://assets/ui/axe.png" id="harvest_axe"]
-[ext_resource type="Texture2D" path="res://assets/ui/pickaxe.png" id="harvest_pickaxe"]
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/build.png" id="build_mode"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/discoveries.png" id="discoveries_icon"]
-[ext_resource type="Texture2D" path="res://assets/ui/inventory.png" id="inventory_icon"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/raise.svg" id="sculpt_raise"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/lower.svg" id="sculpt_lower"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/smooth.svg" id="sculpt_smooth"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/flatten.svg" id="sculpt_flatten"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/sculpt.svg" id="sculpt_base"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/harvest.svg" id="harvest_harvest"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/gather_plants.svg" id="harvest_gather_plants"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/axe.svg" id="harvest_axe"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/pickaxe.svg" id="harvest_pickaxe"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/build.svg" id="build_mode"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/discoveries.svg" id="discoveries_icon"]
+
+
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/inventory.svg" id="inventory_icon"]
+
+
+
 [ext_resource type="PackedScene" path="res://scenes/ui/new_content_badge.tscn" id="new_badge"]
-[sub_resource type="AtlasTexture" id="AtlasTexture_lg3ar"]
-atlas = ExtResource("1_qv1gk")
-region = Rect2(128, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_oqoow"]
-atlas = ExtResource("1_qv1gk")
-region = Rect2(128, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ny63g"]
-atlas = ExtResource("1_qv1gk")
-region = Rect2(0, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_u114x"]
-atlas = ExtResource("1_qv1gk")
-region = Rect2(0, 0, 128, 128)
 
 [sub_resource type="ButtonGroup" id="SculptTypes"]
 
+
+
 [sub_resource type="ButtonGroup" id="GatherTypes"]
+
+
+
 [sub_resource type="ButtonGroup" id="BuildingTypes"]
 allow_unpress = false
+
+
 
 [sub_resource type="Animation" id="DiscoveryPulse"]
 resource_name = "new_discovery"
@@ -56,12 +89,17 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.5, 1),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Color(1, 1, 1, 1), Color(1.35, 1.18, 0.48, 1), Color(1, 1, 1, 1)]
+"values": [Color(1, 1, 1, 1), Color(1.08, 1.02, 0.8, 1), Color(1, 1, 1, 1)]
 }
+
+
+
 [sub_resource type="AnimationLibrary" id="DiscoveryAnimations"]
 _data = {
 &"new_discovery": SubResource("DiscoveryPulse")
 }
+
+
 
 [node name="GameToolbar" type="Control" unique_id=960911768]
 layout_mode = 3
@@ -75,6 +113,9 @@ size_flags_vertical = 3
 mouse_filter = 2
 script = ExtResource("1_n1sdo")
 build_button_group = SubResource("BuildingTypes")
+theme = ExtResource("world_theme")
+
+
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1572403575]
 layout_mode = 1
@@ -83,12 +124,16 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -70.0
-offset_top = -136.0
-offset_right = 70.0
+offset_left = -310.0
+offset_top = -122.0
+offset_right = 310.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
+offset_bottom = -18.0
+theme_override_constants/separation = 10
+
+
 
 [node name="BuildCost" type="RichTextLabel" parent="VBoxContainer"]
 visible = false
@@ -96,14 +141,16 @@ layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
 theme_override_font_sizes/normal_font_size = 16
-theme_override_colors/default_color = Color(1,1,1,1)
 theme_override_colors/font_outline_color = Color(0.025,0.04,0.03,1)
-theme_override_constants/outline_size = 2
+theme_override_constants/outline_size = 0
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
+theme_type_variation = &"CostLabel"
+
+
 
 [node name="BuildingButtons" type="HBoxContainer" parent="VBoxContainer"]
 unique_name_in_owner = true
@@ -111,6 +158,9 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 mouse_filter = 2
+theme_override_constants/separation = 8
+
+
 
 [node name="SculptButtons" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
@@ -119,27 +169,30 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 mouse_filter = 2
+theme_override_constants/separation = 8
 
-[node name="Raise" type="CheckButton" parent="VBoxContainer/SculptButtons"]
+
+
+[node name="Raise" type="Button" parent="VBoxContainer/SculptButtons"]
+toggle_mode = true
 layout_mode = 2
 button_group = SubResource("SculptTypes")
 button_pressed = true
 metadata/sculpt_tool = 0
 metadata/tooltip_title = "Raise terrain"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/SculptButtons/Raise"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -151,26 +204,28 @@ texture = ExtResource("sculpt_raise")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Lower" type="CheckButton" parent="VBoxContainer/SculptButtons"]
+
+
+[node name="Lower" type="Button" parent="VBoxContainer/SculptButtons"]
+toggle_mode = true
 layout_mode = 2
 button_group = SubResource("SculptTypes")
 button_pressed = false
 metadata/sculpt_tool = 1
 metadata/tooltip_title = "Lower terrain"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/SculptButtons/Lower"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -182,26 +237,28 @@ texture = ExtResource("sculpt_lower")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Smooth" type="CheckButton" parent="VBoxContainer/SculptButtons"]
+
+
+[node name="Smooth" type="Button" parent="VBoxContainer/SculptButtons"]
+toggle_mode = true
 layout_mode = 2
 button_group = SubResource("SculptTypes")
 button_pressed = false
 metadata/sculpt_tool = 2
 metadata/tooltip_title = "Smooth terrain"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/SculptButtons/Smooth"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -213,26 +270,28 @@ texture = ExtResource("sculpt_smooth")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Flatten" type="CheckButton" parent="VBoxContainer/SculptButtons"]
+
+
+[node name="Flatten" type="Button" parent="VBoxContainer/SculptButtons"]
+toggle_mode = true
 layout_mode = 2
 button_group = SubResource("SculptTypes")
 button_pressed = false
 metadata/sculpt_tool = 3
 metadata/tooltip_title = "Flatten to starting height"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/SculptButtons/Flatten"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -245,6 +304,7 @@ expand_mode = 1
 stretch_mode = 5
 
 
+
 [node name="GatherButtons" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
 unique_name_in_owner = true
@@ -252,26 +312,29 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 mouse_filter = 2
+theme_override_constants/separation = 8
 
-[node name="Plants" type="CheckButton" parent="VBoxContainer/GatherButtons"]
+
+
+[node name="Plants" type="Button" parent="VBoxContainer/GatherButtons"]
+toggle_mode = true
 layout_mode = 2
 button_group = SubResource("GatherTypes")
 metadata/harvest_tool = 1
 button_pressed = true
 metadata/tooltip_title = "Gather plants"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/GatherButtons/Plants"]
 layout_mode = 1
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -281,25 +344,27 @@ texture = ExtResource("harvest_gather_plants")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Axe" type="CheckButton" parent="VBoxContainer/GatherButtons"]
+
+
+[node name="Axe" type="Button" parent="VBoxContainer/GatherButtons"]
+toggle_mode = true
 layout_mode = 2
 button_group = SubResource("GatherTypes")
 metadata/harvest_tool = 2
 button_pressed = false
 metadata/tooltip_title = "Chop trees"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/GatherButtons/Axe"]
 layout_mode = 1
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -309,25 +374,27 @@ texture = ExtResource("harvest_axe")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Mining" type="CheckButton" parent="VBoxContainer/GatherButtons"]
+
+
+[node name="Mining" type="Button" parent="VBoxContainer/GatherButtons"]
+toggle_mode = true
 layout_mode = 2
 button_group = SubResource("GatherTypes")
 metadata/harvest_tool = 3
 button_pressed = false
 metadata/tooltip_title = "Mine rocks"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked = SubResource("AtlasTexture_oqoow")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_lg3ar")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_oqoow")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/GatherButtons/Mining"]
 layout_mode = 1
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -337,33 +404,37 @@ texture = ExtResource("harvest_pickaxe")
 expand_mode = 1
 stretch_mode = 5
 
+
+
 [node name="BaseButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1165230477]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-offset_transform_position = Vector2(0, -10)
 mouse_filter = 2
+theme_override_constants/separation = 8
 
-[node name="BuildingButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
+
+
+[node name="BuildingButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
 metadata/mode = 6
 metadata/tooltip_title = "Build structures"
 layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_u114x")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104, 104)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/BuildingButton"]
-texture_filter = 1
+texture_filter = 2
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -375,25 +446,27 @@ texture = ExtResource("build_mode")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SculptButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
+
+
+[node name="SculptButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
 metadata/mode = 4
 metadata/tooltip_title = "Shape terrain"
 layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_u114x")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104, 104)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/SculptButton"]
-texture_filter = 1
+texture_filter = 2
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -405,23 +478,25 @@ texture = ExtResource("sculpt_base")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="GatherButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
+
+
+[node name="GatherButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
 layout_mode = 2
 metadata/mode = 5
 metadata/tooltip_title = "Gather resources"
-theme_override_colors/button_unchecked_color = Color(0.3832, 0.3832, 0.3832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_u114x")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104, 104)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/GatherButton"]
 layout_mode = 1
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -431,26 +506,28 @@ texture = ExtResource("harvest_harvest")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="DiscoveriesButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
+
+
+[node name="DiscoveriesButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
 unique_name_in_owner = true
 metadata/mode = 7
 metadata/tooltip_title = "Discoveries"
 layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_u114x")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104, 104)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/DiscoveriesButton"]
-texture_filter = 1
+texture_filter = 2
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -462,32 +539,35 @@ texture = ExtResource("discoveries_icon")
 expand_mode = 1
 stretch_mode = 5
 
+
+
 [node name="DiscoveryFlash" type="AnimationPlayer" parent="."]
 libraries = {
 &"": SubResource("DiscoveryAnimations")
 }
 
 
-[node name="InventoryButton" type="CheckButton" parent="VBoxContainer/BaseButtons"]
+
+[node name="InventoryButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
 unique_name_in_owner = true
 metadata/mode = 8
 metadata/tooltip_title = "Backpack"
 layout_mode = 2
-theme_override_colors/button_unchecked_color = Color(0.38321832, 0.38321835, 0.38321832, 1)
-theme_override_icons/checked = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked = SubResource("AtlasTexture_u114x")
-theme_override_icons/checked_disabled = SubResource("AtlasTexture_ny63g")
-theme_override_icons/unchecked_disabled = SubResource("AtlasTexture_u114x")
 icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104, 104)
+
+
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/InventoryButton"]
-texture_filter = 1
+texture_filter = 2
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.38
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.38
 offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
@@ -499,26 +579,278 @@ texture = ExtResource("inventory_icon")
 expand_mode = 1
 stretch_mode = 5
 
+
+
 [node name="NewContent" parent="VBoxContainer/BaseButtons/BuildingButton" instance=ExtResource("new_badge")]
+
+
 
 [node name="NewContent" parent="VBoxContainer/BaseButtons/SculptButton" instance=ExtResource("new_badge")]
 
+
+
 [node name="NewContent" parent="VBoxContainer/BaseButtons/GatherButton" instance=ExtResource("new_badge")]
+
+
 
 [node name="NewContent" parent="VBoxContainer/BaseButtons/DiscoveriesButton" instance=ExtResource("new_badge")]
 
+
+
 [node name="NewContent" parent="VBoxContainer/BaseButtons/InventoryButton" instance=ExtResource("new_badge")]
+
+
 
 [node name="NewContent" parent="VBoxContainer/SculptButtons/Raise" instance=ExtResource("new_badge")]
 
+
+
 [node name="NewContent" parent="VBoxContainer/SculptButtons/Lower" instance=ExtResource("new_badge")]
+
+
 
 [node name="NewContent" parent="VBoxContainer/SculptButtons/Smooth" instance=ExtResource("new_badge")]
 
+
+
 [node name="NewContent" parent="VBoxContainer/SculptButtons/Flatten" instance=ExtResource("new_badge")]
+
+
 
 [node name="NewContent" parent="VBoxContainer/GatherButtons/Plants" instance=ExtResource("new_badge")]
 
+
+
 [node name="NewContent" parent="VBoxContainer/GatherButtons/Axe" instance=ExtResource("new_badge")]
 
+
+
 [node name="NewContent" parent="VBoxContainer/GatherButtons/Mining" instance=ExtResource("new_badge")]
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/SculptButtons/Raise"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Raise"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/SculptButtons/Lower"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Lower"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/SculptButtons/Smooth"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Smooth"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/SculptButtons/Flatten"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Flatten"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/GatherButtons/Plants"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Plants"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/GatherButtons/Axe"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Axe"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/GatherButtons/Mining"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Pickaxe"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/BuildingButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Build"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/SculptButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Terrain"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/GatherButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Gather"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/DiscoveriesButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Discoveries"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/InventoryButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Backpack"
+horizontal_alignment = 1
+text_overrun_behavior = 3

@@ -3,8 +3,7 @@
 [ext_resource type="Script" path="res://code/creatures/CreatureCelAppearance.gd" id="appearance"]
 [node name="Model" instance=ExtResource("model")]
 position = Vector3(0, -0.1462500000, 0)
-scale = Vector3(0.65, 0.65, 0.65)
 script = ExtResource("appearance")
-walk_distance = 0.22
+walk_distance = 0.143
 walk_speed = 0.3
-work_contact_offset = Vector3(3.725290298461914e-09, 0, 0.3002457618713379)
+work_contact_offset = Vector3(0, 0, 0.195159733)

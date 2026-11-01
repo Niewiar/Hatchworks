@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=7 format=3]
+[ext_resource type="Shader" path="res://code/contructions/building_cel.gdshader" id="cel"]
+[ext_resource type="Shader" path="res://code/contructions/building_outline.gdshader" id="ink"]
+[ext_resource type="Texture2D" path="res://assets/constructions/textures/workshop_albedo.png" id="albedo"]
+[ext_resource type="Texture2D" path="res://assets/constructions/textures/workshop_cavity.png" id="cavity"]
+[sub_resource type="ShaderMaterial" id="outline"]
+shader = ExtResource("ink")
+shader_parameter/width = 0.003
+[resource]
+shader = ExtResource("cel")
+next_pass = SubResource("outline")
+shader_parameter/albedo_texture = ExtResource("albedo")
+shader_parameter/cavity_texture = ExtResource("cavity")
+shader_parameter/cavity_strength = 0.65

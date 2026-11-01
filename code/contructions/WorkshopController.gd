@@ -95,4 +95,4 @@ func _update_visuals() -> void:
 	%Runes.visible = working or state == STATE.READY
 
 func inspection_bounds() -> AABB:
-	return AABB(Vector3(-1.6,0,-1.55),Vector3(3.2,2.85,3.1))
+	return AABB(Vector3(-1.8050,-0.0740,-1.2710),Vector3(3.4929,3.1590,2.6773))

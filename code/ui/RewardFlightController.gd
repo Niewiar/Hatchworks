@@ -35,7 +35,7 @@ func _on_item_gained(id: StringName, count: int, origin: Variant) -> void:
 
 func _on_science_gained(points: int, origin: Variant) -> void:
 	resource_panel.begin_science_gain(points)
-	_enqueue({"category":2,"key":0,"quantity":float(points),"origin":origin,"icon":load("res://assets/ui/discoveries.png")})
+	_enqueue({"category":2,"key":0,"quantity":float(points),"origin":origin,"icon":load("res://assets/ui/illustrated/discoveries.svg")})
 
 func _enqueue(entry: Dictionary) -> void:
 	for waiting in _queued:

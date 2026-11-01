@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://dmkdsdb2fxvsp"]
 
+[ext_resource type="Script" path="res://code/core/GameplayController.gd" id="gameplay_controller"]
+
 [ext_resource type="PackedScene" uid="uid://b3hpw3fug50nl" path="res://scenes/gameplay/map.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://ram2uck0nfvg" path="res://scenes/ui/game_toolbar.tscn" id="2"]
 [ext_resource type="Script" uid="uid://b234vjc1w2spp" path="res://code/map/MapCameraController.gd" id="3"]
@@ -26,6 +28,7 @@ reflected_light_source = 1
 tonemap_mode = 2
 
 [node name="Gameplay" type="Node3D" unique_id=1167394295]
+script = ExtResource("gameplay_controller")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1104193744]
 environment = SubResource("Environment")

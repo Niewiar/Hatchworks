@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="CreatureSpecies" format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/tuftling.png" id="1_lxn36"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/tuftling_portrait.png" id="1_lxn36"]
 [ext_resource type="PackedScene" path="res://scenes/creatures/tuftling.tscn" id="2_eisw8"]
 [ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="3_dpqeq"]
 
@@ -15,6 +15,8 @@ crowding_sensitivity = 0.65
 species_aversions = Dictionary[StringName, float]({
 &"pebblit": 0.65
 })
+unhappy_threshold = 40.0
+happy_threshold = 70.0
 id = &"tuftling"
 display_name = "Tuftling"
 description = "A shake of its water-soaked coat brings grass to bare soil. Tuftlings leave little trails of green wherever they settle."

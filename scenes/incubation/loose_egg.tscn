@@ -6,19 +6,19 @@ emission_enabled = true
 emission = Color(0.4,0.6,0.12,1)
 emission_energy_multiplier = 0.5
 [sub_resource type="TorusMesh" id="ring"]
-inner_radius = 0.33
-outer_radius = 0.35
+inner_radius = 0.16500000
+outer_radius = 0.17500000
 rings = 32
 ring_segments = 6
 material = SubResource("glow")
 [node name="LooseEgg" type="Node3D"]
 script = ExtResource("script")
 [node name="Ring" type="MeshInstance3D" parent="."]
-position = Vector3(0,0.025,0)
+position = Vector3(0,0.01250000,0)
 mesh = SubResource("ring")
 cast_shadow = 0
 [node name="Name" type="Label3D" parent="."]
-position = Vector3(0,1.1,0)
+position = Vector3(0,0.55000000,0)
 billboard = 1
 font_size = 26
 pixel_size = 0.003

@@ -1,9 +1,11 @@
 [gd_resource type="Resource" script_class="CreatureSpecies" format=3]
 [ext_resource type="Script" path="res://code/database/CreatureSpecies.gd" id="script"]
 [ext_resource type="PackedScene" path="res://scenes/creatures/rootle.tscn" id="scene"]
-[ext_resource type="Texture2D" path="res://assets/ui/rootle.png" id="icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/rootle_portrait.png" id="icon"]
 [resource]
 script = ExtResource("script")
+unhappy_threshold = 40.0
+happy_threshold = 70.0
 id = &"rootle"
 display_name = "Rootle"
 description = "A bark-coated gardener that fills grassy clearings with oaks and shrubs. A woodland begins wherever a Rootle puts down roots."

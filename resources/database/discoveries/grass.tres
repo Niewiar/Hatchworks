@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="DiscoveryDefinition" format=3 uid="uid://cwhh1n1pwujcj"]
 
-[ext_resource type="Texture2D" uid="uid://dnyuytsf3lw6b" path="res://assets/ui/gather_plants.png" id="icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/gather_plants.svg" id="icon"]
 [ext_resource type="Script" uid="uid://btt4tn8jtjgi2" path="res://code/database/DiscoveryDefinition.gd" id="script"]
 
 [resource]

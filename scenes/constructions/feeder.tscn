@@ -3,29 +3,29 @@
 [ext_resource type="ArrayMesh" path="res://assets/constructions/feeder_body.res" id="body"]
 [ext_resource type="ArrayMesh" path="res://assets/constructions/feeder_food.res" id="food"]
 [sub_resource type="BoxShape3D" id="shape"]
-size = Vector3(2.4,0.92,1.1)
+size = Vector3(2.4,0.26,1.0)
 [node name="Feeder" type="MeshInstance3D"]
 script = ExtResource("script")
 mesh = ExtResource("body")
 [node name="Food" type="MeshInstance3D" parent="."]
-position = Vector3(0,0.72,0)
+position = Vector3(0,0.17,0)
 mesh = ExtResource("food")
 visible = false
 [node name="Body" type="StaticBody3D" parent="."]
 collision_layer = 2
 collision_mask = 0
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
-position = Vector3(0,0.5,0)
+position = Vector3(0,0.13,0)
 shape = SubResource("shape")
 [node name="SupplyInput" type="Marker3D" parent="."]
-position = Vector3(1.46,0.76,0)
+position = Vector3(1.44,0.28,0)
 rotation_degrees = Vector3(0,-90,0)
 [node name="FeedingSpots" type="Node3D" parent="."]
 [node name="FrontLeft" type="Marker3D" parent="FeedingSpots"]
-position = Vector3(-0.55,0,1.65)
+position = Vector3(-1.5,0,0.95)
 [node name="FrontRight" type="Marker3D" parent="FeedingSpots"]
-position = Vector3(0.55,0,1.65)
+position = Vector3(1.5,0,0.95)
 [node name="BackLeft" type="Marker3D" parent="FeedingSpots"]
-position = Vector3(-0.55,0,-1.65)
+position = Vector3(-1.5,0,-0.95)
 [node name="BackRight" type="Marker3D" parent="FeedingSpots"]
-position = Vector3(0.55,0,-1.65)
+position = Vector3(1.5,0,-0.95)

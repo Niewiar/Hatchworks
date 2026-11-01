@@ -2,14 +2,14 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cqcwg7mbf2nst"
+uid="uid://bkfrfo1yopc50"
 path.s3tc="res://.godot/imported/rootle_male_rootle_male_root_core.png-84572fe9e0ed5f27df304907015bc284.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "fb85a7ea656756b8235eb599465244be"
+"md5": "323b603dc11ec3ae6869bae8c9101906"
 }
 
 [deps]

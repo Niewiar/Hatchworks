@@ -10,11 +10,11 @@ var water_level := -0.35:
 		water_level_changed.emit()
 @export var water_shader: Shader
 @export_group("Water appearance")
-@export_color_no_alpha var shallow_color := Color(0.23, 0.49, 0.43)
-@export_color_no_alpha var deep_color := Color(0.08, 0.28, 0.32)
-@export_color_no_alpha var foam_color := Color(0.80, 0.87, 0.69)
-@export_range(0.05, 0.5, 0.01) var shore_width := 0.20
-@export_range(0.0, 0.05, 0.001) var wave_height := 0.018
+@export_color_no_alpha var shallow_color := Color(0.28, 0.48, 0.43)
+@export_color_no_alpha var deep_color := Color(0.13, 0.32, 0.34)
+@export_color_no_alpha var foam_color := Color(0.77, 0.82, 0.65)
+@export_range(0.05, 0.5, 0.01) var shore_width := 0.11
+@export_range(0.0, 0.05, 0.001) var wave_height := 0.009
 
 var _terrain: TerrainController
 var _water_material: ShaderMaterial

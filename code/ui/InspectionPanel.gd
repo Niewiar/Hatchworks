@@ -11,6 +11,12 @@ var _egg_ids: Array[StringName] = []
 var _egg_signature := ""
 var _aversion_signature := ""
 
+const STRUCTURE_PORTRAITS = {
+	&"incubator": preload("res://assets/ui/illustrated/incubator_portrait.png"),
+	&"feeder": preload("res://assets/ui/illustrated/feeder_portrait.png"),
+	&"life_workshop": preload("res://assets/ui/illustrated/life_workshop_portrait.png")
+}
+
 const AVERSION_ICON := preload("res://scenes/ui/creature_aversion_icon.tscn")
 
 func _ready() -> void:
@@ -95,6 +101,8 @@ func _refresh() -> void:
 		_refresh_creature()
 	_refresh_eggs()
 	var building: BuildingDefinition = map_manager.building_controller.building_definition(target)
+	%StructureArt.texture = STRUCTURE_PORTRAITS.get(building.id,building.icon) if building != null else null
+	%StructureArt.visible = building != null
 	%Durability.visible = building != null or target.has_method("structure_condition")
 	if %Durability.visible:
 		var integrity: float = map_manager.building_controller.condition(target) if building != null else target.structure_condition()
@@ -242,36 +250,10 @@ func _refresh_creature() -> void:
 		labels[index].text = tr("%d%%") % roundi(values[index]*100.0)
 		bars[index].value = stresses[index]*100.0
 		bars[index].modulate = Color(1,0.62,0.45) if stresses[index] >= 0.5 else Color(0.7,0.9,0.7)
-	var state := _creature_activity()
-	%ActivityName.text = tr(state[0])
-	%ActivityIcon.texture = load("res://assets/ui/"+state[1]+".png")
+	var state: Dictionary = target.activity_presentation()
+	%ActivityName.text = state.label
+	%ActivityIcon.texture = load("res://assets/ui/illustrated/"+state.icon+".svg")
 	_refresh_aversions(species)
-
-func _creature_activity() -> Array[String]:
-	if map_manager.breeding.is_breeding(target):
-		return ["Courting","breeding_heart"]
-	if not target is TuftlingController:
-		return ["Resting","status_rest"]
-	match target.activity:
-		TuftlingController.ACTIVITY.SEEKING_WATER,TuftlingController.ACTIVITY.MOVING_TO_WATER:
-			return ["Seeking water","water"]
-		TuftlingController.ACTIVITY.BATHING,TuftlingController.ACTIVITY.SWIMMING:
-			return ["Swimming","water"]
-		TuftlingController.ACTIVITY.SEEKING_GROUND,TuftlingController.ACTIVITY.MOVING_TO_GROUND:
-			return ["On the move","status_walk"]
-		TuftlingController.ACTIVITY.SHAKING:
-			return ["Working","status_work"]
-		TuftlingController.ACTIVITY.HUNGRY:
-			return ["Hungry","status_satiety"]
-		TuftlingController.ACTIVITY.MOVING_TO_FOOD:
-			return ["Seeking food","status_satiety"]
-		TuftlingController.ACTIVITY.EATING:
-			return ["Eating","status_satiety"]
-		TuftlingController.ACTIVITY.NO_WATER:
-			return ["Needs water","water"]
-		TuftlingController.ACTIVITY.NO_GROUND:
-			return ["Needs space","status_space"]
-	return ["Resting","status_rest"]
 
 func _refresh_aversions(species: CreatureSpecies) -> void:
 	var signature := str(species.species_aversions)
@@ -290,7 +272,7 @@ func _refresh_aversions(species: CreatureSpecies) -> void:
 		if other == null:
 			continue
 		var icon := AVERSION_ICON.instantiate() as VBoxContainer
-		icon.get_node("Icon").texture = other.icon if map_manager.discoveries.knows(id) else load("res://assets/ui/status_neighbours.png")
+		icon.get_node("Icon").texture = other.icon if map_manager.discoveries.knows(id) else load("res://assets/ui/illustrated/status_neighbours.svg")
 		icon.get_node("Unknown").visible = not map_manager.discoveries.knows(id)
 		%AversionIcons.add_child(icon)
 		icon.mouse_entered.connect(_show_aversion.bind(id,icon))
@@ -309,7 +291,7 @@ func _show_creature_hint(control: Control) -> void:
 		return
 	var text := ""
 	if control == %CreatureState:
-		text = target.activity_text() if target.has_method("activity_text") else tr("Resting")
+		text = target.activity_presentation().description
 	elif control == %Space:
 		text = tr("Room to roam\n%.1f / %.1f m² of dry ground") % [target.space_per_creature,target.species_data().preferred_area]
 	elif control == %Company:

@@ -1,66 +1,18 @@
+
 [gd_scene format=3]
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
 
 [ext_resource type="Script" path="res://code/ui/DiscoveryCategoryTab.gd" id="script"]
 
-[sub_resource type="StyleBoxFlat" id="normal"]
-bg_color = Color(0.045, 0.075, 0.055, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.28, 0.38, 0.24, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-
-[sub_resource type="StyleBoxFlat" id="hover"]
-bg_color = Color(0.1, 0.16, 0.105, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.52, 0.59, 0.34, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-
-[sub_resource type="StyleBoxFlat" id="selected"]
-bg_color = Color(0.14, 0.21, 0.12, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 3
-border_color = Color(0.94, 0.79, 0.32, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-
-[sub_resource type="StyleBoxFlat" id="focus"]
-bg_color = Color(0, 0, 0, 0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.96, 0.86, 0.55, 0.7)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-
 [node name="DiscoveryCategoryTab" type="Button"]
-custom_minimum_size = Vector2(0, 92)
+custom_minimum_size = Vector2(0, 88)
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
 toggle_mode = true
-theme_override_styles/normal = SubResource("normal")
-theme_override_styles/hover = SubResource("hover")
-theme_override_styles/pressed = SubResource("selected")
-theme_override_styles/hover_pressed = SubResource("selected")
-theme_override_styles/focus = SubResource("focus")
 script = ExtResource("script")
+theme = ExtResource("world_theme")
+theme_type_variation = &"ToolButton"
 
 [node name="Content" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -78,7 +30,7 @@ theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="Content"]
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(32,32)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
@@ -88,7 +40,7 @@ stretch_mode = 5
 [node name="Name" type="Label" parent="Content"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "All"
 horizontal_alignment = 1
 clip_text = true
@@ -96,7 +48,7 @@ clip_text = true
 [node name="Count" type="Label" parent="Content"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 text = "0/0"
 horizontal_alignment = 1
 clip_text = true
@@ -113,7 +65,7 @@ offset_right = -7.0
 offset_bottom = 28.0
 grow_horizontal = 0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.98, 0.8, 0.3, 1)
+theme_override_colors/font_color = Color(0.224, 0.18, 0.125, 1)
 theme_override_font_sizes/font_size = 18
 text = "✓"
 horizontal_alignment = 1

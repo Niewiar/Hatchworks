@@ -1,30 +1,46 @@
+
 [gd_scene format=3]
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
 [ext_resource type="Script" path="res://code/ui/WorkshopPanel.gd" id="script"]
-[ext_resource type="Texture2D" path="res://assets/ui/fiber.png" id="fiber"]
-[ext_resource type="Texture2D" path="res://assets/ui/wood.png" id="wood"]
-[ext_resource type="Texture2D" path="res://assets/ui/stone_resource.png" id="stone"]
-[ext_resource type="Texture2D" path="res://assets/ui/discoveries.png" id="science"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/fiber.svg" id="fiber"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/wood.svg" id="wood"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/stone_resource.svg" id="stone"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/discoveries.svg" id="science"]
+
 [node name="WorkshopPanel" type="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 12
 script = ExtResource("script")
+theme = ExtResource("world_theme")
+
 [node name="Recipe" type="OptionButton" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/icon_max_width = 28
 custom_minimum_size = Vector2(0,42)
+
 [node name="CreationTime" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
+theme_type_variation = &"MutedLabel"
+
 [node name="Costs" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
+
 [node name="Fiber" type="HBoxContainer" parent="Costs"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
+
 [node name="Icon" type="TextureRect" parent="Costs/Fiber"]
 layout_mode = 2
 custom_minimum_size = Vector2(26,26)
@@ -33,10 +49,12 @@ texture = ExtResource("fiber")
 expand_mode = 1
 stretch_mode = 5
 mouse_filter = 2
+
 [node name="Name" type="Label" parent="Costs/Fiber"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Plant Fiber"
+
 [node name="Quantity" type="Label" parent="Costs/Fiber"]
 layout_mode = 2
 text = "0 / 0"
@@ -45,6 +63,7 @@ text = "0 / 0"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
+
 [node name="Icon" type="TextureRect" parent="Costs/Wood"]
 layout_mode = 2
 custom_minimum_size = Vector2(26,26)
@@ -53,10 +72,12 @@ texture = ExtResource("wood")
 expand_mode = 1
 stretch_mode = 5
 mouse_filter = 2
+
 [node name="Name" type="Label" parent="Costs/Wood"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Wood"
+
 [node name="Quantity" type="Label" parent="Costs/Wood"]
 layout_mode = 2
 text = "0 / 0"
@@ -65,6 +86,7 @@ text = "0 / 0"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
+
 [node name="Icon" type="TextureRect" parent="Costs/Stone"]
 layout_mode = 2
 custom_minimum_size = Vector2(26,26)
@@ -73,10 +95,12 @@ texture = ExtResource("stone")
 expand_mode = 1
 stretch_mode = 5
 mouse_filter = 2
+
 [node name="Name" type="Label" parent="Costs/Stone"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Stone"
+
 [node name="Quantity" type="Label" parent="Costs/Stone"]
 layout_mode = 2
 text = "0 / 0"
@@ -85,6 +109,7 @@ text = "0 / 0"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
+
 [node name="Icon" type="TextureRect" parent="Costs/ScienceRow"]
 layout_mode = 2
 custom_minimum_size = Vector2(26,26)
@@ -93,10 +118,12 @@ texture = ExtResource("science")
 expand_mode = 1
 stretch_mode = 5
 mouse_filter = 2
+
 [node name="Name" type="Label" parent="Costs/ScienceRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Science"
+
 [node name="ScienceCost" type="Label" parent="Costs/ScienceRow"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -106,13 +133,17 @@ text = "0 / 0"
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
+theme_type_variation = &"MutedLabel"
+
 [node name="CraftProgress" type="ProgressBar" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(0,14)
 show_percentage = false
+
 [node name="Craft" type="Button" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(0,42)
 text = "Create egg"
+theme_type_variation = &"PrimaryButton"

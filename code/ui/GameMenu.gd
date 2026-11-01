@@ -50,7 +50,7 @@ func show_status(key: String, detail: String = "", failure: bool = false) -> voi
 func _refresh_status() -> void:
 	%Status.visible = not _status_key.is_empty()
 	%Status.text = tr(_status_key) % tr(_status_detail) if _status_key.contains("%s") else tr(_status_key)
-	%Status.modulate = Color(1.0,0.54,0.47) if _status_error else Color(0.77,0.88,0.60)
+	%Status.add_theme_color_override("font_color",Color(0.65,0.27,0.17) if _status_error else Color(0.33,0.42,0.22))
 
 func _select_language(index: int) -> void:
 	Localization.set_language("en" if index == 0 else "pl")

@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="DiscoveryDefinition" format=3 uid="uid://dk1oxk4xarh1d"]
 
-[ext_resource type="Texture2D" uid="uid://ddba187l0ypgp" path="res://assets/ui/mud.png" id="icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/mud.svg" id="icon"]
 [ext_resource type="Script" uid="uid://btt4tn8jtjgi2" path="res://code/database/DiscoveryDefinition.gd" id="script"]
 
 [resource]

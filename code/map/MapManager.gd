@@ -59,7 +59,9 @@ var _grab_screen_offset := Vector2.ZERO
 var _held_plane_height := 0.0
 
 func _ready() -> void:
-	_apply_database()
+	if not _apply_database():
+		set_physics_process(false)
+		return
 	if not terrain_controller.initialize(map_size, pixels_per_unit, environment_controller.enabled):
 		return
 	water_controller.initialize(terrain_controller)
@@ -83,6 +85,7 @@ func _ready() -> void:
 	new_content.initialize(self)
 	navigation.initialize(self)
 	if camera_controller != null:
+		camera_controller.zoom_changed.connect(vegetation_controller.update_detail)
 		camera_controller.configure(terrain_controller.world_size)
 	InputManager.on_lmb.connect(_on_lmb)
 	InputManager.on_mmb.connect(_on_mmb)
@@ -97,9 +100,11 @@ func _ready() -> void:
 func _on_sapling_found(id: StringName, world_position: Vector3) -> void:
 	items.add(id,1,world_position)
 
-func _apply_database() -> void:
+func _apply_database() -> bool:
 	if database == null:
 		database = load(GameDatabase.DEFAULT_PATH) as GameDatabase
+	if not GameManager.validate_database(database):
+		return false
 	inventory.configure(database.resources)
 	vegetation_controller.species = database.flora
 	rock_controller.definitions = database.deposits
@@ -111,6 +116,7 @@ func _apply_database() -> void:
 	vegetation_controller.spawn_clearing_radius = balance.spawn_clearing_radius
 	water_controller.water_level = balance.water_level
 	terrain_controller.starting_water_level = balance.water_level
+	return true
 
 func _physics_process(delta: float) -> void:
 	if inspection_panel != null and inspection_panel.focused and is_instance_valid(inspection_panel.target):

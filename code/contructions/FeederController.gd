@@ -46,4 +46,4 @@ func _refresh() -> void:
 	$Food.scale.y = 0.25+0.75*float(stock)/capacity
 
 func inspection_bounds() -> AABB:
-	return AABB(Vector3(-1.35,0,-0.6),Vector3(2.9,1.2,1.2))
+	return AABB(Vector3(-1.2350,-0.0573,-0.6152),Vector3(2.7900,0.5023,1.2303))

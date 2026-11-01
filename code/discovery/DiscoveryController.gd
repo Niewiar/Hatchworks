@@ -10,17 +10,13 @@ var _known: Dictionary[StringName, bool] = {}
 var _unread: Dictionary[StringName, bool] = {}
 var _recipes: Dictionary[String, bool] = {}
 var _scan_delay := -1.0
-var _stocks: Dictionary[int, float] = {}
 
 func initialize(map: Node3D) -> void:
 	_map = map
 	map.terrain_controller.height_changed.connect(_queue_scan)
 	map.water_controller.water_level_changed.connect(_queue_scan)
 	map.vegetation_controller.plant_sown.connect(_on_plant_sown)
-	map.inventory.changed.connect(_on_resource_changed)
 	map.inventory.gained.connect(_on_resource_gained)
-	for data in map.inventory.definitions:
-		_stocks[data.kind] = map.inventory.amount(data.kind)
 	discover(&"soil")
 	discover(&"life")
 	for flora: FloraSpecies in map.vegetation_controller.present_species():
@@ -89,9 +85,6 @@ func _process(delta: float) -> void:
 
 func _on_plant_sown(species: FloraSpecies, world_position: Vector3) -> void:
 	discover(species.id,world_position)
-
-func _on_resource_changed(kind: int, quantity: float) -> void:
-	_stocks[kind] = quantity
 
 func _on_resource_gained(kind: int, _quantity: float, origin: Variant) -> void:
 	var definition: ResourceDefinition = _map.inventory.definition(kind)

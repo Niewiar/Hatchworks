@@ -9,7 +9,7 @@ const TREE_SCENE = preload("res://scenes/harvesting/deposit.tscn")
 
 var species: Array[FloraSpecies] = []
 @export var foliage_material: ShaderMaterial
-@export var chunk_size := 16.0
+@export var chunk_size := 6.0
 @export var spawn_clearing_radius := 3.2
 
 var _terrain: TerrainController
@@ -21,6 +21,7 @@ var _batch_plants: Dictionary[String, Array] = {}
 var _buckets: Dictionary[Vector2i, Array] = {}
 var _spacing_by_kind: Dictionary[int, float] = {}
 var _material: ShaderMaterial
+var _detail_bias := 1.0
 var _growing: Array[FloraPlant] = []
 var _elapsed := 0.0
 var _dirty_batches: Dictionary[String, bool] = {}
@@ -30,17 +31,30 @@ func initialize(terrain: TerrainController, environment: EnvironmentController) 
 	_environment = environment
 	set_process(false)
 	global_transform = terrain.global_transform
-	_material = foliage_material.duplicate() as ShaderMaterial
-	terrain.bind_height_material(_material)
-	_material.set_shader_parameter("follow_ground",true)
+	_material = foliage_material.duplicate(true) as ShaderMaterial
+	var current: ShaderMaterial = _material
+	while current != null:
+		terrain.bind_height_material(current)
+		current.set_shader_parameter("follow_ground",false)
+		current = current.next_pass as ShaderMaterial
 	for data in species:
 		_spacing_by_kind[data.kind] = maxf(_spacing_by_kind.get(data.kind,0.0),data.spacing*data.maximum_scale)
 	if environment.enabled:
 		_generate_initial_plants()
-	_create_batches()
-	_upload_batches()
-	_update_tree_views()
+	_flush_dirty_batches()
+	set_process(not _growing.is_empty())
 	terrain.height_changed.connect(_on_height_changed)
+
+func update_detail(visible_world_height: float) -> void:
+	var bias := clampf(pow(4.0/maxf(visible_world_height,1.6),4.0),0.001,1.0)
+	if absf(bias-_detail_bias) < maxf(0.0001,_detail_bias*0.02):
+		return
+	_detail_bias = bias
+	for key in _batches:
+		_batches[key].lod_bias = _detail_bias
+	for plant in _trees:
+		if is_instance_valid(plant.tree_view):
+			plant.tree_view.lod_bias = _detail_bias
 
 func _generate_initial_plants() -> void:
 	var terrain := _terrain
@@ -70,26 +84,7 @@ func _generate_initial_plants() -> void:
 			var scale_value := random.randf_range(data.minimum_scale,data.maximum_scale)
 			if not _can_grow_at(data,point) or not _has_space(point,data,scale_value):
 				continue
-			var plant := FloraPlant.new()
-			plant.species = data
-			plant.point = point
-			plant.variant = random.randi_range(0,data.variants.size()-1)
-			plant.scale = scale_value
-			plant.yaw = random.randf_range(-PI,PI)
-			plant.growth = 1.0
-			var chunk := Vector2i(((point+terrain.world_size*0.5)/chunk_size).floor())
-			plant.batch_key = "%d:%d:%d:%d" % [species_index,plant.variant,chunk.x,chunk.y]
-			_plants.append(plant)
-			if data.kind == FloraSpecies.KIND.TREE:
-				_trees.append(plant)
-			if data.kind != FloraSpecies.KIND.TREE:
-				if not _batch_plants.has(plant.batch_key):
-					_batch_plants[plant.batch_key] = []
-				_batch_plants[plant.batch_key].append(plant)
-			var bucket := Vector2i((point/2.0).floor())
-			if not _buckets.has(bucket):
-				_buckets[bucket] = []
-			_buckets[bucket].append(plant)
+			_create_plant(data,point,random.randi_range(0,data.variants.size()-1),scale_value,random.randf_range(-PI,PI),1.0)
 			placed += 1
 
 func _has_space(point: Vector2, data: FloraSpecies, scale_value: float) -> bool:
@@ -112,9 +107,97 @@ func _can_grow_at(data: FloraSpecies, point: Vector2) -> bool:
 	var world := _terrain.to_global(Vector3(point.x,0,point.y))
 	return conditions.z < data.maximum_slope and conditions.w > data.water_depth_range.x and conditions.w < data.water_depth_range.y and (data.ground_material < 0 or _terrain.ground_weight(world,data.ground_material) >= 0.55)
 
-func _create_batches() -> void:
-	for key in _batch_plants:
-		_create_batch(key)
+func _create_plant(data: FloraSpecies, point: Vector2, variant: int, scale_value: float, yaw: float, growth: float) -> FloraPlant:
+	var plant := FloraPlant.new()
+	plant.species = data
+	plant.point = point
+	plant.variant = variant
+	plant.scale = scale_value
+	plant.yaw = yaw
+	plant.growth = growth
+	var chunk := Vector2i(((point+_terrain.world_size*0.5)/chunk_size).floor())
+	plant.batch_key = "%d:%d:%d:%d" % [species.find(data),variant,chunk.x,chunk.y]
+	_plants.append(plant)
+	var bucket := Vector2i((point/2.0).floor())
+	if not _buckets.has(bucket):
+		_buckets[bucket] = []
+	_buckets[bucket].append(plant)
+	if data.kind == FloraSpecies.KIND.TREE:
+		_trees.append(plant)
+		_update_tree_view(plant)
+	else:
+		if not _batch_plants.has(plant.batch_key):
+			_batch_plants[plant.batch_key] = []
+		_batch_plants[plant.batch_key].append(plant)
+		if not _batches.has(plant.batch_key):
+			_create_batch(plant.batch_key)
+		_dirty_batches[plant.batch_key] = true
+	if growth < 1.0:
+		_growing.append(plant)
+	set_process(not _growing.is_empty() or not _dirty_batches.is_empty())
+	return plant
+
+func _remove_plant(plant: FloraPlant) -> bool:
+	if plant.removed:
+		return false
+	plant.removed = true
+	plant.growth = 0.0
+	_plants.erase(plant)
+	_trees.erase(plant)
+	_growing.erase(plant)
+	var bucket := Vector2i((plant.point/2.0).floor())
+	_buckets[bucket].erase(plant)
+	if _buckets[bucket].is_empty():
+		_buckets.erase(bucket)
+	if plant.species.kind != FloraSpecies.KIND.TREE:
+		var key := plant.batch_key
+		_batch_plants[key].erase(plant)
+		if _batch_plants[key].is_empty():
+			_batch_plants.erase(key)
+			_batches[key].queue_free()
+			_batches.erase(key)
+			_dirty_batches.erase(key)
+		else:
+			_dirty_batches[key] = true
+	plant.tree_view = null
+	set_process(not _growing.is_empty() or not _dirty_batches.is_empty())
+	return true
+
+func clear() -> void:
+	for plant in _plants:
+		plant.removed = true
+		plant.tree_view = null
+	for child in get_children():
+		child.free()
+	_plants.clear()
+	_trees.clear()
+	_batches.clear()
+	_batch_plants.clear()
+	_buckets.clear()
+	_growing.clear()
+	_dirty_batches.clear()
+	_elapsed = 0.0
+	set_process(false)
+
+func capture_state() -> Array[Dictionary]:
+	var records: Array[Dictionary] = []
+	for plant in _plants:
+		records.append({"id":plant.species.id,"point":plant.point,"variant":plant.variant,"scale":plant.scale,"yaw":plant.yaw,"growth":plant.growth,"hits":plant.tree_view._hits if is_instance_valid(plant.tree_view) else 0})
+	return records
+
+func restore_state(records: Array) -> void:
+	clear()
+	for record: Dictionary in records:
+		var data: FloraSpecies
+		for candidate in species:
+			if candidate.id == StringName(record.id):
+				data = candidate
+				break
+		var plant := _create_plant(data,record.point,record.variant,record.scale,record.yaw,record.growth)
+		if is_instance_valid(plant.tree_view):
+			plant.tree_view.restore_hits(record.hits)
+	_flush_dirty_batches()
+	obstacles_changed.emit()
 
 func _create_batch(key: String) -> void:
 	var first := _batch_plants[key][0] as FloraPlant
@@ -124,6 +207,7 @@ func _create_batch(key: String) -> void:
 	batch.multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	batch.multimesh.mesh = first.species.variants[first.variant]
 	batch.material_override = _material
+	batch.lod_bias = _detail_bias
 	batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var chunk := Vector2i(((first.point+_terrain.world_size*0.5)/chunk_size).floor())
 	var corner := Vector2(chunk)*chunk_size-_terrain.world_size*0.5
@@ -131,57 +215,59 @@ func _create_batch(key: String) -> void:
 	add_child(batch)
 	_batches[key] = batch
 
-func _upload_batches() -> void:
-	for key in _batch_plants:
+func _flush_dirty_batches() -> void:
+	for key in _dirty_batches:
 		_upload_batch(key)
+	_dirty_batches.clear()
+	set_process(not _growing.is_empty())
 
 func _upload_batch(key: String) -> void:
 	var count := 0
 	var batch := _batches[key].multimesh
+	var source_bounds: AABB = batch.mesh.get_aabb()
+	var visible_bounds := AABB()
 	if batch.instance_count != _batch_plants[key].size():
 		batch.instance_count = _batch_plants[key].size()
 	for plant: FloraPlant in _batch_plants[key]:
 		if plant.removed or plant.growth < 0.025:
 			continue
 		var basis := Basis(Vector3.UP,plant.yaw).scaled(Vector3.ONE*plant.scale*plant.growth)
-		batch.set_instance_transform(count,Transform3D(basis,Vector3(plant.point.x,0,plant.point.y)))
+		var surface := _terrain.to_local(_terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y))))
+		batch.set_instance_transform(count,Transform3D(basis,surface))
+		var plant_bounds := Transform3D(basis,surface)*source_bounds
+		visible_bounds = plant_bounds if count == 0 else visible_bounds.merge(plant_bounds)
 		count += 1
 	batch.visible_instance_count = count
+	if count > 0:
+		batch.custom_aabb = visible_bounds.grow(0.05)
 
 func _on_height_changed() -> void:
-	var ground := _terrain.mesh.get_aabb()
 	for key in _batches:
-		var batch := _batches[key].multimesh
-		var plant := _batch_plants[key][0] as FloraPlant
-		var bounds := batch.custom_aabb
-		bounds.position.y = ground.position.y-0.1
-		bounds.size.y = ground.size.y+batch.mesh.get_aabb().end.y*plant.species.maximum_scale+0.2
-		batch.custom_aabb = bounds
+		_upload_batch(key)
 	_update_tree_views()
 
 func _update_tree_views() -> void:
 	for plant in _trees:
-		if plant.removed:
-			continue
-		if not is_instance_valid(plant.tree_view):
-			if plant.removed or plant.growth < 0.025:
-				continue
-			plant.tree_view = TREE_SCENE.instantiate() as HarvestableDeposit
-			add_child(plant.tree_view)
-			plant.tree_view.hits_required = plant.species.hits_required
-			plant.tree_view.resource_kind = plant.species.harvest_resource
-			plant.tree_view.yield_amount = maxi(1,roundi(plant.species.harvest_amount*plant.scale))
-			plant.tree_view.configure(plant.species.variants[plant.variant],_material,plant.yaw,plant.species.trunk_radius,plant.species.trunk_height)
-			plant.tree_view.depleted.connect(_on_tree_depleted.bind(plant))
-		plant.tree_view.set_growth(plant.growth,plant.scale)
-		plant.tree_view.global_position = _terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y)))
+		_update_tree_view(plant)
+
+func _update_tree_view(plant: FloraPlant) -> void:
+	if not is_instance_valid(plant.tree_view):
+		if plant.growth < 0.025:
+			return
+		plant.tree_view = TREE_SCENE.instantiate() as HarvestableDeposit
+		add_child(plant.tree_view)
+		plant.tree_view.lod_bias = _detail_bias
+		plant.tree_view.hits_required = plant.species.hits_required
+		plant.tree_view.resource_kind = plant.species.harvest_resource
+		plant.tree_view.yield_amount = maxi(1,roundi(plant.species.harvest_amount*plant.scale))
+		plant.tree_view.configure(plant.species.variants[plant.variant],_material,plant.yaw,plant.species.trunk_radius,plant.species.trunk_height)
+		plant.tree_view.depleted.connect(_on_tree_depleted.bind(plant))
+	plant.tree_view.set_growth(plant.growth,plant.scale)
+	plant.tree_view.global_position = _terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y)))
 
 func _on_tree_depleted(deposit: HarvestableDeposit, plant: FloraPlant) -> void:
-	if plant.removed:
+	if not _remove_plant(plant):
 		return
-	plant.removed = true
-	plant.growth = 0.0
-	_growing.erase(plant)
 	_harvest_sapling(plant,deposit.global_position)
 	obstacles_changed.emit()
 
@@ -242,23 +328,18 @@ func gather_plants(world_position: Vector3, radius: float) -> Dictionary[int, in
 	var point := Vector2(local.x,local.z)
 	var first := Vector2i(((point-Vector2.ONE*radius)/2.0).floor())
 	var last := Vector2i(((point+Vector2.ONE*radius)/2.0).floor())
-	var dirty: Dictionary[String, bool] = {}
 	var obstacles_removed := false
 	for y in range(first.y,last.y+1):
 		for x in range(first.x,last.x+1):
-			for plant: FloraPlant in _buckets.get(Vector2i(x,y),[]):
+			for plant: FloraPlant in _buckets.get(Vector2i(x,y),[]).duplicate():
 				if plant.removed or plant.species.kind == FloraSpecies.KIND.TREE or plant.growth < 0.6 or point.distance_squared_to(plant.point) > radius*radius:
 					continue
 				var kind := plant.species.harvest_resource
 				result[kind] = result.get(kind,0)+plant.species.harvest_amount
 				obstacles_removed = obstacles_removed or plant.species.kind == FloraSpecies.KIND.SHRUB
-				plant.growth = 0.0
-				plant.removed = true
-				_growing.erase(plant)
-				dirty[plant.batch_key] = true
+				_remove_plant(plant)
 				_harvest_sapling(plant,_terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y))))
-	for key in dirty:
-		_upload_batch(key)
+	_flush_dirty_batches()
 	if obstacles_removed:
 		obstacles_changed.emit()
 	return result
@@ -275,9 +356,7 @@ func _process(delta: float) -> void:
 			_growing.remove_at(index)
 	if _elapsed >= 0.1:
 		_elapsed = 0.0
-		for key in _dirty_batches:
-			_upload_batch(key)
-		_dirty_batches.clear()
+		_flush_dirty_batches()
 		_update_tree_views()
 	if _growing.is_empty() and _dirty_batches.is_empty():
 		set_process(false)
@@ -305,15 +384,6 @@ func seed_grass(world_position: Vector3, count: int, radius: float = 1.0) -> int
 	var local := _terrain.to_local(world_position)
 	var center := Vector2(local.x,local.z)
 	var planted := 0
-	for plant in _plants:
-		if planted >= count:
-			break
-		if plant.species == data and plant.removed and plant.point.distance_to(center) <= radius*0.72 and can_seed_grass(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y))):
-			plant.removed = false
-			plant.growth = 0.05
-			_growing.append(plant)
-			_dirty_batches[plant.batch_key] = true
-			planted += 1
 	for attempt in count*25:
 		if planted >= count:
 			break
@@ -321,27 +391,7 @@ func seed_grass(world_position: Vector3, count: int, radius: float = 1.0) -> int
 		var world := _terrain.to_global(Vector3(point.x,0,point.y))
 		if not can_seed_grass(world):
 			continue
-		var plant := FloraPlant.new()
-		plant.species = data
-		plant.point = point
-		plant.variant = randi_range(0,data.variants.size()-1)
-		plant.scale = randf_range(data.minimum_scale,data.maximum_scale)
-		plant.yaw = randf()*TAU
-		plant.growth = 0.05
-		var chunk := Vector2i(((point+_terrain.world_size*0.5)/chunk_size).floor())
-		plant.batch_key = "%d:%d:%d:%d" % [species.find(data),plant.variant,chunk.x,chunk.y]
-		_plants.append(plant)
-		var bucket := Vector2i((point/2.0).floor())
-		if not _buckets.has(bucket):
-			_buckets[bucket] = []
-		_buckets[bucket].append(plant)
-		if not _batch_plants.has(plant.batch_key):
-			_batch_plants[plant.batch_key] = []
-		_batch_plants[plant.batch_key].append(plant)
-		if not _batches.has(plant.batch_key):
-			_create_batch(plant.batch_key)
-		_growing.append(plant)
-		_dirty_batches[plant.batch_key] = true
+		_create_plant(data,point,randi_range(0,data.variants.size()-1),randf_range(data.minimum_scale,data.maximum_scale),randf()*TAU,0.05)
 		planted += 1
 	if planted > 0:
 		plant_sown.emit(data,world_position)
@@ -368,31 +418,7 @@ func plant_specimen(data: FloraSpecies, world_position: Vector3) -> bool:
 		return false
 	var local := _terrain.to_local(world_position)
 	var point := Vector2(local.x,local.z)
-	var plant := FloraPlant.new()
-	plant.species = data
-	plant.point = point
-	plant.variant = randi_range(0,data.variants.size()-1)
-	plant.scale = 1.0
-	plant.yaw = randf()*TAU
-	plant.growth = 0.25
-	var chunk := Vector2i(((point+_terrain.world_size*0.5)/chunk_size).floor())
-	plant.batch_key = "%d:%d:%d:%d" % [species.find(data),plant.variant,chunk.x,chunk.y]
-	_plants.append(plant)
-	var bucket := Vector2i((point/2.0).floor())
-	if not _buckets.has(bucket):
-		_buckets[bucket] = []
-	_buckets[bucket].append(plant)
-	if data.kind == FloraSpecies.KIND.TREE:
-		_trees.append(plant)
-		_update_tree_views()
-	else:
-		if not _batch_plants.has(plant.batch_key):
-			_batch_plants[plant.batch_key] = []
-		_batch_plants[plant.batch_key].append(plant)
-		if not _batches.has(plant.batch_key):
-			_create_batch(plant.batch_key)
-		_dirty_batches[plant.batch_key] = true
-	_growing.append(plant)
+	_create_plant(data,point,randi_range(0,data.variants.size()-1),1.0,randf()*TAU,0.25)
 	if data.kind == FloraSpecies.KIND.GRASS:
 		_terrain.grow_grass(world_position,0.65)
 	set_process(true)
@@ -413,13 +439,10 @@ func flatten_ground_plants(world_position: Vector3, radius: float) -> int:
 	var local := _terrain.to_local(world_position)
 	var center := Vector2(local.x,local.z)
 	var removed := 0
-	for plant in _plants:
+	for plant in _plants.duplicate():
 		if plant.removed or plant.species.kind in [FloraSpecies.KIND.TREE,FloraSpecies.KIND.SHRUB] or plant.point.distance_to(center) > radius:
 			continue
-		plant.removed = true
-		plant.growth = 0.0
-		_growing.erase(plant)
-		_dirty_batches[plant.batch_key] = true
+		_remove_plant(plant)
 		removed += 1
 	if removed > 0:
 		set_process(true)

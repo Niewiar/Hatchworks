@@ -11,7 +11,7 @@ func initialize(map: Node3D, egg: EggDefinition, point: Vector3) -> void:
 	global_position = map.terrain_controller.surface_position(point)
 	var model := egg.model.instantiate() as Node3D
 	model.process_mode = Node.PROCESS_MODE_DISABLED
-	model.position.y = 0.37
+	model.position.y = 0.19360000
 	model.scale = Vector3.ONE*0.63
 	add_child(model)
 	$Name.text = egg.display_name+tr("\nClick to collect")
@@ -25,7 +25,7 @@ func collect() -> bool:
 		return false
 	_collected = true
 	hide()
-	_map.items.add(definition.id,1,global_position+Vector3.UP*0.37)
+	_map.items.add(definition.id,1,global_position+Vector3.UP*0.19360000)
 	queue_free()
 	return true
 
@@ -33,7 +33,7 @@ func _follow_ground() -> void:
 	global_position = _map.terrain_controller.surface_position(global_position)
 
 func inspection_bounds() -> AABB:
-	return AABB(Vector3(-0.38,0,-0.38),Vector3(0.76,0.85,0.76))
+	return AABB(Vector3(-0.19000000,0,-0.19000000),Vector3(0.38000000,0.42500000,0.38000000))
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and definition != null:

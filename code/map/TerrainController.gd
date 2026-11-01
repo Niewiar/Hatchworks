@@ -12,7 +12,7 @@ enum GROUND_TYPE { GRASS = 0, SOIL = 1, SAND = 3, ROCK = 4 }
 @export_group("Terrain appearance")
 @export var terrain_seed := 17
 @export_range(0.5, 3.0, 0.1) var terrain_scale := 1.0
-@export_range(0.0, 1.0, 0.05) var terrain_detail := 0.65
+@export_range(0.0, 1.0, 0.05) var terrain_detail := 0.42
 @export_range(0.0, 6.0, 0.25) var edge_roughness := 2.5
 @export_range(0.0, 24.0, 0.5) var transition_width := 10.0
 

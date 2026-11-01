@@ -7,8 +7,6 @@ signal changed(kind: KIND, amount: float)
 
 enum KIND { FIBER = 5, HERBS = 6, WOOD = 9, STONE = 10 }
 
-const RESERVED_KINDS := [0, 1, 2, 3, 4, 7, 8]
-
 var definitions: Array[ResourceDefinition] = []
 
 var _amounts: Dictionary[int, float] = {}

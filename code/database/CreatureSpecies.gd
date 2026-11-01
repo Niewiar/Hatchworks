@@ -40,10 +40,14 @@ extends DatabaseEntry
 @export_group("Leisure")
 @export_range(1.0,120.0,0.5) var leisure_seconds_min := 8.0
 @export_range(1.0,120.0,0.5) var leisure_seconds_max := 16.0
-@export_range(1,10,1) var leisure_cycles_min := 1
-@export_range(1,10,1) var leisure_cycles_max := 2
+@export_range(1,10,1) var leisure_cycles_min := 2
+@export_range(1,10,1) var leisure_cycles_max := 3
+@export_range(1,10,1) var neutral_leisure_cycles_min := 1
+@export_range(1,10,1) var neutral_leisure_cycles_max := 1
 
 @export_group("Contentment")
+@export_range(0.0,100.0,1.0) var unhappy_threshold := 40.0
+@export_range(0.0,100.0,1.0) var happy_threshold := 70.0
 @export_range(1.0,300.0,1.0) var happiness_response_seconds := 30.0
 @export_range(1.0,100.0,0.5) var preferred_area := 12.0
 @export_range(1.0,30.0,0.5) var company_radius := 6.0
@@ -72,7 +76,6 @@ enum PRODUCTION { NONE, GARDENER, QUARRY, HERBALIST, SAND_MAKER }
 @export_range(1,40,1) var production_limit := 12
 @export_range(0.4,3.0,0.1) var impact_radius := 1.2
 @export_range(0.01,0.3,0.01) var impact_strength := 0.08
-@export_range(0.0,100.0,1.0) var aggression_threshold := 40.0
 @export_range(1.0,100.0,1.0) var impact_damage := 25.0
 @export_range(1.0,60.0,1.0) var aggression_cooldown := 12.0
 

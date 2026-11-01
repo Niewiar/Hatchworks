@@ -1,5 +1,10 @@
+
 [gd_scene format=3]
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
 [ext_resource type="Script" path="res://code/ui/RewardFlightController.gd" id="script"]
+
 [node name="Rewards" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -10,3 +15,4 @@ grow_vertical = 2
 mouse_filter = 2
 z_index = 90
 script = ExtResource("script")
+theme = ExtResource("world_theme")

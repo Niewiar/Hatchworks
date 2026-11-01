@@ -17,36 +17,8 @@ const DEFAULT_PATH := "res://resources/database/game_database.tres"
 @export var construction: FancesDatabase
 @export var world: WorldBalance
 
-func entries(category: String) -> Array:
-	match category:
-		"Discoveries": return discoveries
-		"Recipes": return recipes
-		"Buildings": return buildings
-		"Eggs": return eggs
-		"Glossary": return glossary
-		"Creatures": return creatures
-		"Creature Research": return research
-		"Flora": return flora
-		"Resources": return resources
-		"Deposits": return deposits
-		"Construction": return construction.fances if construction != null else []
-		"World Balance": return [world] if world != null else []
-	return []
-
-func replace_entries(category: String, values: Array) -> void:
-	match category:
-		"Discoveries": discoveries.assign(values)
-		"Recipes": recipes.assign(values)
-		"Buildings": buildings.assign(values)
-		"Eggs": eggs.assign(values)
-		"Glossary": glossary.assign(values)
-		"Creatures": creatures.assign(values)
-		"Creature Research": research.assign(values)
-		"Flora": flora.assign(values)
-		"Resources": resources.assign(values)
-		"Deposits": deposits.assign(values)
-		"Construction": construction.fances.assign(values)
-	emit_changed()
+func validation_errors() -> PackedStringArray:
+	return GameDatabaseValidator.validate(self)
 
 func creature(species_id: StringName) -> CreatureSpecies:
 	for entry in creatures:
@@ -102,5 +74,5 @@ func item_info(id: StringName) -> Dictionary:
 	var egg_data := egg(id)
 	if egg_data != null:
 		var concept := discovery(id)
-		return {"name":egg_data.display_name,"description":egg_data.description,"icon":concept.icon if concept != null else load("res://assets/ui/egg.png")}
-	return {"name":str(id).capitalize(),"description":tr("Stored item."),"icon":load("res://assets/ui/inventory.png")}
+		return {"name":egg_data.display_name,"description":egg_data.description,"icon":concept.icon if concept != null else load("res://assets/ui/illustrated/egg.svg")}
+	return {"name":str(id).capitalize(),"description":tr("Stored item."),"icon":load("res://assets/ui/illustrated/inventory.svg")}

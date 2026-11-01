@@ -25,7 +25,6 @@ animation_player = NodePath("Model/AnimationPlayer")
 shape = SubResource("body")
 [node name="Model" parent="." instance=ExtResource("model")]
 position = Vector3(0, -0.3075, 0)
-scale = Vector3(0.65,0.65,0.65)
 [node name="Splash" type="CPUParticles3D" parent="."]
 scale = Vector3(0.65,0.65,0.65)
 position = Vector3(0, -0.05, 0.15)

@@ -1,13 +1,20 @@
+
 [gd_scene format=3]
+
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="world_theme"]
+
 [node name="AversionIcon" type="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 2
+theme = ExtResource("world_theme")
+
 [node name="Icon" type="TextureRect" parent="."]
 custom_minimum_size = Vector2(30,30)
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
 [node name="Unknown" type="Label" parent="."]
 layout_mode = 2
 mouse_filter = 2

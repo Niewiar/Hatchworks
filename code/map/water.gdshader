@@ -3,11 +3,11 @@ shader_type spatial;
 render_mode diffuse_lambert, specular_disabled, cull_disabled, depth_draw_never;
 
 uniform float water_level = -0.35;
-uniform vec4 shallow_color : source_color = vec4(0.23, 0.49, 0.43, 1.0);
-uniform vec4 deep_color : source_color = vec4(0.08, 0.28, 0.32, 1.0);
-uniform vec4 foam_color : source_color = vec4(0.80, 0.87, 0.69, 1.0);
-uniform float shore_width : hint_range(0.05, 0.5) = 0.20;
-uniform float wave_height : hint_range(0.0, 0.05) = 0.018;
+uniform vec4 shallow_color : source_color = vec4(0.28, 0.48, 0.43, 1.0);
+uniform vec4 deep_color : source_color = vec4(0.13, 0.32, 0.34, 1.0);
+uniform vec4 foam_color : source_color = vec4(0.77, 0.82, 0.65, 1.0);
+uniform float shore_width : hint_range(0.05, 0.5) = 0.11;
+uniform float wave_height : hint_range(0.0, 0.05) = 0.009;
 
 varying vec2 ground_position;
 varying float surface_height;
@@ -60,9 +60,9 @@ void fragment() {
 	vec2 local = fract(oriented) - mix(vec2(0.22), vec2(0.78), random);
 	float curve = sin(local.x * 7.0 + random.y * 6.28) * 0.025;
 	float dash = (1.0 - smoothstep(0.09, 0.20, abs(local.x))) * (1.0 - smoothstep(0.012, 0.038, abs(local.y + curve)));
-	float active = step(0.60, water_hash(cell + 91.0));
+	float active = step(0.73, water_hash(cell + 91.0));
 	float shimmer = 0.35 + 0.65 * pow(sin(TIME * 0.8 + random.x * 6.28) * 0.5 + 0.5, 2.0);
-	float highlights = dash * active * shimmer * smoothstep(0.04, 0.18, depth) * 0.16;
+	float highlights = dash * active * shimmer * smoothstep(0.04, 0.18, depth) * 0.11;
 	float foam_noise = water_noise(p * 5.3 + vec2(time * 0.11, -time * 0.09));
 	float foam_edge = shore_width * (0.72 + foam_noise * 0.45);
 	float foam = (1.0 - smoothstep(foam_edge * 0.30, foam_edge, depth));
@@ -70,18 +70,18 @@ void fragment() {
 	float inner_ring = 1.0 - smoothstep(0.012, 0.038, abs(depth - shore_width * (0.55 + sin(TIME * 0.75 + broad * 5.0) * 0.12)));
 	foam = max(foam, inner_ring * smoothstep(0.35, 0.70, foam_noise) * 0.22);
 	vec2 slope = vec2(
-		cos(dot(p, vec2(0.95, 0.42)) * 1.7 + TIME * 0.65) * 0.030,
-		cos(dot(p, vec2(-0.35, 0.94)) * 2.2 - TIME * 0.48) * 0.025
+		cos(dot(p, vec2(0.95, 0.42)) * 1.7 + TIME * 0.65) * 0.012,
+		cos(dot(p, vec2(-0.35, 0.94)) * 2.2 - TIME * 0.48) * 0.010
 	);
-	slope += vec2(sin(p.x * 9.0 + p.y * 4.0 + TIME * 0.5), cos(p.y * 11.0 - p.x * 3.0 - TIME * 0.4)) * 0.015;
+	slope += vec2(sin(p.x * 9.0 + p.y * 4.0 + TIME * 0.5), cos(p.y * 11.0 - p.x * 3.0 - TIME * 0.4)) * 0.004;
 	vec3 world_normal = normalize(mat3(ground_to_world) * vec3(-slope.x, 1.0, -slope.y));
 	NORMAL = normalize(mat3(VIEW_MATRIX) * world_normal);
 	float fresnel = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.5);
-	color = mix(color, foam_color.rgb * 0.85, fresnel * 0.18 + highlights);
-	color = mix(color, foam_color.rgb, foam * 0.50);
+	color = mix(color, foam_color.rgb * 0.85, fresnel * 0.10 + highlights);
+	color = mix(color, foam_color.rgb, foam * 0.16);
 	ALBEDO = color;
 	ROUGHNESS = 0.78;
 	SPECULAR = 0.0;
 	EMISSION = foam_color.rgb * highlights * 0.15;
-	ALPHA = smoothstep(0.0, 0.035, depth) * clamp(0.72 + depth_tint * 0.24 + foam * 0.16, 0.0, 0.95);
+	ALPHA = smoothstep(0.0, 0.035, depth) * clamp(0.72 + depth_tint * 0.24 + foam * 0.05, 0.0, 0.95);
 }
