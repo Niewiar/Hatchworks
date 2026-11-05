@@ -15,14 +15,14 @@
 
 [ext_resource type="Script" path="res://code/environment/EnvironmentController.gd" id="11"]
 [ext_resource type="Script" path="res://code/environment/VegetationController.gd" id="12"]
-[ext_resource type="Material" path="res://resources/flora/foliage_material.tres" id="18"]
 
 [ext_resource type="Script" path="res://code/resources/ResourceInventory.gd" id="19_inventory"]
 [ext_resource type="Script" path="res://code/harvesting/HarvestController.gd" id="20_harvest"]
 [ext_resource type="Script" path="res://code/harvesting/RockController.gd" id="21_rocks"]
 [ext_resource type="Script" path="res://code/harvesting/HarvestTool.gd" id="22_tool"]
-[ext_resource type="ArrayMesh" path="res://assets/harvesting/axe.res" id="23_axe"]
-[ext_resource type="ArrayMesh" path="res://assets/harvesting/pickaxe.res" id="24_pickaxe"]
+[ext_resource type="PackedScene" path="res://assets/harvesting/axe.glb" id="23_axe"]
+[ext_resource type="PackedScene" path="res://assets/harvesting/pickaxe.glb" id="24_pickaxe"]
+[ext_resource type="PackedScene" path="res://assets/harvesting/rake.glb" id="25_rake"]
 
 [ext_resource type="Resource" path="res://resources/database/game_database.tres" id="database"]
 
@@ -41,6 +41,16 @@
 [ext_resource type="Script" path="res://code/ui/NewContentTracker.gd" id="new_content"]
 [ext_resource type="Script" path="res://code/environment/NoiseController.gd" id="noise"]
 [ext_resource type="Script" path="res://code/creatures/CreatureWellbeingController.gd" id="wellbeing"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/creature_drop_marker.tscn" id="drop_marker"]
+
+[ext_resource type="Script" path="res://code/environment/LandscapeController.gd" id="landscape"]
+
+[ext_resource type="Script" path="res://code/resources/TraderController.gd" id="trader_controller"]
+[ext_resource type="Script" path="res://code/discovery/ScienceProjectsController.gd" id="science_projects_controller"]
+[ext_resource type="Script" path="res://code/map/MapOverlayController.gd" id="overlay"]
+
+[ext_resource type="Script" path="res://code/contructions/BuildingEditingController.gd" id="building_editing"]
+
 [node name="Map" type="Node3D"]
 script = ExtResource("1")
 database = ExtResource("database")
@@ -56,6 +66,10 @@ terrain_shader = ExtResource("3")
 script = ExtResource("9")
 water_shader = ExtResource("10")
 
+[node name="Overlay" type="MeshInstance3D" parent="."]
+visible = false
+script = ExtResource("overlay")
+
 [node name="Brush" type="MeshInstance3D" parent="." node_paths=PackedStringArray("paint_surface")]
 unique_name_in_owner = true
 visible = false
@@ -63,6 +77,8 @@ script = ExtResource("4")
 brush_shader = ExtResource("5")
 paint_surface = NodePath("../Terrain")
 brush_max_radius = 48
+
+[node name="DropMarker" parent="." instance=ExtResource("drop_marker")]
 
 [node name="Fances" type="Node3D" parent="."]
 unique_name_in_owner = true
@@ -75,7 +91,6 @@ script = ExtResource("11")
 
 [node name="Vegetation" type="Node3D" parent="."]
 script = ExtResource("12")
-foliage_material = ExtResource("18")
 
 [node name="Inventory" type="Node" parent="."]
 script = ExtResource("19_inventory")
@@ -87,14 +102,22 @@ script = ExtResource("21_rocks")
 script = ExtResource("20_harvest")
 tool_view = NodePath("../HarvestTool")
 
-[node name="HarvestTool" type="MeshInstance3D" parent="."]
+[node name="HarvestTool" type="Node3D" parent="."]
 visible = false
 script = ExtResource("22_tool")
-axe_mesh = ExtResource("23_axe")
-pickaxe_mesh = ExtResource("24_pickaxe")
+axe_scene = ExtResource("23_axe")
+pickaxe_scene = ExtResource("24_pickaxe")
+rake_scene = ExtResource("25_rake")
+rake_contact = Vector3(-0.1202670352, 0.6282576856, -0.0960498988)
+rake_teeth = PackedVector3Array(-0.3382862147, 0.6342303576, -0.1025040262, -0.2956191746, 0.6269825841, -0.09503866025, -0.2453335654, 0.62662981, -0.09489542707, -0.1965716723, 0.6285375779, -0.09525909821, -0.1459053375, 0.626066781, -0.09425590611, -0.09904788762, 0.6253612545, -0.09396944848, -0.04038147771, 0.6280415955, -0.09546863971, 0.003809278521, 0.627125814, -0.09468589431, 0.05295190299, 0.6276881105, -0.09532511788, 0.101713796, 0.6319129709, -0.09909676981)
+axe_contact = Vector3(0.3118795637, 0.4248531502, 0.0003147872)
+pickaxe_contact = Vector3(0.3179919126, 0.4217925217, 0.0013872073)
 
 [node name="Buildings" type="Node3D" parent="."]
 script = ExtResource("buildings")
+
+[node name="BuildingEditing" type="Node" parent="."]
+script = ExtResource("building_editing")
 
 [node name="Navigation" type="Node" parent="."]
 script = ExtResource("navigation")
@@ -122,3 +145,12 @@ script = ExtResource("noise")
 
 [node name="Wellbeing" type="Node" parent="."]
 script = ExtResource("wellbeing")
+
+[node name="Landscape" type="Node" parent="."]
+script = ExtResource("landscape")
+
+[node name="Trader" type="Node" parent="."]
+script = ExtResource("trader_controller")
+
+[node name="ScienceProjects" type="Node" parent="."]
+script = ExtResource("science_projects_controller")

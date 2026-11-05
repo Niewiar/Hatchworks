@@ -7,19 +7,26 @@
 
 
 [ext_resource type="PackedScene" path="res://scenes/creatures/tuftling_female_model.tscn" id="female_appearance"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/sleep_signs.tscn" id="sleep_signs"]
+[ext_resource type="AudioStream" path="res://assets/audio/effects/tuftling_shake.wav" id="shake_sound"]
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_lg3ar"]
-radius = 0.1625
+radius = 0.22
 
 [sub_resource type="StandardMaterial3D" id="SplashMaterial"]
-albedo_color = Color(0.4, 0.75, 0.8, 0.8)
+albedo_color = Color(0.58, 0.86, 0.91, 0.75)
 transparency = 1
 shading_mode = 0
 [sub_resource type="SphereMesh" id="SplashMesh"]
-radius = 0.02
-height = 0.04
+radius = 0.011
+height = 0.033
 radial_segments = 6
 rings = 3
 material = SubResource("SplashMaterial")
+
+[sub_resource type="Gradient" id="DropletFade"]
+offsets = PackedFloat32Array(0, 0.7, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.85, 1, 1, 1, 0)
 
 [node name="Tuftling" type="CharacterBody3D" unique_id=280441931 node_paths=PackedStringArray("animation_player")]
 collision_layer = 8
@@ -36,19 +43,37 @@ shape = SubResource("SphereShape3D_lg3ar")
 [node name="Model" parent="." unique_id=1258856697 instance=ExtResource("2_u0svn")]
 
 [node name="Splash" type="CPUParticles3D" parent="."]
-scale = Vector3(0.65,0.65,0.65)
+scale = Vector3(0.65, 0.65, 0.65)
 position = Vector3(0, 0.15, 0)
 emitting = false
-amount = 18
-lifetime = 0.75
-one_shot = true
-explosiveness = 1.0
+amount = 36
+lifetime = 0.45
+one_shot = false
+explosiveness = 0.0
+randomness = 0.35
 mesh = SubResource("SplashMesh")
+emission_shape = 1
+emission_sphere_radius = 0.18
 direction = Vector3(0, 1, 0)
-spread = 85.0
-gravity = Vector3(0, -3, 0)
-initial_velocity_min = 0.4
-initial_velocity_max = 0.9
+spread = 100.0
+gravity = Vector3(0, -4, 0)
+initial_velocity_min = 0.55
+initial_velocity_max = 1.25
+scale_amount_min = 0.65
+scale_amount_max = 1.25
+color_ramp = SubResource("DropletFade")
+
+[node name="ShakeAudio" type="AudioStreamPlayer3D" parent="."]
+process_mode = 1
+stream = ExtResource("shake_sound")
+volume_db = -11.0
+unit_size = 12.0
+max_distance = 45.0
+attenuation_filter_cutoff_hz = 18000.0
+bus = &"Effects"
+
 [node name="Hearts" parent="." instance=ExtResource("hearts")]
 position = Vector3(0, 0.30875, 0)
 scale = Vector3(0.65,0.65,0.65)
+
+[node name="SleepSigns" parent="." instance=ExtResource("sleep_signs")]

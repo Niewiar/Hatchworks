@@ -123,11 +123,12 @@ func move_creature(creature: Creature, delta: float) -> void:
 	var visitor: Creature = pair.female if caller == pair.male else pair.male
 	if not is_instance_valid(caller) or not is_instance_valid(visitor):
 		return
+	var paired_animation: StringName = &"behaviour/Call" if creature.species_id == &"tuftling" else &"Idle"
 	if creature == caller:
-		caller.face_point(visitor.global_position,&"Idle" if pair.courting else &"behaviour/Call")
+		caller.face_point(visitor.global_position,paired_animation if pair.courting else &"behaviour/Call")
 		return
 	if pair.courting:
-		visitor.face_point(caller.global_position)
+		visitor.face_point(caller.global_position,paired_animation)
 		return
 	var difference := Vector2(caller.global_position.x-visitor.global_position.x,caller.global_position.z-visitor.global_position.z)
 	if difference.length() <= caller.body_radius()+visitor.body_radius()+0.35 and _clear_sight(caller,visitor):

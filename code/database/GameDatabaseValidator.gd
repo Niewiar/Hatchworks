@@ -3,16 +3,23 @@ extends RefCounted
 
 static func validate(database: GameDatabase) -> PackedStringArray:
 	var errors := PackedStringArray()
+	for problem: Dictionary in DiscoveryCatalogValidator.validate(DiscoveryCatalogValidator.capture(database)):
+		if problem.code not in ["invalid_entry", "invalid_id"]:
+			errors.append(problem.message)
 	var catalogs := {
 		"discoveries":database.discoveries,"recipes":database.recipes,"buildings":database.buildings,
 		"eggs":database.eggs,"glossary":database.glossary,"creatures":database.creatures,
-		"research":database.research,"flora":database.flora,"resources":database.resources,"deposits":database.deposits
+		"science_projects":database.science_projects,"research":database.research,"flora":database.flora,"resources":database.resources,"deposits":database.deposits
 	}
 	if database.world == null:
 		errors.append("world: missing WorldBalance resource.")
 	else:
+		_check_numbers(database.world,["trade_fee_percent"],0.0,99.0,errors)
+		_check_numbers(database.world,["science_trade_value"],0.0001,INF,errors)
+		_check_numbers(database.world,["science_project_interval"],1.0,86400.0,errors)
+		_check_numbers(database.world,["science_project_cost_ratio"],1.01,10.0,errors)
 		_check_numbers(database.world,["starting_height_variation","spawn_clearing_radius","starting_pond_radius"],0.0,INF,errors)
-		_check_numbers(database.world,["terrain_wavelength","sculpt_speed","gather_interval"],0.0001,INF,errors)
+		_check_numbers(database.world,["terrain_wavelength","sculpt_speed"],0.0001,INF,errors)
 		_check_numbers(database.world,["maximum_sculpt_slope"],0.0,89.0,errors)
 		if not is_finite(database.world.water_level) or not database.world.starting_pond_offset.is_finite():
 			errors.append("world: water level and pond offset must be finite.")
@@ -32,9 +39,22 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 		if entry.kind not in ResourceInventory.KIND.values() or kinds.has(entry.kind):
 			errors.append("resources/%s: resource kind must be supported and unique." % entry.id)
 		kinds[entry.kind] = true
-		_check_numbers(entry,["starting_amount"],0.0,INF,errors)
+		_check_numbers(entry,["starting_amount","trade_value"],0.0,INF,errors)
 	for kind: int in ResourceInventory.KIND.values():
 		_reference(kinds,kind,"resources.kind",errors)
+	for entry: ScienceProjectDefinition in database.science_projects:
+		if entry == null:
+			continue
+		_check_numbers(entry,["science_reward"],1,1000000,errors)
+		if entry.costs.is_empty():
+			errors.append("science_projects/%s: at least one material is required." % entry.id)
+		for kind: int in entry.costs:
+			_reference(kinds,kind,"science_projects/%s.costs" % entry.id,errors)
+			if entry.costs[kind] < 1 or entry.costs[kind] > 1000000:
+				errors.append("science_projects/%s: costs must be positive whole units." % entry.id)
+			for resource: ResourceDefinition in database.resources:
+				if resource != null and resource.kind == kind and resource.trade_value <= 0.0:
+					errors.append("science_projects/%s: required materials need a positive trade value." % entry.id)
 	var items: Dictionary = ids.eggs.duplicate()
 	for entry: FloraSpecies in database.flora:
 		if entry == null:
@@ -56,16 +76,8 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 	for entry: DiscoveryDefinition in database.discoveries:
 		if entry == null:
 			continue
-		if entry.category not in DiscoveryDefinition.CATEGORY.values() or entry.reward_count < 0:
-			errors.append("discoveries/%s: invalid category or reward count." % entry.id)
 		if entry.reward_count > 0:
 			_reference(items,entry.reward_item,"discoveries/%s.reward_item" % entry.id,errors)
-	for entry: DiscoveryRecipe in database.recipes:
-		if entry == null:
-			continue
-		for field: String in ["first","second","result"]:
-			_reference(ids.discoveries,entry.get(field),"recipes/%s.%s" % [entry.id,field],errors)
-		_check_numbers(entry,["science_reward"],0.0,INF,errors)
 	for entry: CreatureSpecies in database.creatures:
 		if entry == null:
 			continue
@@ -115,15 +127,13 @@ static func validate(database: GameDatabase) -> PackedStringArray:
 static func _creature(entry: CreatureSpecies, creatures: Dictionary, kinds: Dictionary, errors: PackedStringArray) -> void:
 	_required_asset(entry,"scene",errors)
 	_reference(kinds,entry.food_resource,"creatures/%s.food_resource" % entry.id,errors)
-	_check_numbers(entry,["unhappy_threshold","happy_threshold","breeding_min_satiety","breeding_satiety_cost","feeding_threshold","satiety_per_meal"],0.0,100.0,errors)
+	_check_numbers(entry,["terrain_happiness_penalty","unhappy_threshold","happy_threshold","breeding_min_satiety","breeding_satiety_cost","feeding_threshold","satiety_per_meal"],0.0,100.0,errors)
 	if entry.unhappy_threshold >= entry.happy_threshold:
 		errors.append("creatures/%s: unhappy_threshold must be below happy_threshold." % entry.id)
-	_check_numbers(entry,["noise_sensitivity","crowding_sensitivity","sand_coverage_limit"],0.0,1.0,errors)
+	_check_numbers(entry,["noise_sensitivity","crowding_sensitivity"],0.0,1.0,errors)
 	_check_numbers(entry,["hold_height","follow_speed","rotation_speed","walk_speed","swim_speed","minimum_swim_depth","bathing_seconds","shaking_seconds","resting_seconds","feeding_seconds","breeding_seconds","breeding_cooldown","satiety_seconds","leisure_seconds_min","leisure_seconds_max","happiness_response_seconds","preferred_area","company_radius","breeding_call_seconds","production_seconds","impact_time","production_radius","impact_radius","impact_strength","impact_damage","aggression_cooldown","grass_radius"],0.0001,INF,errors)
-	_check_numbers(entry,["grass_per_cycle","food_per_feeding","leisure_cycles_min","leisure_cycles_max","neutral_leisure_cycles_min","neutral_leisure_cycles_max","production_limit"],1.0,INF,errors)
+	_check_numbers(entry,["grass_per_cycle","food_per_feeding","production_limit"],1.0,INF,errors)
 	_ordered(entry,"leisure_seconds_min","leisure_seconds_max",errors)
-	_ordered(entry,"leisure_cycles_min","leisure_cycles_max",errors)
-	_ordered(entry,"neutral_leisure_cycles_min","neutral_leisure_cycles_max",errors)
 	_ordered(entry,"impact_time","production_seconds",errors)
 	if entry.habitat_ground < -1 or entry.habitat_ground > 4 or entry.production not in CreatureSpecies.PRODUCTION.values() or entry.female_production not in CreatureSpecies.PRODUCTION.values():
 		errors.append("creatures/%s: unsupported habitat or production type." % entry.id)
@@ -132,9 +142,26 @@ static func _creature(entry: CreatureSpecies, creatures: Dictionary, kinds: Dict
 		var strength: float = entry.species_aversions[id]
 		if not is_finite(strength) or strength < 0.0 or strength > 1.0:
 			errors.append("creatures/%s: aversion strengths must be finite values from 0 to 1." % entry.id)
+	for field: String in ["terrain_minimums","female_terrain_minimums"]:
+		var issue := terrain_minimums_error(entry.get(field))
+		if not issue.is_empty():
+			errors.append("creatures/%s.%s: %s" % [entry.id,field,issue])
 	var graph_error := CreatureAiGraph.validate(entry.ai_graph)
 	if not graph_error.is_empty():
 		errors.append("creatures/%s.ai_graph: %s" % [entry.id,graph_error])
+
+static func terrain_minimums_error(value: Variant) -> String:
+	if not value is Dictionary:
+		return "Terrain minimums must be a JSON object."
+	var total := 0.0
+	for kind in value:
+		if String(kind) not in ["grass","soil","sand","rock"]:
+			return "Supported terrain names: grass, soil, sand, rock."
+		var amount: Variant = value[kind]
+		if not (amount is int or amount is float) or not is_finite(float(amount)) or float(amount) < 0.0 or float(amount) > 100.0:
+			return "Terrain minimums must be finite numeric percentages from 0 to 100."
+		total += float(amount)
+	return "Terrain minimums must total no more than 100 percent." if total > 100.0001 else ""
 
 static func _index(entries: Array, category: String, errors: PackedStringArray) -> Dictionary:
 	var result := {}

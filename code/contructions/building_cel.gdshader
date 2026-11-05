@@ -4,6 +4,7 @@ uniform sampler2D albedo_texture : source_color, filter_linear_mipmap, repeat_di
 uniform sampler2D cavity_texture : filter_linear_mipmap, repeat_disable;
 uniform vec3 light_direction = vec3(-0.45,0.75,0.65);
 uniform float cavity_strength = 0.65;
+uniform float warmth = 0.0;
 vec3 to_linear(vec3 color) {
  return mix(color/12.92,pow((color+0.055)/1.055,vec3(2.4)),step(vec3(0.04045),color));
 }
@@ -21,6 +22,8 @@ void fragment() {
  float cavity = mix(1.0,texture(cavity_texture,UV).r,cavity_strength);
  vec3 color = paint*band*cavity;
  ALBEDO = OUTPUT_IS_SRGB ? to_srgb(color) : color;
+ float warm_mask = smoothstep(1.18,1.65,paint.r/max(paint.g,0.01))*smoothstep(1.15,1.8,paint.g/max(paint.b,0.01));
+ EMISSION = paint*vec3(1.0,0.72,0.35)*warmth*warm_mask;
  ROUGHNESS = 1.0;
  SPECULAR = 0.0;
 }

@@ -36,6 +36,17 @@ func clear() -> void:
 	_sources.clear()
 	_pulses.clear()
 
+func active_sources() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for source in _sources:
+		if not is_instance_valid(source) or source.is_queued_for_deletion():
+			continue
+		var data: Dictionary = _sources[source]
+		result.append({"point":source.global_position,"strength":data.strength,"radius":data.radius,"source":source,"transient":false})
+	for data: Dictionary in _pulses:
+		result.append({"point":data.point,"strength":data.strength*data.remaining/data.duration,"radius":data.radius,"source":data.source,"transient":true})
+	return result
+
 func _falloff(point: Vector3, origin: Vector3, radius: float) -> float:
 	var weight := clampf(1.0-point.distance_to(origin)/radius,0.0,1.0)
 	return weight*weight

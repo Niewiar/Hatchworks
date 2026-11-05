@@ -15,21 +15,16 @@ func _ready() -> void:
 	%ScienceCounter.mouse_entered.connect(func(): tooltip_controller.show_hint(tr("Science\nEvery new discovery brings another spark of understanding."),%ScienceCounter))
 	%ScienceCounter.mouse_exited.connect(tooltip_controller.hide_text.bind(%ScienceCounter))
 	var existing: Array[int] = []
-	for child in %Counters.get_children():
-		if not child is ResourceCounter:
-			continue
-		var counter := child as ResourceCounter
+	for counter in _counters():
 		existing.append(counter.resource_kind)
 	for data in inventory.definitions:
 		if data.kind not in existing:
 			var counter := COUNTER.instantiate() as ResourceCounter
 			counter.name = data.display_name.to_pascal_case()+str(data.kind)
 			counter.resource_kind = data.kind
-			%Counters.add_child(counter)
-	for child in %Counters.get_children():
-		if not child is ResourceCounter:
-			continue
-		var counter := child as ResourceCounter
+			var row: HBoxContainer = %GroundCounters if data.kind in ResourceInventory.GROUND_TYPES else %Counters
+			row.add_child(counter)
+	for counter in _counters():
 		counter.initialize(inventory)
 
 func _on_science_changed(amount: int) -> void:
@@ -62,12 +57,19 @@ func finish_science_gain(points: int) -> void:
 func reset_presentation() -> void:
 	_pending_science = 0
 	_on_science_changed(science.amount)
-	for counter in %Counters.get_children():
-		if counter is ResourceCounter:
-			counter.reset_presentation()
+	for counter in _counters():
+		counter.reset_presentation()
 
 func _counter(kind: int) -> ResourceCounter:
-	for child in %Counters.get_children():
-		if child is ResourceCounter and child.resource_kind == kind:
-			return child
+	for counter in _counters():
+		if counter.resource_kind == kind:
+			return counter
 	return null
+
+func _counters() -> Array[ResourceCounter]:
+	var result: Array[ResourceCounter] = []
+	for row in [%Counters,%GroundCounters]:
+		for child in row.get_children():
+			if child is ResourceCounter:
+				result.append(child)
+	return result

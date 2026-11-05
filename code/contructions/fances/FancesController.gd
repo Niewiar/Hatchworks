@@ -103,20 +103,73 @@ func finish_drawing(world_position: Vector3, commit: bool = true) -> Array[int]:
 	if not _drawing:
 		return created
 	_update_preview_at(world_to_map(world_position))
-	var price_data: FanceData = FANCES_DATABASE.fances[selected_fance]
-	if commit and _preview_valid and _inventory.spend(price_data.construction_resource,_path_cost(_pending_points,price_data)):
-		var points := _pending_points.duplicate()
-		var data: FanceData = FANCES_DATABASE.fances[selected_fance]
-		var ids: Array[int] = []
-		for point in points:
-			ids.append(_ensure_post(point, data))
-		for index in range(ids.size() - 1):
-			created.append(_add_span(ids[index], ids[index + 1], data))
+	var data: FanceData = FANCES_DATABASE.fances[selected_fance]
+	if commit and _preview_valid and _inventory.spend(data.construction_resource, _path_cost(_pending_points, data)):
+		created = _build_paid_path(_pending_points.duplicate(), data)
 		_finish_edit()
 	_drawing = false
 	_preview_dirty = true
 	_update_preview_at(world_to_map(world_position))
 	return created
+
+func _build_paid_path(points: PackedVector2Array, data: FanceData) -> Array[int]:
+	var ids: Array[int] = []
+	var created: Array[int] = []
+	for point in points:
+		var existing_id := _find_exact_post(point)
+		var needs_post := existing_id == 0 or _posts[existing_id].data.post_priority < data.post_priority
+		var costs := post_costs(existing_id)
+		var post_id := _ensure_post(point, data)
+		ids.append(post_id)
+		if needs_post:
+			costs[data.construction_resource] = costs.get(data.construction_resource, 0) + maxi(0, data.material_per_post)
+			_posts[post_id].paid_costs = costs
+	var length := 0.0
+	var allocated := 0
+	for index in range(ids.size() - 1):
+		length += points[index].distance_to(points[index + 1]) / pixels_per_unit
+		var total_cost := _length_cost(length, data)
+		var span_id := _add_span(ids[index], ids[index + 1], data)
+		_spans[span_id].paid_costs[data.construction_resource] = total_cost - allocated
+		allocated = total_cost
+		created.append(span_id)
+	return created
+
+func span_costs(span_id: int) -> Dictionary[int, int]:
+	if not _spans.has(span_id):
+		return {}
+	var span := _spans[span_id]
+	if not span.paid_costs.is_empty():
+		return span.paid_costs.duplicate()
+	var length := _posts[span.start_post_id].position.distance_to(_posts[span.end_post_id].position) / pixels_per_unit
+	return {span.data.construction_resource: _length_cost(length, span.data)}
+
+func post_costs(post_id: int) -> Dictionary[int, int]:
+	if not _posts.has(post_id):
+		return {}
+	var post := _posts[post_id]
+	if not post.paid_costs.is_empty():
+		return post.paid_costs.duplicate()
+	return {post.data.construction_resource: maxi(0, post.data.material_per_post)}
+
+func demolish_span(span_id: int) -> bool:
+	if _inventory == null or not _spans.has(span_id):
+		return false
+	var span := _spans[span_id]
+	var costs := span_costs(span_id)
+	var midpoint := (_posts[span.start_post_id].position + _posts[span.end_post_id].position) * 0.5
+	var origin := map_to_world(midpoint)
+	for post_id in [span.start_post_id, span.end_post_id]:
+		if _posts[post_id].span_ids.size() != 1:
+			continue
+		var post_refund := post_costs(post_id)
+		for kind: int in post_refund:
+			costs[kind] = costs.get(kind, 0) + post_refund[kind]
+	remove_span(span_id)
+	for kind: int in costs:
+		if costs[kind] > 0:
+			_inventory.add(kind, costs[kind], origin)
+	return true
 
 func get_posts() -> Array:
 	return _posts.values()
@@ -363,6 +416,8 @@ func _finish_edit() -> void:
 			if candidate.post_priority > best.post_priority or (candidate.post_priority == best.post_priority and String(candidate.id) < String(best.id)):
 				best = candidate
 		var integrity := post.integrity()
+		if best != post.data and post.paid_costs.is_empty():
+			post.paid_costs = post_costs(post_id)
 		post.data = best
 		post.health = best.post_max_health * integrity
 		_post_views[post_id].configure(post, pixels_per_unit, _post_rotation_at(post.position), _terrain)
@@ -430,12 +485,13 @@ func get_post_at_screen(screen_position: Vector2, camera: Camera3D) -> int:
 		var base := map_to_world(post.position)
 		if camera.is_position_behind(base):
 			continue
-		var top := base + global_basis.y * ((post.data.height + 3) / pixels_per_unit)
+		var detail_scale := post.data.detail_scale()
+		var top := base + global_basis.y * ((post.data.height + 3 * detail_scale) / pixels_per_unit)
 		var first := camera.unproject_position(base)
 		var last := camera.unproject_position(top)
 		var closest := Geometry2D.get_closest_point_to_segment(screen_position, first, last)
 		var distance := screen_position.distance_squared_to(closest)
-		var side := camera.unproject_position(base + camera.global_basis.x * ((post.data.post_width + 4) * 0.5 / pixels_per_unit))
+		var side := camera.unproject_position(base + camera.global_basis.x * ((post.data.post_width + 4 * detail_scale) * 0.5 / pixels_per_unit))
 		var radius := maxf(6, first.distance_to(side) + 4)
 		var depth := camera.global_position.distance_squared_to(base)
 		if distance <= radius * radius and (distance < best_distance - 1 or (absf(distance - best_distance) <= 1 and depth < best_depth)):
@@ -479,7 +535,10 @@ func _path_cost(points: PackedVector2Array, data: FanceData) -> int:
 		var id := _find_exact_post(point)
 		if id == 0 or _posts[id].data.post_priority < data.post_priority:
 			posts += 1
-	return ceili(maxf(0.0,length*maxf(0.0,data.material_per_meter)-0.0001))+posts*maxi(0,data.material_per_post)
+	return _length_cost(length, data) + posts * maxi(0, data.material_per_post)
+
+func _length_cost(length: float, data: FanceData) -> int:
+	return ceili(maxf(0.0, length * maxf(0.0, data.material_per_meter) - 0.0001))
 
 func configure_surface(terrain: TerrainController) -> void:
 	_terrain = terrain

@@ -27,10 +27,10 @@ func costs() -> Dictionary[int, int]:
 
 @export_range(1.0,1000.0,1.0) var max_health := 100.0
 
-func scaled_costs(previous_placements: int) -> Dictionary[int, int]:
+func scaled_costs(existing_count: int, first_placement_used: bool = false) -> Dictionary[int, int]:
 	var result := costs()
-	var count := maxi(0,previous_placements)
-	if first_placement_free and count == 0:
+	var count := maxi(0,existing_count)
+	if first_placement_free and not first_placement_used and count == 0:
 		for kind: int in result:
 			result[kind] = 0
 		return result

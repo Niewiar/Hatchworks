@@ -47,8 +47,9 @@ func _update_collision() -> void:
 		_shape = CollisionShape3D.new()
 		_shape.shape = BoxShape3D.new()
 		_body.add_child(_shape)
-	var height := state.data.height + 4
-	(_shape.shape as BoxShape3D).size = Vector3(state.data.post_width + 4, height, state.data.thickness * 1.15 + 3) / _pixels_per_unit
+	var detail_scale := state.data.detail_scale()
+	var height := state.data.height + 4 * detail_scale
+	(_shape.shape as BoxShape3D).size = Vector3(state.data.post_width + 4 * detail_scale, height, state.data.thickness * 1.15 + 3 * detail_scale) / _pixels_per_unit
 	_shape.position = Vector3(0, height * 0.5 / _pixels_per_unit, 0)
 
 func inspection_bounds() -> AABB:

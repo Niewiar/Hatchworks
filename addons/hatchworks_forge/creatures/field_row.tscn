@@ -1,0 +1,96 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/creatures/field_row.gd" id="script"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/creatures/mapping_editor.tscn" id="mapping"]
+
+[node name="Field" type="VBoxContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+script = ExtResource("script")
+
+[node name="Heading" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FieldName" type="Label" parent="Heading"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+text = "Pole"
+autowrap_mode = 3
+
+[node name="Unit" type="Label" parent="Heading"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+theme_override_font_sizes/font_size = 12
+
+[node name="Changed" type="Label" parent="Heading"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.27, 1)
+text = "●"
+
+[node name="Description" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+
+[node name="Line" type="LineEdit" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Multiline" type="TextEdit" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 105)
+layout_mode = 2
+size_flags_horizontal = 3
+wrap_mode = 1
+
+[node name="Number" type="SpinBox" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Choice" type="OptionButton" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="Toggle" type="CheckButton" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Tak"
+
+[node name="Mapping" parent="." instance=ExtResource("mapping")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Readonly" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeMuted"
+autowrap_mode = 3
+
+[node name="Error" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"ForgeError"
+autowrap_mode = 3

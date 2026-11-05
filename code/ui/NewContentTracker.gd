@@ -24,10 +24,9 @@ func mark_fence_seen(id: StringName) -> void:
 	_mark("fence:"+str(id))
 
 func mark_tool_seen(mode: MapManager.MODE, index: int) -> void:
-	if mode == MapManager.MODE.SCULPT:
-		_mark("sculpt:"+str(index))
-	elif mode == MapManager.MODE.HARVEST:
-		_mark("harvest:"+str(index))
+	var key := _tool_key(mode,index)
+	if not key.is_empty():
+		_mark(key)
 
 func item_is_unread(id: StringName) -> bool:
 	return _map.items.amount(id) > 0 and not _seen.has("item:"+str(id))
@@ -39,7 +38,8 @@ func fence_is_unread(id: StringName) -> bool:
 	return not _seen.has("fence:"+str(id))
 
 func tool_is_unread(mode: MapManager.MODE, index: int) -> bool:
-	return not _seen.has(("sculpt:" if mode == MapManager.MODE.SCULPT else "harvest:")+str(index))
+	var key := _tool_key(mode,index)
+	return not key.is_empty() and not _seen.has(key)
 
 func unread_item_ids() -> Array[StringName]:
 	var result: Array[StringName] = []
@@ -64,12 +64,20 @@ func unread_count(mode: MapManager.MODE) -> int:
 			for index in _map.database.construction.fances.size():
 				if _map.fances_controller.unlocked(index) and fence_is_unread(_map.database.construction.fances[index].id):
 					count += 1
+		MapManager.MODE.PAINT:
+			for kind in ResourceInventory.GROUND_TYPES:
+				if tool_is_unread(mode,kind):
+					count += 1
 		MapManager.MODE.SCULPT:
 			for index in TerrainController.SCULPT_TOOL.values():
 				if tool_is_unread(mode,index):
 					count += 1
+		MapManager.MODE.EDIT_BUILDINGS:
+			for index in BuildingEditingController.TOOL.values():
+				if tool_is_unread(mode,index):
+					count += 1
 		MapManager.MODE.HARVEST:
-			for index in [HarvestController.TOOL.PLANTS,HarvestController.TOOL.AXE,HarvestController.TOOL.MINING]:
+			for index in [HarvestController.TOOL.GROUND,HarvestController.TOOL.HOE,HarvestController.TOOL.AXE,HarvestController.TOOL.MINING]:
 				if tool_is_unread(mode,index):
 					count += 1
 	return count
@@ -91,3 +99,15 @@ func _mark(key: String) -> void:
 
 func _on_building_placed(_building: Node3D, data: BuildingDefinition) -> void:
 	mark_building_seen(data.id)
+
+func _tool_key(mode: MapManager.MODE, index: int) -> String:
+	match mode:
+		MapManager.MODE.PAINT:
+			return "paint:"+str(index)
+		MapManager.MODE.SCULPT:
+			return "sculpt:"+str(index)
+		MapManager.MODE.HARVEST:
+			return "harvest:"+str(index)
+		MapManager.MODE.EDIT_BUILDINGS:
+			return "building_edit:"+str(index)
+	return ""

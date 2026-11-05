@@ -3,3 +3,6 @@
 [ext_resource type="Script" path="res://code/creatures/PebblitAppearance.gd" id="script"]
 [node name="Model" instance=ExtResource("model")]
 script = ExtResource("script")
+walk_distance = 0.1298102767
+walk_speed = 0.35
+run_distance = 0.2427620759

@@ -30,11 +30,15 @@ func sample(creature: Creature) -> Dictionary:
 		if is_instance_valid(other) and other != creature and other.blocks_space() and other.species_id == creature.species_id and creature.global_position.distance_squared_to(other.global_position) <= data.company_radius*data.company_radius:
 			companions += 1
 	var aversion := 0.0
+	var unwanted := PackedStringArray()
 	var present: Dictionary = _species.get(region.id,{})
 	for id: StringName in data.species_aversions:
 		if id != creature.species_id and present.get(id,0) > 0:
 			aversion += data.species_aversions[id]
-	return {"space":maxf(0.0,region.area-region.water_area)/population,"companions":companions,"aversion":clampf(aversion,0.0,1.0)}
+			if data.species_aversions[id] > 0.0:
+				unwanted.append(str(id))
+	unwanted.sort()
+	return {"space":maxf(0.0,region.area-region.water_area)/population,"companions":companions,"aversion":clampf(aversion,0.0,1.0),"unwanted_species":unwanted}
 
 func _refresh() -> void:
 	_members.clear()

@@ -3,6 +3,7 @@ class_name DepositDefinition
 extends DatabaseEntry
 
 @export var variants: Array[Mesh] = []
+@export var pebble_mesh: Mesh
 @export var material: Material
 @export_range(0.0, 0.1, 0.001) var density := 0.009
 @export_range(0.1, 8.0, 0.1) var spacing := 2.0

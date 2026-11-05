@@ -498,7 +498,7 @@ Rubbing against a rock to relax,Rubbing against a rock to relax,Ociera się o sk
 Shaking off sand,Shaking off sand,Otrzepuje się z piasku
 Charging at a structure,Charging at a structure,Szarżuje na konstrukcję
 Walking to a work site,Walking to a work site,Idzie do miejsca pracy
-Armored and stubborn. Males walk on four paws and charge on stone elbows when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard.,Armored and stubborn. Males walk on four paws and charge on stone elbows when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard.,"Opancerzone i uparte. Samce chodzą na czterech łapach, a rozzłoszczone szarżują na kamiennych łokciach. Piaskowe samice otrzepują się, wytwarzając piasek; ocieranie o skały służy im do relaksu. Daj im przestrzeń — osaczony Pebblit mocno uderza."
+Armored and stubborn. Males walk on four paws and run at their target and strike with their head when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard.,Armored and stubborn. Males walk on four paws and run at their target and strike with their head when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard.,"Opancerzone i uparte. Samce chodzą na czterech łapach, a rozzłoszczone biegną do celu i uderzają głową. Piaskowe samice otrzepują się, wytwarzając piasek; ocieranie o skały służy im do relaksu. Daj im przestrzeń — osaczony Pebblit mocno uderza."
 Resting after a charge,Resting after a charge,Odpoczywa po szarży
 Continue,Continue,Kontynuuj
 New game,New game,Nowa gra
@@ -548,3 +548,159 @@ LMB / RMB / Esc — confirm","Welcome to Hatchworks
 LMB / RMB / Esc — confirm","Witaj w Hatchworks
 LPM / PPM / Esc — zatwierdź"
 Attacking,Attacking,Atakuje
+This workshop has been destroyed.,This workshop has been destroyed.,Ten warsztat został zniszczony.
+Life Workshop ruins,Life Workshop ruins,Ruiny Warsztatu Życia
+Clear the ruins to free this building site.,Clear the ruins to free this building site.,"Uprzątnij ruiny, aby zwolnić miejsce pod budowę."
+Clear ruins,Clear ruins,Uprzątnij ruiny
+Building attacked,Building attacked,Atak na budynek
+%s is attacking %s,%s is attacking %s,%s atakuje: %s
+Rake,Rake,Grabie
+Hold LMB and pull the handle to rake plants and pebbles beneath the teeth. RMB: close.,Hold LMB and pull the handle to rake plants and pebbles beneath the teeth. RMB: close.,Przytrzymaj LPM i ciągnij za trzonek. Zęby grabi zbierają rośliny i kamyki. PPM: zamknij.
+Its mood follows the conditions below.,Its mood follows the conditions below.,Nastrój zmienia się wraz z warunkami poniżej.
+%s / %s m²,%s / %s m²,%s / %s m²
+There is enough room to roam.,There is enough room to roam.,Ma wystarczająco dużo miejsca.
+This region is crowded. Expand it or move some creatures elsewhere.,This region is crowded. Expand it or move some creatures elsewhere.,W regionie jest ciasno. Powiększ go lub przenieś część stworków.
+Company nearby makes it happier.,Company nearby makes it happier.,Bliskie towarzystwo poprawia mu nastrój.
+Another of its kind nearby would help it feel at home.,Another of its kind nearby would help it feel at home.,Towarzysz tego samego gatunku pomoże mu poczuć się jak w domu.
+Noise is not bothering it.,Noise is not bothering it.,Hałas mu nie przeszkadza.
+Too much noise nearby. Move it to a quieter spot.,Too much noise nearby. Move it to a quieter spot.,W pobliżu jest za głośno. Przenieś go w spokojniejsze miejsce.
+No unwanted neighbours share this region.,No unwanted neighbours share this region.,W tym regionie nie ma niechcianych sąsiadów.
+Unwanted neighbours share this region. Give them separate homes.,Unwanted neighbours share this region. Give them separate homes.,Współdzieli region z niechcianymi sąsiadami. Rozdziel je.
+It is settling down after an unwanted neighbour left.,It is settling down after an unwanted neighbour left.,Uspokaja się po odejściu niechcianego sąsiada.
+At ease,At ease,Spokojnie
+Disturbed,Disturbed,Niepokój
+Alone,Alone,Samotnie
+Settling down,Settling down,Uspokaja się
+A stocked feeder keeps it well fed.,A stocked feeder keeps it well fed.,Pełny karmnik pozwoli mu się najeść.
+Company,Company,Towarzystwo
+Space,Space,Przestrzeń
+Noise,Noise,Hałas
+Neighbours,Neighbours,Sąsiedzi
+Happiness,Happiness,Zadowolenie
+Room to roam: %s m² each.,Room to roam: %s m² each.,Miejsce do życia: %s m² na stworka.
+×%d,×%d,×%d
+When working: up to %d tasks before a rest.,When working: up to %d tasks before a rest.,Podczas pracy: do %d zadań przed odpoczynkiem.
+Preferred ground,Preferred ground,Preferowane podłoże
+Updating region…,Updating region…,Aktualizowanie regionu…
+%s%% / min. %s%%,%s%% / min. %s%%,%s%% / min. %s%%
+%d%% fulfilled,%d%% fulfilled,Spełnienie: %d%%
+Updating the region's ground coverage.,Updating the region's ground coverage.,Trwa aktualizowanie pokrycia podłoża w regionie.
+%s: %s%% of dry land; regional minimum %s%%.,%s: %s%% of dry land; regional minimum %s%%.,%s: %s%% suchego lądu; minimum w regionie: %s%%.
+The highest minimum requested by a resident sets the shared regional goal.,The highest minimum requested by a resident sets the shared regional goal.,Najwyższe minimum wymagane przez mieszkańca wyznacza wspólny cel regionu.
+"A shortage lowers happiness proportionally, by up to %s points.","A shortage lowers happiness proportionally, by up to %s points.","Niedobór proporcjonalnie obniża zadowolenie, maksymalnie o %s punktów."
+This region has no dry land.,This region has no dry land.,W tym regionie nie ma suchego lądu.
+Paint,Paint,Maluj
+Paint terrain,Paint terrain,Malowanie podłoża
+Gather ground,Gather ground,Zbieranie podłoża
+Ground,Ground,Podłoże
+%s available,%s available,Dostępne: %s
+"Hold LMB and drag to paint using stored material.
+Mouse wheel: brush size. RMB: close.","Hold LMB and drag to paint using stored material.
+Mouse wheel: brush size. RMB: close.","Przytrzymaj LPM i przeciągaj, malując z zapasu podłoża.
+Kółko myszy: rozmiar pędzla. PPM: zamknij."
+"Hold LMB and drag to gather grass, sand and rock, leaving soil.
+Mouse wheel: brush size. RMB: close.","Hold LMB and drag to gather grass, sand and rock, leaving soil.
+Mouse wheel: brush size. RMB: close.","Przytrzymaj LPM i przeciągaj, zbierając trawę, piasek i skałę. Pozostanie gleba.
+Kółko myszy: rozmiar pędzla. PPM: zamknij."
+Trader,Trader,Handlarz
+Close trader,Close trader,Zamknij handel
+"Exchange resources and terrain, or spend science on supplies.","Exchange resources and terrain, or spend science on supplies.",Wymieniaj surowce i podłoże lub kupuj zapasy za punkty nauki.
+You give,You give,Oddajesz
+You receive,You receive,Otrzymujesz
+Offer all available units,Offer all available units,Oddaj cały dostępny zapas
+Exchange,Exchange,Wymień
+Complete this exchange,Complete this exchange,Zatwierdź wymianę
+Available: %s,Available: %s,Dostępne: %s
+After exchange: %s,After exchange: %s,Po wymianie: %s
+Choose two different resources.,Choose two different resources.,Wybierz dwa różne surowce.
+Trading is unavailable.,Trading is unavailable.,Handel jest niedostępny.
+This resource cannot be traded.,This resource cannot be traded.,Tego surowca nie można wymieniać.
+Enter a positive amount.,Enter a positive amount.,Podaj ilość większą od zera.
+"Enter whole units, or hundredths of a square metre for terrain.","Enter whole units, or hundredths of a square metre for terrain.",Podaj całe sztuki lub setne części m² podłoża.
+Offer more to receive at least one unit.,Offer more to receive at least one unit.,"Zwiększ ofertę, aby otrzymać co najmniej jedną jednostkę."
+Not enough science.,Not enough science.,Za mało punktów nauki.
+Not enough resources.,Not enough resources.,Za mało surowców.
+The resulting amount is too large.,The resulting amount is too large.,Wynikowa ilość jest zbyt duża.
+Ready to exchange.,Ready to exchange.,Możesz dokonać wymiany.
+Exchanged %s %s for %s %s.,Exchanged %s %s for %s %s.,Wymieniono %s %s na %s %s.
+ (m²), (m²), (m²)
+Offer all,Offer all,Cały zapas
+Science Projects,Science Projects,Projekty naukowe
+Projects,Projects,Projekty
+Close science projects,Close science projects,Zamknij projekty naukowe
+Supply research materials to earn Science. Projects stay available until completed.,Supply research materials to earn Science. Projects stay available until completed.,Przekazuj materiały do badań i zdobywaj naukę. Projekty pozostają dostępne do wykonania.
+Available projects: %d / %d,Available projects: %d / %d,Dostępne projekty: %d / %d
+All projects available,All projects available,Wszystkie projekty dostępne
+Next project in %s,Next project in %s,Nowy projekt za %s
+Discover resources to unlock projects.,Discover resources to unlock projects.,"Poznawaj surowce, aby odblokować projekty."
+Research materials,Research materials,Materiały do badań
+Available / required: %s / %s,Available / required: %s / %s,Masz / potrzeba: %s / %s
+Give materials,Give materials,Przekaż materiały
+Give the listed materials and receive Science.,Give the listed materials and receive Science.,Przekaż wskazane materiały i otrzymaj punkty nauki.
+Completed %s. Earned %d Science.,Completed %s. Earned %d Science.,Ukończono: %s. Zdobyto %d pkt nauki.
+A new project is on its way,A new project is on its way,Kolejny projekt w przygotowaniu
+Explore and gather materials while researchers prepare their next request.,Explore and gather materials while researchers prepare their next request.,"Odkrywaj świat i zbieraj materiały, zanim pojawi się kolejne zlecenie."
+Science: %d,Science: %d,Nauka: %d
++%d Science,+%d Science,+%d pkt nauki
+Plant fiber study,Plant fiber study,Badanie włókien roślinnych
+Compare the strength of fibers gathered from woodland plants.,Compare the strength of fibers gathered from woodland plants.,Porównaj wytrzymałość włókien zebranych z leśnych roślin.
+Reading the growth rings,Reading the growth rings,Czytanie słojów
+Examine how woodland trees grow and store water.,Examine how woodland trees grow and store water.,"Zbadaj, jak leśne drzewa rosną i gromadzą wodę."
+Stone grain study,Stone grain study,Badanie ziaren kamienia
+Compare the grains and fractures of local stones.,Compare the grains and fractures of local stones.,Porównaj ziarnistość i przełamy miejscowych kamieni.
+Herbal extracts,Herbal extracts,Ziołowe wyciągi
+Study the properties of aromatic woodland herbs.,Study the properties of aromatic woodland herbs.,Poznaj właściwości aromatycznych leśnych ziół.
+Living turf,Living turf,Żywa darń
+Examine the roots and moisture held by a patch of grass.,Examine the roots and moisture held by a patch of grass.,Zbadaj korzenie i wilgoć zatrzymywaną przez kępę trawy.
+Sand structure,Sand structure,Struktura piasku
+Compare the shape and texture of sand grains.,Compare the shape and texture of sand grains.,Porównaj kształty i powierzchnię ziaren piasku.
+Life on rocky ground,Life on rocky ground,Życie na skalnym gruncie
+Study the structure of stony soil.,Study the structure of stony soil.,Zbadaj strukturę kamienistego podłoża.
+Study of the forest floor,Study of the forest floor,Badanie runa leśnego
+Compare plant fibers and herbs from the woodland floor.,Compare plant fibers and herbs from the woodland floor.,Porównaj włókna roślinne i zioła z leśnego runa.
+Root strength,Root strength,Wytrzymałość korzeni
+Explore how wood and plant fibers bend under strain.,Explore how wood and plant fibers bend under strain.,"Sprawdź, jak drewno i włókna roślinne zginają się pod obciążeniem."
+This project is no longer available.,This project is no longer available.,Ten projekt nie jest już dostępny.
+The science total is too high.,The science total is too high.,Osiągnięto limit punktów nauki.
+Project pricing is unavailable.,Project pricing is unavailable.,Nie można teraz wycenić tego projektu.
+Ready to submit materials.,Ready to submit materials.,Materiały gotowe do przekazania.
+Map views,Map views,Widoki mapy
+Normal,Normal,Normalny
+Regions,Regions,Regiony
+Region %d,Region %d,Region %d
+Dry land: %s m²,Dry land: %s m²,Suchy ląd: %s m²
+Water: %s%% of region,Water: %s%% of region,Woda: %s%% regionu
+No dry land,No dry land,Brak suchego lądu
+Ground percentages refer to dry land.,Ground percentages refer to dry land.,Udziały podłoża dotyczą suchego lądu.
+Noise: %d/100,Noise: %d/100,Hałas: %d/100
+Quiet · 0,Quiet · 0,Cicho · 0
+100 · Loud,100 · Loud,100 · Głośno
+Show the world without map overlays.,Show the world without map overlays.,Pokaż świat bez nakładek mapy.
+Show local noise and its sources.,Show local noise and its sources.,Pokaż lokalny hałas i jego źródła.
+Show fence regions and their ground composition.,Show fence regions and their ground composition.,Pokaż regiony wyznaczone ogrodzeniami i skład ich podłoża.
+Impact,Impact,Uderzenie
+Noise source,Noise source,Źródło hałasu
+Sleeping,Sleeping,Śpi
+Sleeping peacefully,Sleeping peacefully,Spokojnie śpi
+Wandering,Wandering,Spaceruje
+Exploring nearby,Exploring nearby,Przechadza się po okolicy
+Walking to a sleeping spot,Walking to a sleeping spot,Szuka miejsca do snu
+Greeting,Greeting,Wita się
+Greeting a friend,Greeting a friend,Wita się z towarzyszem
+Playing,Playing,Bawi się
+Playing with a friend,Playing with a friend,Bawi się z towarzyszem
+Walking to a friend,Walking to a friend,Podchodzi do towarzysza
+Looking around,Looking around,Rozgląda się
+Looking for a playmate,Looking for a playmate,Szuka towarzysza do zabawy
+Playing together,Playing together,Bawią się razem
+Walking to a playmate,Walking to a playmate,Podchodzi do towarzysza
+Manage structures,Manage structures,Zarządzaj budowlami
+Manage,Manage,Zarządzaj
+Move buildings,Move buildings,Przesuwaj budynki
+Move,Move,Przesuń
+Remove structures,Remove structures,Usuwaj budowle
+Remove,Remove,Usuń
+Find a new place for your building.,Find a new place for your building.,Znajdź nowe miejsce dla budynku.
+Reclaim the materials. Stored contents are lost.,Reclaim the materials. Stored contents are lost.,Odzyskaj materiały. Zawartość budowli przepadnie.
+Move buildings or clear space for something new.,Move buildings or clear space for something new.,Przenieś budynki lub zrób miejsce na coś nowego.
+Hold to rotate,Hold to rotate,"Przytrzymaj, aby obracać"

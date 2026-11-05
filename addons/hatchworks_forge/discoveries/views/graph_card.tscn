@@ -1,0 +1,89 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/discoveries/views/graph_card.gd" id="1"]
+[ext_resource type="Script" path="res://addons/hatchworks_forge/discoveries/views/graph_discovery_chip.gd" id="2"]
+
+[node name="DiscoveryCard" type="GraphNode"]
+custom_minimum_size = Vector2(220, 0)
+resizable = false
+script = ExtResource("1")
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Central" type="VBoxContainer" parent="Content"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Discovery" type="Button" parent="Content/Central"]
+unique_name_in_owner = true
+layout_mode = 2
+icon_max_width = 24
+expand_icon = true
+script = ExtResource("2")
+
+[node name="Incoming" type="VBoxContainer" parent="Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Pair" type="HBoxContainer" parent="Content/Incoming"]
+layout_mode = 2
+
+[node name="First" type="Button" parent="Content/Incoming/Pair"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "A"
+icon_max_width = 18
+expand_icon = true
+script = ExtResource("2")
+
+[node name="Plus" type="Label" parent="Content/Incoming/Pair"]
+layout_mode = 2
+text = "+"
+
+[node name="Second" type="Button" parent="Content/Incoming/Pair"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "B"
+icon_max_width = 18
+expand_icon = true
+script = ExtResource("2")
+
+[node name="EditIncoming" type="Button" parent="Content/Incoming"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Edytuj recepturę"
+flat = true
+
+[node name="Outgoing" type="VBoxContainer" parent="Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Partner" type="Button" parent="Content/Outgoing"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "+ B"
+icon_max_width = 18
+expand_icon = true
+script = ExtResource("2")
+
+[node name="Result" type="Button" parent="Content/Outgoing"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "→ Wynik"
+icon_max_width = 18
+expand_icon = true
+script = ExtResource("2")
+
+[node name="EditOutgoing" type="Button" parent="Content/Outgoing"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Edytuj recepturę"
+flat = true

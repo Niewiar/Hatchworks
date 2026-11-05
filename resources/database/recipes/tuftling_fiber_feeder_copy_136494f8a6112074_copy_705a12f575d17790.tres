@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
+
+[ext_resource type="Script" uid="uid://b2ma6xf73f6ms" path="res://code/database/DiscoveryRecipe.gd" id="1_b276i"]
+
+[resource]
+script = ExtResource("1_b276i")
+first = &"pebblit"
+second = &"fiber"
+result = &"feeder"
+science_reward = 0
+id = &"tuftling_fiber_feeder_copy_136494f8a6112074_copy_705a12f575d17790"
+display_name = "Tuftling + Plant Fiber"

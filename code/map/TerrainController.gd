@@ -3,6 +3,8 @@ extends MeshInstance3D
 
 signal terrain_changed
 signal height_changed
+signal ground_area_changed(bounds: Rect2)
+signal height_area_changed(bounds: Rect2)
 
 enum SCULPT_TOOL { RAISE, LOWER, SMOOTH, FLATTEN }
 enum GROUND_TYPE { GRASS = 0, SOIL = 1, SAND = 3, ROCK = 4 }
@@ -49,6 +51,8 @@ var _ground_image: Image
 var _ground_texture: ImageTexture
 var _terrain_mat: ShaderMaterial
 var _upload_pending := false
+var _ground_stroke_point := Vector2.INF
+var _ground_stroke_kind := -1
 
 var _height_size := Vector2i.ZERO
 var _height_cell := Vector2.ZERO
@@ -93,6 +97,7 @@ func initialize(map_size: Vector2i, pixel_density: float = 32.0, natural_start: 
 	_terrain_mat.set_shader_parameter("ground_map", _ground_texture)
 	_terrain_mat.set_shader_parameter("ground_influence", _ground_influence_texture)
 	_terrain_mat.set_shader_parameter("nature_map", _natural_texture)
+	_terrain_mat.set_shader_parameter("natural_ground_enabled",false)
 	_terrain_mat.set_shader_parameter("map_size", Vector2(map_size))
 	_terrain_mat.set_shader_parameter("world_size", world_size)
 	_terrain_mat.set_shader_parameter("terrain_seed", float(terrain_seed))
@@ -144,10 +149,28 @@ func sample_coverage(sample_size: Vector2i) -> Image:
 			data[offset] = clampi(roundi(data[offset]+base[offset]*amount),0,255)
 	return Image.create_from_data(sample_size.x,sample_size.y,false,Image.FORMAT_RGBA8,data)
 
+func sample_coverage_window(grid_size: Vector2i, bounds: Rect2i) -> Image:
+	var first := Vector2i((Vector2(bounds.position)/Vector2(grid_size)*Vector2(_map_size)).floor()).max(Vector2i.ZERO)
+	var last := Vector2i((Vector2(bounds.end)/Vector2(grid_size)*Vector2(_map_size)).ceil()).min(_map_size)
+	var pixels := Rect2i(first,last-first)
+	var sample := _ground_image.get_region(pixels)
+	sample.resize(bounds.size.x,bounds.size.y,Image.INTERPOLATE_TRILINEAR)
+	if _natural_image == null:
+		return sample
+	var influence := _ground_influence.get_region(pixels)
+	influence.resize(bounds.size.x,bounds.size.y,Image.INTERPOLATE_TRILINEAR)
+	for y in bounds.size.y:
+		for x in bounds.size.x:
+			var mask := (Vector2(bounds.position+Vector2i(x,y))+Vector2(0.5,0.5))/Vector2(grid_size)*Vector2(_map_size)
+			var point := Vector2i(mask.floor()).clamp(Vector2i.ZERO,_map_size-Vector2i.ONE)
+			sample.set_pixel(x,y,sample.get_pixel(x,y)+_nature_at_pixel(point.x,point.y)*(1.0-influence.get_pixel(x,y).r))
+	return sample
+
 func set_natural_coverage(coverage: Image) -> void:
 	if _natural_image != null and _natural_image.get_size() == coverage.get_size() and _natural_image.get_data() == coverage.get_data():
 		return
 	_natural_image = coverage.duplicate() as Image
+	_terrain_mat.set_shader_parameter("natural_ground_enabled",true)
 	var display := coverage.duplicate() as Image
 	display.resize(coverage.get_width()*2,coverage.get_height()*2,Image.INTERPOLATE_CUBIC)
 	if _natural_texture.get_size() != Vector2(display.get_size()):
@@ -177,32 +200,186 @@ func _ground_weight(coverage: Color, material_index: int) -> float:
 		return maxf(0.0,1.0-coverage.r-coverage.g-coverage.b-coverage.a)
 	return maxf(0.0,coverage[material_index-1])
 
-func grow_grass(world_position: Vector3, radius: float) -> float:
-	if radius <= 0.0 or not contains_world_point(world_position):
+func end_stroke() -> void:
+	_ground_stroke_point = Vector2.INF
+	_ground_stroke_kind = -1
+
+func _ground_stroke_points(point: Vector2, kind: int, radius: float) -> PackedVector2Array:
+	var first := _ground_stroke_point if _ground_stroke_kind == kind else point
+	var steps := maxi(1,ceili(first.distance_to(point)/maxf(1.0,radius*0.35)))
+	var points := PackedVector2Array()
+	for step in range(1,steps+1):
+		points.append(first.lerp(point,float(step)/float(steps)))
+	_ground_stroke_point = point
+	_ground_stroke_kind = kind
+	return points
+
+func _notify_ground_stroke(points: PackedVector2Array, radius: float) -> void:
+	var first := points[0]
+	var last := first
+	for point in points:
+		first = first.min(point)
+		last = last.max(point)
+	first = (first-Vector2.ONE*radius).max(Vector2.ZERO)
+	last = (last+Vector2.ONE*radius).min(Vector2(_map_size))
+	ground_area_changed.emit(Rect2((first-Vector2(_map_size)*0.5)/pixels_per_unit,(last-first)/pixels_per_unit))
+	_queue_upload()
+
+func paint(kind: int, point: Vector3, radius_pixels: float, hardness: float, available_area: float) -> float:
+	if kind not in ResourceInventory.GROUND_TYPES or not point.is_finite() or not is_finite(radius_pixels) or radius_pixels <= 0.0 or not is_finite(hardness) or not is_finite(available_area) or available_area <= 0.0 or not contains_world_point(point):
+		end_stroke()
+		return 0.0
+	var points := _ground_stroke_points(_world_to_mask(point),kind,radius_pixels)
+	var used := 0.0
+	for center in points:
+		used += _paint_ground_stamp(center,kind,radius_pixels,hardness,available_area-used)
+		if used >= available_area:
+			break
+	if used > 0.0:
+		_notify_ground_stroke(points,radius_pixels)
+	return used
+
+func _paint_ground_stamp(center: Vector2, kind: int, radius: float, hardness: float, available: float) -> float:
+	if available <= 0.0:
+		return 0.0
+	var first := Vector2i((center-Vector2.ONE*radius).floor()).max(Vector2i.ZERO)
+	var last := Vector2i((center+Vector2.ONE*radius).ceil()).min(_map_size-Vector2i.ONE)
+	var pixel_area := 1.0/(pixels_per_unit*pixels_per_unit)
+	var used := 0.0
+	for y in range(first.y,last.y+1):
+		for x in range(first.x,last.x+1):
+			var distance := (Vector2(x,y)+Vector2(0.5,0.5)).distance_to(center)
+			if distance >= radius:
+				continue
+			var amount := 1.0-smoothstep(radius*clampf(hardness,0.0,0.99),radius,distance)
+			var original := _ground_image.get_pixel(x,y)
+			var influence := _ground_influence.get_pixel(x,y)
+			var before := _coverage_at_pixel(x,y)
+			var lower := 0.0
+			var upper := amount
+			var next := original
+			var next_influence := influence
+			var cost := 0.0
+			var budget_limited := false
+			for attempt in 18:
+				if attempt > 0:
+					amount = (lower+upper)*0.5
+				_ground_image.set_pixel(x,y,original.lerp(TARGET_WEIGHTS[kind],amount))
+				_ground_influence.set_pixel(x,y,Color(lerpf(influence.r,1.0,amount),0,0,1))
+				var after := _coverage_at_pixel(x,y)
+				if kind != GROUND_TYPE.GRASS:
+					var grass_excess := _ground_weight(after,GROUND_TYPE.GRASS)-_ground_weight(before,GROUND_TYPE.GRASS)
+					if grass_excess > 0.0:
+						var adjusted := _ground_image.get_pixel(x,y)
+						adjusted.r8 = mini(255,adjusted.r8+maxi(1,ceili(grass_excess*255.0)))
+						_ground_image.set_pixel(x,y,adjusted)
+						after = _coverage_at_pixel(x,y)
+				var gain := maxf(0.0,_ground_weight(after,kind)-_ground_weight(before,kind))*pixel_area
+				var valid := gain > 0.0 and used+gain <= available
+				budget_limited = budget_limited or used+gain > available
+				for other: int in ResourceInventory.GROUND_TYPES:
+					if other != kind and _ground_weight(after,other) > _ground_weight(before,other):
+						valid = false
+				if valid:
+					next = _ground_image.get_pixel(x,y)
+					next_influence = _ground_influence.get_pixel(x,y)
+					cost = gain
+					lower = amount
+					if attempt == 0:
+						break
+				else:
+					upper = amount
+					if gain <= 0.0 and attempt == 0:
+						break
+			_ground_image.set_pixel(x,y,next)
+			_ground_influence.set_pixel(x,y,next_influence)
+			used += cost
+			if budget_limited or used >= available:
+				return used
+	return used
+
+func harvest_ground(point: Vector3, radius_pixels: float) -> Dictionary[int,float]:
+	var result: Dictionary[int,float] = {ResourceInventory.KIND.GRASS:0.0,ResourceInventory.KIND.SAND:0.0,ResourceInventory.KIND.GROUND_ROCK:0.0}
+	if not point.is_finite() or not is_finite(radius_pixels) or radius_pixels <= 0.0 or not contains_world_point(point):
+		end_stroke()
+		return result
+	var points := _ground_stroke_points(_world_to_mask(point),-2,radius_pixels)
+	var pixel_area := 1.0/(pixels_per_unit*pixels_per_unit)
+	var changed := false
+	for center in points:
+		var first := Vector2i((center-Vector2.ONE*radius_pixels).floor()).max(Vector2i.ZERO)
+		var last := Vector2i((center+Vector2.ONE*radius_pixels).ceil()).min(_map_size-Vector2i.ONE)
+		for y in range(first.y,last.y+1):
+			for x in range(first.x,last.x+1):
+				if (Vector2(x,y)+Vector2(0.5,0.5)).distance_squared_to(center) >= radius_pixels*radius_pixels:
+					continue
+				var before := _coverage_at_pixel(x,y)
+				var quantity := 0.0
+				for kind: int in ResourceInventory.GROUND_TYPES:
+					var area := _ground_weight(before,kind)*pixel_area
+					result[kind] += area
+					quantity += area
+				if quantity <= 0.0:
+					continue
+				_ground_image.set_pixel(x,y,TARGET_WEIGHTS[GROUND_TYPE.SOIL])
+				_ground_influence.set_pixel(x,y,Color(1,0,0,1))
+				changed = true
+	if changed:
+		_notify_ground_stroke(points,radius_pixels)
+	return result
+
+func grow_grass(world_position: Vector3, radius: float, filter: Callable = Callable(), maximum_area: float = INF) -> float:
+	return _stamp_ground(world_position,radius,GROUND_TYPE.GRASS,[GROUND_TYPE.SOIL,GROUND_TYPE.GRASS],filter,maximum_area,0.55)
+
+func transform_ground(world_position: Vector3, radius: float, kind: int, filter: Callable = Callable(), maximum_area: float = INF) -> float:
+	return _stamp_ground(world_position,radius,kind,[],filter,maximum_area,0.5)
+
+func _stamp_ground(world_position: Vector3, radius: float, kind: int, sources: Array, filter: Callable, maximum_area: float, inner_radius: float) -> float:
+	if radius <= 0.0 or maximum_area <= 0.0 or kind not in GROUND_TYPE.values() or not contains_world_point(world_position):
 		return 0.0
 	var center := _world_to_mask(world_position)
 	var pixel_radius := radius*pixels_per_unit
 	var first := Vector2i((center-Vector2.ONE*pixel_radius).floor()).max(Vector2i.ZERO)
 	var last := Vector2i((center+Vector2.ONE*pixel_radius).ceil()).min(_map_size-Vector2i.ONE)
+	var pixel_area := 1.0/(pixels_per_unit*pixels_per_unit)
 	var area := 0.0
 	for y in range(first.y,last.y+1):
 		for x in range(first.x,last.x+1):
+			if area >= maximum_area-0.0000001:
+				break
 			var pixel := Vector2(x,y)+Vector2(0.5,0.5)
 			var distance := pixel.distance_to(center)
 			if distance >= pixel_radius:
 				continue
-			var position_2d := (pixel-Vector2(_map_size)*0.5)/pixels_per_unit
-			if _sample_height(position_2d) <= surface_water_level+0.015:
+			var local := (pixel-Vector2(_map_size)*0.5)/pixels_per_unit
+			var point := to_global(Vector3(local.x,_sample_height(local),local.y))
+			if point.y <= surface_water_level+0.015 or (filter.is_valid() and not filter.call(point)):
 				continue
 			var before := _coverage_at_pixel(x,y)
-			if _ground_weight(before,GROUND_TYPE.SOIL)+_ground_weight(before,GROUND_TYPE.GRASS) < 0.55:
+			var available := 0.0
+			for source: int in sources:
+				available += _ground_weight(before,source)
+			if not sources.is_empty() and available < 0.55:
 				continue
-			var amount := 1.0-smoothstep(pixel_radius*0.55,pixel_radius,distance)
-			_ground_image.set_pixel(x,y,_ground_image.get_pixel(x,y).lerp(TARGET_WEIGHTS[GROUND_TYPE.GRASS],amount))
+			var amount := 1.0-smoothstep(pixel_radius*inner_radius,pixel_radius,distance)
+			var original := _ground_image.get_pixel(x,y)
 			var influence := _ground_influence.get_pixel(x,y).r
-			_ground_influence.set_pixel(x,y,Color(lerpf(influence,1.0,amount),0,0,1))
-			area += maxf(0.0,_ground_weight(_coverage_at_pixel(x,y),GROUND_TYPE.GRASS)-_ground_weight(before,GROUND_TYPE.GRASS))/(pixels_per_unit*pixels_per_unit)
+			var nature := _nature_at_pixel(x,y)
+			var next_influence := lerpf(influence,1.0,amount)
+			var next := original.lerp(TARGET_WEIGHTS[kind],amount)
+			var gain := maxf(0.0,_ground_weight(next+nature*(1.0-next_influence),kind)-_ground_weight(before,kind))*pixel_area
+			if gain <= 0.0:
+				continue
+			if area+gain > maximum_area:
+				amount *= (maximum_area-area)/gain
+				next_influence = lerpf(influence,1.0,amount)
+				next = original.lerp(TARGET_WEIGHTS[kind],amount)
+			_ground_image.set_pixel(x,y,next)
+			_ground_influence.set_pixel(x,y,Color(next_influence,0,0,1))
+			area += maxf(0.0,_ground_weight(_coverage_at_pixel(x,y),kind)-_ground_weight(before,kind))*pixel_area
 	if area > 0.0:
+		var local := to_local(world_position)
+		ground_area_changed.emit(Rect2(Vector2(local.x,local.z)-Vector2.ONE*radius,Vector2.ONE*radius*2.0))
 		_queue_upload()
 	return area
 
@@ -449,6 +626,8 @@ func _upload_height_surface() -> void:
 	var image := Image.create_from_data(_height_size.x,_height_size.y,false,Image.FORMAT_RF,_heights.to_byte_array())
 	_height_texture.update(image)
 	_height_upload_pending = false
+	var area_position := Vector2(bounds.position)*_height_cell-world_size*0.5
+	height_area_changed.emit(Rect2(area_position,Vector2(bounds.size)*_height_cell))
 	height_changed.emit()
 
 func _generate_starting_heights() -> void:
@@ -510,8 +689,8 @@ func has_submerged_ground(water_level: float) -> bool:
 			return true
 	return false
 
-func rocky_impact(world_position: Vector3, radius: float, strength: float) -> float:
-	if radius <= 0.0 or strength <= 0.0 or not contains_world_point(world_position):
+func rocky_impact(world_position: Vector3, radius: float, strength: float, filter: Callable = Callable(), maximum_area: float = INF) -> float:
+	if radius <= 0.0 or strength <= 0.0 or maximum_area <= 0.0 or not contains_world_point(world_position):
 		return 0.0
 	var local := to_local(world_position)
 	var point := Vector2(local.x,local.z)
@@ -525,7 +704,17 @@ func rocky_impact(world_position: Vector3, radius: float, strength: float) -> fl
 			if distance >= 1.0:
 				continue
 			var sample_point := Vector2(x,y)*_height_cell-world_size*0.5
-			if ground_weight(to_global(Vector3(sample_point.x,0,sample_point.y)),GROUND_TYPE.SAND) > 0.05:
+			var world := to_global(Vector3(sample_point.x,_sample_height(sample_point),sample_point.y))
+			if world.y <= surface_water_level+0.015 or (filter.is_valid() and not filter.call(world)):
+				continue
+			var contained := true
+			if filter.is_valid():
+				for neighbor_y in range(-1,2):
+					for neighbor_x in range(-1,2):
+						var neighbor := sample_point+Vector2(neighbor_x,neighbor_y)*_height_cell
+						if not filter.call(to_global(Vector3(neighbor.x,_sample_height(neighbor),neighbor.y))):
+							contained = false
+			if not contained:
 				continue
 			var ripple := sin(distance*TAU-PI*0.5)*(1.0-smoothstep(0.45,1.0,distance))
 			var index := y*_height_size.x+x
@@ -536,26 +725,7 @@ func rocky_impact(world_position: Vector3, radius: float, strength: float) -> fl
 	if not _height_upload_pending:
 		_height_upload_pending = true
 		_upload_height_surface.call_deferred()
-	var mask_center := _world_to_mask(world_position)
-	var mask_radius := radius*pixels_per_unit
-	var mask_first := Vector2i((mask_center-Vector2.ONE*mask_radius).floor()).max(Vector2i.ZERO)
-	var mask_last := Vector2i((mask_center+Vector2.ONE*mask_radius).ceil()).min(_map_size-Vector2i.ONE)
-	var area := 0.0
-	for y in range(mask_first.y,mask_last.y+1):
-		for x in range(mask_first.x,mask_last.x+1):
-			var distance := (Vector2(x,y)+Vector2(0.5,0.5)).distance_to(mask_center)/mask_radius
-			if distance >= 1.0:
-				continue
-			var amount := 1.0-smoothstep(0.5,1.0,distance)
-			var coverage := _coverage_at_pixel(x,y)
-			if _ground_weight(coverage,GROUND_TYPE.SAND) > 0.05:
-				continue
-			var before := _ground_weight(coverage,GROUND_TYPE.ROCK)
-			_ground_image.set_pixel(x,y,_ground_image.get_pixel(x,y).lerp(TARGET_WEIGHTS[GROUND_TYPE.ROCK],amount))
-			_ground_influence.set_pixel(x,y,Color(1,0,0,1))
-			area += maxf(0.0,_ground_weight(_coverage_at_pixel(x,y),GROUND_TYPE.ROCK)-before)/(pixels_per_unit*pixels_per_unit)
-	_queue_upload()
-	return area
+	return transform_ground(world_position,radius,GROUND_TYPE.ROCK,filter,maximum_area)
 
 func ground_coverage_near(world_position: Vector3, radius: float, material_index: int) -> float:
 	if radius <= 0.0 or not contains_world_point(world_position):
@@ -575,31 +745,5 @@ func ground_coverage_near(world_position: Vector3, radius: float, material_index
 			samples += 1
 	return coverage/maxi(samples,1)
 
-func make_sand(world_position: Vector3, radius: float) -> float:
-	if radius <= 0.0 or not contains_world_point(world_position):
-		return 0.0
-	var center := _world_to_mask(world_position)
-	var pixel_radius := radius*pixels_per_unit
-	var first := Vector2i((center-Vector2.ONE*pixel_radius).floor()).max(Vector2i.ZERO)
-	var last := Vector2i((center+Vector2.ONE*pixel_radius).ceil()).min(_map_size-Vector2i.ONE)
-	var area := 0.0
-	for y in range(first.y,last.y+1):
-		for x in range(first.x,last.x+1):
-			var pixel := Vector2(x,y)+Vector2(0.5,0.5)
-			var distance := pixel.distance_to(center)
-			if distance >= pixel_radius:
-				continue
-			var point := (pixel-Vector2(_map_size)*0.5)/pixels_per_unit
-			if _sample_height(point) <= surface_water_level+0.015:
-				continue
-			var before := _coverage_at_pixel(x,y)
-			if _ground_weight(before,GROUND_TYPE.SOIL)+_ground_weight(before,GROUND_TYPE.GRASS)+_ground_weight(before,GROUND_TYPE.ROCK) < 0.55:
-				continue
-			var amount := 1.0-smoothstep(pixel_radius*0.45,pixel_radius,distance)
-			_ground_image.set_pixel(x,y,_ground_image.get_pixel(x,y).lerp(TARGET_WEIGHTS[GROUND_TYPE.SAND],amount))
-			var influence := _ground_influence.get_pixel(x,y).r
-			_ground_influence.set_pixel(x,y,Color(lerpf(influence,1.0,amount),0,0,1))
-			area += maxf(0.0,_ground_weight(_coverage_at_pixel(x,y),GROUND_TYPE.SAND)-_ground_weight(before,GROUND_TYPE.SAND))/(pixels_per_unit*pixels_per_unit)
-	if area > 0.0:
-		_queue_upload()
-	return area
+func make_sand(world_position: Vector3, radius: float, filter: Callable = Callable(), maximum_area: float = INF) -> float:
+	return _stamp_ground(world_position,radius,GROUND_TYPE.SAND,[GROUND_TYPE.SOIL,GROUND_TYPE.GRASS,GROUND_TYPE.ROCK],filter,maximum_area,0.45)

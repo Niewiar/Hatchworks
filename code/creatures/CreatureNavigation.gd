@@ -308,6 +308,9 @@ func spawn_position(around: Vector3, radius_needed: float = 0.5) -> Variant:
 				return ground+Vector3.UP*(radius_needed+0.1)
 	return null
 
+func has_current_paths() -> bool:
+	return ready_for_paths and not _pending and _cursor < 0
+
 func route_to_feeder(from: Vector3, species: CreatureSpecies, actor: Creature = null) -> Dictionary:
 	var nearest := INF
 	var result := {}
@@ -459,7 +462,7 @@ func _courtesy_velocity(actor: Creature, desired: Vector2, neighbors: Array) -> 
 		var clearance := _traffic_radii[actor]+_traffic_radii[other]+0.12
 		if distance < clearance and distance > 0.001:
 			separation -= relative/distance*minf((clearance-distance)*3.0,0.7)
-		if _map.breeding.are_partners(actor,other):
+		if _map.breeding.are_partners(actor,other) or (actor is TuftlingController and actor.is_playing_with(other)):
 			continue
 		var other_desired: Vector2 = _traffic_intentions.get(other,Vector2.ZERO)
 		var incoming: Vector2 = other_desired if other_desired.length_squared() > 0.01 else _traffic_velocities.get(other,Vector2.ZERO)
@@ -558,10 +561,10 @@ func bathing_route(actor: Creature) -> PackedVector3Array:
 			return path
 	return PackedVector3Array()
 
-func route_to_partner(actor: Creature, partner: Creature) -> PackedVector3Array:
+func route_to_partner(actor: Creature, partner: Creature, clearance: float = 0.22) -> PackedVector3Array:
 	var best := PackedVector3Array()
 	var nearest := INF
-	var separation := actor.body_radius()+partner.body_radius()+0.22
+	var separation := actor.body_radius()+partner.body_radius()+clearance
 	for index in 16:
 		var point := partner.global_position+Vector3(cos(index*TAU/16),0,sin(index*TAU/16))*separation
 		point = _map.terrain_controller.surface_position(point)
@@ -607,32 +610,6 @@ func _partner_segment_clear(actor: Creature, from: Vector3, to: Vector3) -> bool
 	query.transform.origin = to+Vector3.UP*(radius+0.03)
 	query.motion = Vector3.ZERO
 	return space.intersect_shape(query,1).is_empty()
-
-func drop_position(actor: Creature, around: Vector3) -> Variant:
-	var rings := ceili(_map.terrain_controller.world_size.length()/0.6)
-	for ring in range(rings):
-		var count := 1 if ring == 0 else maxi(8,ceili(TAU*ring))
-		for index in count:
-			var angle := TAU*index/count
-			var point := around+Vector3(cos(angle),0,sin(angle))*ring*0.6
-			if not _map.terrain_controller.contains_world_point(point):
-				continue
-			point = _map.terrain_controller.surface_position(point)
-			if ready_for_paths and _astar.is_point_solid(_cell(point)):
-				continue
-			if not space_available(point,actor):
-				continue
-			var shape := SphereShape3D.new()
-			shape.radius = actor.body_radius()+0.02
-			var query := PhysicsShapeQueryParameters3D.new()
-			query.shape = shape
-			query.transform.origin = point+Vector3.UP*(actor.body_radius()+0.04)
-			query.collision_mask = 14
-			query.exclude = [actor.get_rid()]
-			if _map.get_world_3d().direct_space_state.intersect_shape(query,1).is_empty():
-				point.y = maxf(around.y,point.y+actor.body_radius()+0.04)
-				return point
-	return null
 
 func avoid_blocked_route(actor: Creature, target: Vector3) -> void:
 	var places: Array = _failed_places.get(actor,[])

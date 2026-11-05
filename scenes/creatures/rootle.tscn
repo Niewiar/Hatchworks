@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/creatures/breeding_hearts.tscn" id="hearts"]
 [ext_resource type="PackedScene" path="res://scenes/creatures/rootle_female_model.tscn" id="female_appearance"]
 [sub_resource type="SphereShape3D" id="body"]
-radius = 0.195
+radius = 0.22
 [sub_resource type="StandardMaterial3D" id="pollen"]
 shading_mode = 0
 transparency = 1

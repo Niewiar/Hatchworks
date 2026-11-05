@@ -47,3 +47,12 @@ func _award(key: String, title: String, points: int, origin: Variant) -> void:
 	gained.emit(points,origin)
 	changed.emit(amount)
 	earned.emit(title,points)
+
+func award_project(title: String, points: int, origin: Variant = null) -> bool:
+	if points <= 0 or amount > 2147483647-points:
+		return false
+	amount += points
+	gained.emit(points,origin)
+	changed.emit(amount)
+	earned.emit(title,points)
+	return true

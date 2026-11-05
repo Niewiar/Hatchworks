@@ -10,3 +10,5 @@ icon = ExtResource("2")
 starting_amount = 0.0
 id = &"wood"
 display_name = "Wood"
+
+trade_value = 2.0

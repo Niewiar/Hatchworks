@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ScienceProjectDefinition" format=3]
+
+[ext_resource type="Script" path="res://code/database/ScienceProjectDefinition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"plant_fibers"
+display_name = "Plant fiber study"
+description = "Compare the strength of fibers gathered from woodland plants."
+costs = Dictionary[int, int]({5: 18})
+science_reward = 1

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ScienceProjectDefinition" format=3]
+
+[ext_resource type="Script" path="res://code/database/ScienceProjectDefinition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"herbal_extracts"
+display_name = "Herbal extracts"
+description = "Study the properties of aromatic woodland herbs."
+costs = Dictionary[int, int]({6: 5})
+science_reward = 1

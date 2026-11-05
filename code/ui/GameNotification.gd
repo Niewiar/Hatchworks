@@ -4,7 +4,8 @@ extends PanelContainer
 signal activated(notification: GameNotification)
 signal dismissed(notification: GameNotification)
 
-var target_mode: MapManager.MODE
+var target_mode := -1
+var action: Callable
 var _render_content: Callable
 
 func _ready() -> void:
@@ -17,8 +18,9 @@ func _ready() -> void:
 	%Expiry.start()
 	_sync_clock()
 
-func configure(title: String, message: String, icon: Texture2D, mode: MapManager.MODE, render_content: Callable = Callable()) -> void:
+func configure(title: String, message: String, icon: Texture2D, mode: int, render_content: Callable = Callable(), activate: Callable = Callable()) -> void:
 	_render_content = render_content
+	action = activate
 	target_mode = mode
 	%Title.text = title
 	%Message.text = message

@@ -1,0 +1,294 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/creatures/animation_viewer.gd" id="script"]
+[ext_resource type="Theme" path="res://addons/hatchworks_forge/forge_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/creatures/creature_preview.tscn" id="preview"]
+
+[sub_resource type="ButtonGroup" id="sex"]
+
+[node name="HatchworksAnimationViewer" type="Window"]
+title = "Hatchworks Animation Viewer"
+initial_position = 1
+size = Vector2i(1440, 900)
+min_size = Vector2i(1100, 720)
+visible = false
+force_native = true
+transient = true
+script = ExtResource("script")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("theme")
+theme_type_variation = &"ForgeMain"
+
+[node name="Margins" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margins"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="Panel/Margins/Content"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/Margins/Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeTitle"
+text = "Podgląd animacji"
+
+[node name="ReadOnly" type="Label" parent="Panel/Margins/Content/Header"]
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "Modele i animacje gry"
+
+[node name="Body" type="HBoxContainer" parent="Panel/Margins/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="Library" type="PanelContainer" parent="Panel/Margins/Content/Body"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margins/Content/Body/Library"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/Margins/Content/Body/Library/Content"]
+layout_mode = 2
+theme_type_variation = &"ForgeHeading"
+text = "Kreatura"
+
+[node name="Species" type="OptionButton" parent="Panel/Margins/Content/Body/Library/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SexTitle" type="Label" parent="Panel/Margins/Content/Body/Library/Content"]
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "Płeć"
+
+[node name="Sex" type="VBoxContainer" parent="Panel/Margins/Content/Body/Library/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Male" type="Button" parent="Panel/Margins/Content/Body/Library/Content/Sex"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("sex")
+text = "Samiec"
+
+[node name="Female" type="Button" parent="Panel/Margins/Content/Body/Library/Content/Sex"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("sex")
+text = "Samica"
+
+[node name="Effects" type="VBoxContainer" parent="Panel/Margins/Content/Body/Library/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Panel/Margins/Content/Body/Library/Content/Effects"]
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "Efekty"
+
+[node name="VFX" type="CheckButton" parent="Panel/Margins/Content/Body/Library/Content/Effects"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "VFX"
+
+[node name="SFX" type="CheckButton" parent="Panel/Margins/Content/Body/Library/Content/Effects"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "SFX"
+
+[node name="VolumeHeader" type="HBoxContainer" parent="Panel/Margins/Content/Body/Library/Content/Effects"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/Margins/Content/Body/Library/Content/Effects/VolumeHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeMuted"
+text = "Głośność"
+
+[node name="SoundVolumeValue" type="Label" parent="Panel/Margins/Content/Body/Library/Content/Effects/VolumeHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "70%"
+
+[node name="SoundVolume" type="HSlider" parent="Panel/Margins/Content/Body/Library/Content/Effects"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 0.7
+scrollable = false
+
+[node name="Spacer" type="Control" parent="Panel/Margins/Content/Body/Library/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PartnerControls" type="VBoxContainer" parent="Panel/Margins/Content/Body/Library/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Panel/Margins/Content/Body/Library/Content/PartnerControls"]
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "Płeć partnera"
+
+[node name="PartnerSex" type="OptionButton" parent="Panel/Margins/Content/Body/Library/Content/PartnerControls"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 1
+item_count = 2
+popup/item_0/text = "Samiec"
+popup/item_0/id = 0
+popup/item_1/text = "Samica"
+popup/item_1/id = 1
+
+[node name="Controls" type="Label" parent="Panel/Margins/Content/Body/Library/Content"]
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "LPM: obrót\nPPM: przesuwanie\nKółko: zbliżenie\nSpacja: odtwórz / pauza"
+autowrap_mode = 2
+
+[node name="Center" type="VBoxContainer" parent="Panel/Margins/Content/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+theme_override_constants/separation = 12
+
+[node name="Preview" parent="Panel/Margins/Content/Body/Center" instance=ExtResource("preview")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="FrameBar" type="HBoxContainer" parent="Panel/Margins/Content/Body/Center"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FrameTitle" type="Label" parent="Panel/Margins/Content/Body/Center/FrameBar"]
+layout_mode = 2
+text = "Klatka"
+
+[node name="Frame" type="SpinBox" parent="Panel/Margins/Content/Body/Center/FrameBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+max_value = 120.0
+step = 1.0
+rounded = true
+update_on_text_changed = true
+
+[node name="FrameCount" type="Label" parent="Panel/Margins/Content/Body/Center/FrameBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeMuted"
+text = "/ 120"
+
+[node name="FPSTitle" type="Label" parent="Panel/Margins/Content/Body/Center/FrameBar"]
+layout_mode = 2
+text = "Klatek/s"
+
+[node name="FramesPerSecond" type="SpinBox" parent="Panel/Margins/Content/Body/Center/FrameBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(86, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 120.0
+step = 1.0
+value = 30.0
+rounded = true
+update_on_text_changed = true
+
+[node name="Notes" type="PanelContainer" parent="Panel/Margins/Content/Body"]
+custom_minimum_size = Vector2(270, 0)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margins/Content/Body/Notes"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Panel/Margins/Content/Body/Notes/Content"]
+layout_mode = 2
+theme_type_variation = &"ForgeHeading"
+text = "Uwagi"
+
+[node name="ReviewNotes" type="ItemList" parent="Panel/Margins/Content/Body/Notes/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+size_flags_vertical = 3
+allow_reselect = true
+
+[node name="NoteText" type="TextEdit" parent="Panel/Margins/Content/Body/Notes/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+placeholder_text = "Wpisz uwagę…"
+wrap_mode = 1
+
+[node name="Actions" type="HBoxContainer" parent="Panel/Margins/Content/Body/Notes/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AddNote" type="Button" parent="Panel/Margins/Content/Body/Notes/Content/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Dodaj uwagę"
+
+[node name="DeleteNote" type="Button" parent="Panel/Margins/Content/Body/Notes/Content/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "Usuń"
+
+[node name="NewNote" type="Button" parent="Panel/Margins/Content/Body/Notes/Content/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Nowa"
+
+[node name="ExportReview" type="Button" parent="Panel/Margins/Content/Body/Notes/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+theme_type_variation = &"ForgePrimary"
+text = "Eksportuj na Pulpit"
+
+[node name="Status" type="Label" parent="Panel/Margins/Content/Body/Notes/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+autowrap_mode = 2
+
+[node name="SaveReport" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Zapisz raport uwag"
+initial_position = 1
+size = Vector2i(900, 600)
+file_mode = 4
+access = 2
+filters = PackedStringArray("*.md ; Markdown")
+use_native_dialog = true

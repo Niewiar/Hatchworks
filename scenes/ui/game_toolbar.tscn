@@ -62,6 +62,23 @@
 
 
 
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/grass.svg" id="paint_grass"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/sand.svg" id="paint_sand"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/rock.svg" id="paint_rock"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/gather_ground.svg" id="harvest_ground"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/trader.svg" id="trader_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/science_projects.svg" id="science_projects_icon"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/edit_buildings.png" id="edit_buildings"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/move_building.png" id="move_building"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/remove_building.png" id="remove_building"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/key_r.png" id="key_r"]
+
+[sub_resource type="ButtonGroup" id="EditingTypes"]
+
+[sub_resource type="ButtonGroup" id="PaintTypes"]
+
 [sub_resource type="ButtonGroup" id="SculptTypes"]
 
 
@@ -124,9 +141,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -310.0
+offset_left = -332.0
 offset_top = -122.0
-offset_right = 310.0
+offset_right = 332.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
@@ -134,6 +151,30 @@ offset_bottom = -18.0
 theme_override_constants/separation = 10
 
 
+
+[node name="RotationHint" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Key" type="TextureRect" parent="VBoxContainer/RotationHint"]
+layout_mode = 2
+custom_minimum_size = Vector2(30,30)
+mouse_filter = 2
+texture = ExtResource("key_r")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="VBoxContainer/RotationHint"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"CostLabel"
+theme_override_font_sizes/font_size = 16
+text = "Hold to rotate"
 
 [node name="BuildCost" type="RichTextLabel" parent="VBoxContainer"]
 visible = false
@@ -305,6 +346,207 @@ stretch_mode = 5
 
 
 
+[node name="PaintButtons" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Grass" type="Button" parent="VBoxContainer/PaintButtons"]
+toggle_mode = true
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+button_group = SubResource("PaintTypes")
+button_pressed = true
+metadata/ground_kind = 0
+metadata/tooltip_title = "Grass"
+metadata/tooltip_body = "Hold LMB and drag to paint using stored material.\nMouse wheel: brush size. RMB: close."
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Grass"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.28
+anchor_right = 0.5
+anchor_bottom = 0.28
+offset_left = -21.0
+offset_top = -21.0
+offset_right = 21.0
+offset_bottom = 21.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("paint_grass")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="VBoxContainer/PaintButtons/Grass"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -48.0
+offset_right = -4.0
+offset_bottom = -27.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Grass"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="Amount" type="Label" parent="VBoxContainer/PaintButtons/Grass"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "0.00 m²"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/PaintButtons/Grass" instance=ExtResource("new_badge")]
+
+[node name="Sand" type="Button" parent="VBoxContainer/PaintButtons"]
+toggle_mode = true
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+button_group = SubResource("PaintTypes")
+button_pressed = false
+metadata/ground_kind = 3
+metadata/tooltip_title = "Sand"
+metadata/tooltip_body = "Hold LMB and drag to paint using stored material.\nMouse wheel: brush size. RMB: close."
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Sand"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.28
+anchor_right = 0.5
+anchor_bottom = 0.28
+offset_left = -21.0
+offset_top = -21.0
+offset_right = 21.0
+offset_bottom = 21.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("paint_sand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="VBoxContainer/PaintButtons/Sand"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -48.0
+offset_right = -4.0
+offset_bottom = -27.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Sand"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="Amount" type="Label" parent="VBoxContainer/PaintButtons/Sand"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "0.00 m²"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/PaintButtons/Sand" instance=ExtResource("new_badge")]
+
+[node name="Rock" type="Button" parent="VBoxContainer/PaintButtons"]
+toggle_mode = true
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+button_group = SubResource("PaintTypes")
+button_pressed = false
+metadata/ground_kind = 4
+metadata/tooltip_title = "Rock"
+metadata/tooltip_body = "Hold LMB and drag to paint using stored material.\nMouse wheel: brush size. RMB: close."
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PaintButtons/Rock"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.28
+anchor_right = 0.5
+anchor_bottom = 0.28
+offset_left = -21.0
+offset_top = -21.0
+offset_right = 21.0
+offset_bottom = 21.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("paint_rock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="VBoxContainer/PaintButtons/Rock"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -48.0
+offset_right = -4.0
+offset_bottom = -27.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Rock"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="Amount" type="Label" parent="VBoxContainer/PaintButtons/Rock"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "0.00 m²"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/PaintButtons/Rock" instance=ExtResource("new_badge")]
+
 [node name="GatherButtons" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
 unique_name_in_owner = true
@@ -316,13 +558,61 @@ theme_override_constants/separation = 8
 
 
 
+[node name="Ground" type="Button" parent="VBoxContainer/GatherButtons"]
+toggle_mode = true
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+button_group = SubResource("GatherTypes")
+button_pressed = false
+metadata/harvest_tool = 0
+metadata/tooltip_title = "Gather ground"
+metadata/tooltip_body = "Hold LMB and drag to gather grass, sand and rock, leaving soil.\nMouse wheel: brush size. RMB: close."
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/GatherButtons/Ground"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.38
+anchor_right = 0.5
+anchor_bottom = 0.38
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("harvest_ground")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="VBoxContainer/GatherButtons/Ground"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Ground"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/GatherButtons/Ground" instance=ExtResource("new_badge")]
+
 [node name="Plants" type="Button" parent="VBoxContainer/GatherButtons"]
 toggle_mode = true
 layout_mode = 2
 button_group = SubResource("GatherTypes")
 metadata/harvest_tool = 1
 button_pressed = true
-metadata/tooltip_title = "Gather plants"
+metadata/tooltip_title = "Rake"
+metadata/tooltip_body = "Hold LMB and pull the handle to rake plants and pebbles beneath the teeth. RMB: close."
 icon_alignment = 1
 theme_type_variation = &"ToolButton"
 custom_minimum_size = Vector2(96,96)
@@ -406,6 +696,102 @@ stretch_mode = 5
 
 
 
+[node name="EditingButtons" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Move" type="Button" parent="VBoxContainer/EditingButtons"]
+toggle_mode = true
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+metadata/building_edit_tool = 0
+metadata/tooltip_title = "Move buildings"
+button_group = SubResource("EditingTypes")
+metadata/tooltip_body = "Find a new place for your building."
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/EditingButtons/Move"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.38
+anchor_right = 0.5
+anchor_bottom = 0.38
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+mouse_filter = 2
+texture = ExtResource("move_building")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="VBoxContainer/EditingButtons/Move"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Move"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/EditingButtons/Move" instance=ExtResource("new_badge")]
+
+[node name="Remove" type="Button" parent="VBoxContainer/EditingButtons"]
+toggle_mode = true
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(96,96)
+metadata/building_edit_tool = 1
+metadata/tooltip_title = "Remove structures"
+button_group = SubResource("EditingTypes")
+metadata/tooltip_body = "Reclaim the materials. Stored contents are lost."
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/EditingButtons/Remove"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.38
+anchor_right = 0.5
+anchor_bottom = 0.38
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+mouse_filter = 2
+texture = ExtResource("remove_building")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="VBoxContainer/EditingButtons/Remove"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Remove"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/EditingButtons/Remove" instance=ExtResource("new_badge")]
+
 [node name="BaseButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=1165230477]
 unique_name_in_owner = true
 layout_mode = 2
@@ -448,6 +834,50 @@ stretch_mode = 5
 
 
 
+[node name="BuildingEditingButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104,104)
+metadata/mode = 12
+metadata/tooltip_title = "Manage structures"
+unique_name_in_owner = true
+metadata/tooltip_body = "Move buildings or clear space for something new."
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/BuildingEditingButton"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.38
+anchor_right = 0.5
+anchor_bottom = 0.38
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+mouse_filter = 2
+texture = ExtResource("edit_buildings")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/BuildingEditingButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Manage"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/BuildingEditingButton" instance=ExtResource("new_badge")]
+
 [node name="SculptButton" type="Button" parent="VBoxContainer/BaseButtons"]
 toggle_mode = true
 metadata/mode = 4
@@ -479,6 +909,51 @@ expand_mode = 1
 stretch_mode = 5
 
 
+
+[node name="PaintButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104,104)
+metadata/mode = 1
+metadata/tooltip_title = "Paint terrain"
+metadata/tooltip_body = "Hold LMB and drag to paint using stored material.\nMouse wheel: brush size. RMB: close."
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/PaintButton"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.38
+anchor_right = 0.5
+anchor_bottom = 0.38
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("paint_grass")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/PaintButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Paint"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/PaintButton" instance=ExtResource("new_badge")]
 
 [node name="GatherButton" type="Button" parent="VBoxContainer/BaseButtons"]
 toggle_mode = true
@@ -578,6 +1053,74 @@ mouse_filter = 2
 texture = ExtResource("inventory_icon")
 expand_mode = 1
 stretch_mode = 5
+
+
+
+[node name="TraderButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
+unique_name_in_owner = true
+metadata/mode = 10
+metadata/tooltip_title = "Trader"
+layout_mode = 2
+icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104, 104)
+
+
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/TraderButton"]
+texture_filter = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.38
+anchor_right = 0.5
+anchor_bottom = 0.38
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("trader_icon")
+expand_mode = 1
+stretch_mode = 5
+
+
+
+
+[node name="ScienceProjectsButton" type="Button" parent="VBoxContainer/BaseButtons"]
+toggle_mode = true
+unique_name_in_owner = true
+metadata/mode = 11
+metadata/tooltip_title = "Science Projects"
+layout_mode = 2
+icon_alignment = 1
+theme_type_variation = &"ToolButton"
+custom_minimum_size = Vector2(104, 104)
+
+
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/BaseButtons/ScienceProjectsButton"]
+texture_filter = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.38
+anchor_right = 0.5
+anchor_bottom = 0.38
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("science_projects_icon")
+expand_mode = 1
+stretch_mode = 5
+
 
 
 
@@ -718,7 +1261,7 @@ grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 14
-text = "Plants"
+text = "Rake"
 horizontal_alignment = 1
 text_overrun_behavior = 3
 
@@ -852,5 +1395,43 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 14
 text = "Backpack"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/TraderButton" instance=ExtResource("new_badge")]
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/TraderButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Trader"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="NewContent" parent="VBoxContainer/BaseButtons/ScienceProjectsButton" instance=ExtResource("new_badge")]
+
+[node name="Caption" type="Label" parent="VBoxContainer/BaseButtons/ScienceProjectsButton"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -28.0
+offset_right = -4.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Projects"
 horizontal_alignment = 1
 text_overrun_behavior = 3

@@ -1,5 +1,5 @@
 class_name IncubatorController
-extends MeshInstance3D
+extends Node3D
 
 signal changed
 signal hatch_requested(incubator: IncubatorController)
@@ -14,18 +14,19 @@ var _sex_assigned := false
 var _map: Node3D
 var _phase := 0.0
 var _egg_visual: Node3D
-var _glow: StandardMaterial3D
+var _warm_materials: Array[ShaderMaterial] = []
 var _socket_rest := Vector3.ZERO
+
+func _ready() -> void:
+	_warm_materials = BuildingAppearance.configure(self)
 
 func initialize(map: Node3D) -> void:
 	_map = map
 	_socket_rest = $EggSocket.position
 	global_position = map.terrain_controller.surface_position(global_position)
-	_glow = $Glow.material_override.duplicate() as StandardMaterial3D
-	$Glow.material_override = _glow
 
 func select_egg(egg: EggDefinition) -> void:
-	if state != STATE.EMPTY or (egg != null and _map.items.amount(egg.id) < 1):
+	if _map.building_controller.relocating_building() == self or state != STATE.EMPTY or (egg != null and _map.items.amount(egg.id) < 1):
 		return
 	current_egg = egg
 	if is_instance_valid(_egg_visual):
@@ -38,7 +39,7 @@ func select_egg(egg: EggDefinition) -> void:
 	changed.emit()
 
 func start_incubation() -> bool:
-	if state != STATE.EMPTY or current_egg == null or not _map.items.spend(current_egg.id):
+	if _map.building_controller.relocating_building() == self or state != STATE.EMPTY or current_egg == null or not _map.items.spend(current_egg.id):
 		return false
 	_sex_assigned = false
 	remaining = current_egg.incubation_seconds
@@ -49,18 +50,33 @@ func start_incubation() -> bool:
 	return true
 
 func request_hatch() -> bool:
-	if state != STATE.READY:
+	if _map.building_controller.relocating_building() == self or state != STATE.READY:
 		return false
 	if not _sex_assigned:
-		pending_sex = Creature.SEX.MALE if randi()%2 == 0 else Creature.SEX.FEMALE
+		pending_sex = _choose_sex()
 		_sex_assigned = true
 	state = STATE.PRESENTING
 	changed.emit()
 	hatch_requested.emit(self)
 	return true
 
+func _choose_sex() -> Creature.SEX:
+	var male_weight := 1
+	var female_weight := 1
+	if _map != null and current_egg != null:
+		for node in get_tree().get_nodes_in_group("creatures"):
+			if not node is Creature or node.is_queued_for_deletion() or node.species_id != current_egg.creature_id:
+				continue
+			if node.terrain_controller != _map.terrain_controller or node.get_viewport() != _map.get_viewport():
+				continue
+			if node.sex == Creature.SEX.MALE:
+				female_weight += 1
+			elif node.sex == Creature.SEX.FEMALE:
+				male_weight += 1
+	return Creature.SEX.MALE if randi_range(1,male_weight+female_weight) <= male_weight else Creature.SEX.FEMALE
+
 func accept_hatch(origin: Variant = null) -> Creature:
-	if state != STATE.PRESENTING:
+	if _map.building_controller.relocating_building() == self or state != STATE.PRESENTING:
 		return null
 	var data: CreatureSpecies = _map.database.creature(current_egg.creature_id)
 	if data == null or data.scene == null:
@@ -102,10 +118,13 @@ func _process(delta: float) -> void:
 			changed.emit()
 	_map.noise.set_source(self,0.3,4.0,state == STATE.INCUBATING)
 	SoundEffects.set_machine_loop(self,&"incubator_loop",state == STATE.INCUBATING)
-	_glow.emission_energy_multiplier = 1.5+sin(_phase*3.0)*0.7 if state == STATE.READY else 0.45+sin(_phase*2.0)*0.2
+	var warmth := 0.38+sin(_phase*3.0)*0.14 if state == STATE.READY else 0.12+sin(_phase*2.0)*0.06 if state == STATE.INCUBATING else 0.03
+	for material in _warm_materials:
+		material.set_shader_parameter("warmth", warmth)
+	$WarmLight.light_energy = warmth*1.2
 
 func inspection_bounds() -> AABB:
-	return AABB(Vector3(-1.3857,-0.0593,-1.1273),Vector3(2.6809,2.6401,2.2600))
+	return AABB(Vector3(-1.26,0,-1.34),Vector3(2.50,2.08,2.68))
 
 func cancel_hatch() -> bool:
 	if state != STATE.PRESENTING:

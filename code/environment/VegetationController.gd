@@ -8,7 +8,6 @@ signal sapling_found(id: StringName, world_position: Vector3)
 const TREE_SCENE = preload("res://scenes/harvesting/deposit.tscn")
 
 var species: Array[FloraSpecies] = []
-@export var foliage_material: ShaderMaterial
 @export var chunk_size := 6.0
 @export var spawn_clearing_radius := 3.2
 
@@ -20,7 +19,6 @@ var _batches: Dictionary[String, MultiMeshInstance3D] = {}
 var _batch_plants: Dictionary[String, Array] = {}
 var _buckets: Dictionary[Vector2i, Array] = {}
 var _spacing_by_kind: Dictionary[int, float] = {}
-var _material: ShaderMaterial
 var _detail_bias := 1.0
 var _growing: Array[FloraPlant] = []
 var _elapsed := 0.0
@@ -31,12 +29,6 @@ func initialize(terrain: TerrainController, environment: EnvironmentController) 
 	_environment = environment
 	set_process(false)
 	global_transform = terrain.global_transform
-	_material = foliage_material.duplicate(true) as ShaderMaterial
-	var current: ShaderMaterial = _material
-	while current != null:
-		terrain.bind_height_material(current)
-		current.set_shader_parameter("follow_ground",false)
-		current = current.next_pass as ShaderMaterial
 	for data in species:
 		_spacing_by_kind[data.kind] = maxf(_spacing_by_kind.get(data.kind,0.0),data.spacing*data.maximum_scale)
 	if environment.enabled:
@@ -108,6 +100,7 @@ func _can_grow_at(data: FloraSpecies, point: Vector2) -> bool:
 	return conditions.z < data.maximum_slope and conditions.w > data.water_depth_range.x and conditions.w < data.water_depth_range.y and (data.ground_material < 0 or _terrain.ground_weight(world,data.ground_material) >= 0.55)
 
 func _create_plant(data: FloraSpecies, point: Vector2, variant: int, scale_value: float, yaw: float, growth: float) -> FloraPlant:
+	variant = clampi(variant,0,data.variants.size()-1)
 	var plant := FloraPlant.new()
 	plant.species = data
 	plant.point = point
@@ -206,7 +199,6 @@ func _create_batch(key: String) -> void:
 	batch.multimesh = MultiMesh.new()
 	batch.multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	batch.multimesh.mesh = first.species.variants[first.variant]
-	batch.material_override = _material
 	batch.lod_bias = _detail_bias
 	batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var chunk := Vector2i(((first.point+_terrain.world_size*0.5)/chunk_size).floor())
@@ -239,7 +231,7 @@ func _upload_batch(key: String) -> void:
 		count += 1
 	batch.visible_instance_count = count
 	if count > 0:
-		batch.custom_aabb = visible_bounds.grow(0.05)
+		batch.custom_aabb = visible_bounds.grow(0.12)
 
 func _on_height_changed() -> void:
 	for key in _batches:
@@ -257,10 +249,11 @@ func _update_tree_view(plant: FloraPlant) -> void:
 		plant.tree_view = TREE_SCENE.instantiate() as HarvestableDeposit
 		add_child(plant.tree_view)
 		plant.tree_view.lod_bias = _detail_bias
+		plant.tree_view.extra_cull_margin = 0.12
 		plant.tree_view.hits_required = plant.species.hits_required
 		plant.tree_view.resource_kind = plant.species.harvest_resource
 		plant.tree_view.yield_amount = maxi(1,roundi(plant.species.harvest_amount*plant.scale))
-		plant.tree_view.configure(plant.species.variants[plant.variant],_material,plant.yaw,plant.species.trunk_radius,plant.species.trunk_height)
+		plant.tree_view.configure(plant.species.variants[plant.variant],null,plant.yaw,plant.species.trunk_radius,plant.species.trunk_height)
 		plant.tree_view.depleted.connect(_on_tree_depleted.bind(plant))
 	plant.tree_view.set_growth(plant.growth,plant.scale)
 	plant.tree_view.global_position = _terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y)))
@@ -323,22 +316,36 @@ func occupied(point: Vector2, radius: float) -> bool:
 	return false
 
 func gather_plants(world_position: Vector3, radius: float) -> Dictionary[int, int]:
-	var result: Dictionary[int, int] = {}
-	var local := _terrain.to_local(world_position)
-	var point := Vector2(local.x,local.z)
-	var first := Vector2i(((point-Vector2.ONE*radius)/2.0).floor())
-	var last := Vector2i(((point+Vector2.ONE*radius)/2.0).floor())
+	var result: Dictionary[int,int] = {}
+	for item: Dictionary in gather_segment(world_position,world_position,radius):
+		var kind: int = item.kind
+		result[kind] = result.get(kind,0)+int(item.quantity)
+	return result
+
+func gather_segment(from: Vector3, to: Vector3, radius: float) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if radius <= 0.0:
+		return result
+	var from_local := _terrain.to_local(from)
+	var to_local := _terrain.to_local(to)
+	var first_point := Vector2(from_local.x,from_local.z)
+	var last_point := Vector2(to_local.x,to_local.z)
+	var first := Vector2i(((first_point.min(last_point)-Vector2.ONE*radius)/2.0).floor())
+	var last := Vector2i(((first_point.max(last_point)+Vector2.ONE*radius)/2.0).floor())
 	var obstacles_removed := false
 	for y in range(first.y,last.y+1):
 		for x in range(first.x,last.x+1):
 			for plant: FloraPlant in _buckets.get(Vector2i(x,y),[]).duplicate():
-				if plant.removed or plant.species.kind == FloraSpecies.KIND.TREE or plant.growth < 0.6 or point.distance_squared_to(plant.point) > radius*radius:
+				if plant.removed or plant.species.kind == FloraSpecies.KIND.TREE or plant.growth < 0.6:
 					continue
-				var kind := plant.species.harvest_resource
-				result[kind] = result.get(kind,0)+plant.species.harvest_amount
+				var nearest := Geometry2D.get_closest_point_to_segment(plant.point,first_point,last_point)
+				if nearest.distance_squared_to(plant.point) > radius*radius:
+					continue
+				var origin := _terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y)))
+				result.append({"kind":plant.species.harvest_resource,"quantity":plant.species.harvest_amount,"origin":origin})
 				obstacles_removed = obstacles_removed or plant.species.kind == FloraSpecies.KIND.SHRUB
 				_remove_plant(plant)
-				_harvest_sapling(plant,_terrain.surface_position(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y))))
+				_harvest_sapling(plant,origin)
 	_flush_dirty_batches()
 	if obstacles_removed:
 		obstacles_changed.emit()
@@ -369,7 +376,7 @@ func grass_species() -> FloraSpecies:
 
 func can_seed_grass(world_position: Vector3) -> bool:
 	var data := grass_species()
-	if data == null or data.variants.is_empty() or _material == null or not _terrain.contains_world_point(world_position):
+	if data == null or data.variants.is_empty() or _terrain == null or not _terrain.contains_world_point(world_position):
 		return false
 	var local := _terrain.to_local(world_position)
 	var point := Vector2(local.x,local.z)
@@ -377,9 +384,9 @@ func can_seed_grass(world_position: Vector3) -> bool:
 	var grass := _terrain.ground_weight(world_position,TerrainController.GROUND_TYPE.GRASS)
 	return soil+grass >= 0.55 and _can_grow_at(data,point) and _has_space(point,data,1.0)
 
-func seed_grass(world_position: Vector3, count: int, radius: float = 1.0) -> int:
+func seed_grass(world_position: Vector3, count: int, radius: float = 1.0, filter: Callable = Callable(), paint_ground: bool = true) -> int:
 	var data := grass_species()
-	if data == null or data.variants.is_empty() or _material == null:
+	if data == null or data.variants.is_empty() or _terrain == null:
 		return 0
 	var local := _terrain.to_local(world_position)
 	var center := Vector2(local.x,local.z)
@@ -389,13 +396,14 @@ func seed_grass(world_position: Vector3, count: int, radius: float = 1.0) -> int
 			break
 		var point := center+Vector2.from_angle(randf()*TAU)*sqrt(randf())*radius*0.72
 		var world := _terrain.to_global(Vector3(point.x,0,point.y))
-		if not can_seed_grass(world):
+		if (filter.is_valid() and not filter.call(world)) or not can_seed_grass(world):
 			continue
 		_create_plant(data,point,randi_range(0,data.variants.size()-1),randf_range(data.minimum_scale,data.maximum_scale),randf()*TAU,0.05)
 		planted += 1
 	if planted > 0:
 		plant_sown.emit(data,world_position)
-		_terrain.grow_grass(world_position,radius)
+		if paint_ground:
+			_terrain.grow_grass(world_position,radius,filter)
 		set_process(true)
 	return planted
 
@@ -413,14 +421,14 @@ func can_plant(data: FloraSpecies, world_position: Vector3) -> bool:
 	var point := Vector2(local.x,local.z)
 	return _can_grow_at(data,point) and _has_space(point,data,1.0)
 
-func plant_specimen(data: FloraSpecies, world_position: Vector3) -> bool:
-	if not can_plant(data,world_position):
+func plant_specimen(data: FloraSpecies, world_position: Vector3, filter: Callable = Callable()) -> bool:
+	if (filter.is_valid() and not filter.call(world_position)) or not can_plant(data,world_position):
 		return false
 	var local := _terrain.to_local(world_position)
 	var point := Vector2(local.x,local.z)
 	_create_plant(data,point,randi_range(0,data.variants.size()-1),1.0,randf()*TAU,0.25)
 	if data.kind == FloraSpecies.KIND.GRASS:
-		_terrain.grow_grass(world_position,0.65)
+		_terrain.grow_grass(world_position,0.65,filter)
 	set_process(true)
 	plant_sown.emit(data,world_position)
 	obstacles_changed.emit()
@@ -435,12 +443,12 @@ func count_near(world_position: Vector3, radius: float, ids: Array[StringName]) 
 			count += 1
 	return count
 
-func flatten_ground_plants(world_position: Vector3, radius: float) -> int:
+func flatten_ground_plants(world_position: Vector3, radius: float, filter: Callable = Callable()) -> int:
 	var local := _terrain.to_local(world_position)
 	var center := Vector2(local.x,local.z)
 	var removed := 0
 	for plant in _plants.duplicate():
-		if plant.removed or plant.species.kind in [FloraSpecies.KIND.TREE,FloraSpecies.KIND.SHRUB] or plant.point.distance_to(center) > radius:
+		if plant.removed or plant.species.kind in [FloraSpecies.KIND.TREE,FloraSpecies.KIND.SHRUB] or plant.point.distance_to(center) > radius or (filter.is_valid() and not filter.call(_terrain.to_global(Vector3(plant.point.x,0,plant.point.y)))):
 			continue
 		_remove_plant(plant)
 		removed += 1

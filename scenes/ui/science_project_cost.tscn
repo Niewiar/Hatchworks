@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[node name="ProjectCost" type="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 2
+custom_minimum_size = Vector2(38,38)
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Name" type="Label" parent="."]
+layout_mode = 2
+
+[node name="Amount" type="Label" parent="."]
+layout_mode = 2

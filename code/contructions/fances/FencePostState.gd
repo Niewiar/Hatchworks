@@ -5,6 +5,7 @@ var id := 0
 var position := Vector2.ZERO
 var data: FanceData
 var health := 0.0
+var paid_costs: Dictionary[int, int] = {}
 var span_ids: Array[int] = []
 
 func integrity() -> float:

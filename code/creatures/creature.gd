@@ -15,6 +15,7 @@ var companions := 0
 var noise_stress := 0.0
 var crowding_stress := 0.0
 var species_stress := 0.0
+var terrain_stress := 0.0
 var _voice_wait := 12.0
 var _wellbeing_elapsed := 1.0
 var _happiness_target := 75.0
@@ -88,8 +89,9 @@ func _physics_process(delta: float) -> void:
 		return
 	_update_rotation(_rest_rotation, delta)
 	velocity += get_gravity() * delta
-	var impact_speed := maxf(0.0, -velocity.y)
-	_apply_avoidance(delta)
+	if _state == STATE.GROUNDED:
+		_apply_avoidance(delta)
+	var impact_speed := maxf(0.0,-velocity.y)
 	move_and_slide()
 	if is_on_floor():
 		_airborne_elapsed = 0.0
@@ -141,14 +143,9 @@ func set_hold_target(target: Vector3) -> void:
 func get_hold_height() -> float:
 	return _ground_offset + hold_height
 
-func release() -> bool:
+func release() -> void:
 	if _state != STATE.HELD:
-		return true
-	if _navigation != null:
-		var point = _navigation.drop_position(self,global_position)
-		if point == null:
-			return false
-		global_position = point
+		return
 	collision_mask = _normal_collision_mask
 	collision_layer = _normal_collision_layer
 	velocity = Vector3.ZERO
@@ -157,7 +154,6 @@ func release() -> bool:
 		_navigation.get_parent().wellbeing.invalidate()
 	_airborne_elapsed = 0.0
 	_play_animation(&"Fall")
-	return true
 
 func _update_held(delta: float) -> void:
 	var previous := global_position
@@ -189,7 +185,7 @@ func _play_animation(name: StringName, blend: float = 0.12) -> bool:
 		animation_player.speed_scale = 1.0
 		animation_player.play(name, blend)
 		if name == &"behaviour/Call":
-			SoundEffects.play_at(StringName(str(species_id)+"_voice"),global_position,self,0.9 if sex == SEX.MALE else 1.1)
+			SoundEffects.play_at(&"tuftling_call" if species_id == &"tuftling" else StringName(str(species_id)+"_voice"),global_position,self,0.9 if sex == SEX.MALE else 1.1)
 	return true
 
 func _on_animation_finished(name: StringName) -> void:
@@ -244,10 +240,13 @@ func _update_habitat_needs() -> void:
 	crowding_stress = (1.0-space_score)*_species.crowding_sensitivity
 	noise_stress = map.noise.level_at(global_position,self)*_species.noise_sensitivity
 	species_stress = sample.aversion
+	var ground := map.landscape.terrain_status(self)
+	if ground.ready:
+		terrain_stress = 1.0-ground.fulfillment
 	_happiness_target = happiness_factors().target
 
 func happiness_factors() -> Dictionary:
-	var factors := {"base":35.0,"satiety":satiety*0.45,"company":20.0 if companions > 0 else 0.0,"crowding":-crowding_stress*35.0,"noise":-noise_stress*25.0,"neighbours":-species_stress*25.0}
+	var factors := {"base":35.0,"satiety":satiety*0.45,"company":20.0 if companions > 0 else 0.0,"crowding":-crowding_stress*35.0,"noise":-noise_stress*25.0,"neighbours":-species_stress*25.0,"terrain":-terrain_stress*_species.terrain_happiness_penalty}
 	var total := 0.0
 	for value: float in factors.values():
 		total += value
@@ -258,9 +257,6 @@ func mood() -> MOOD:
 	if happiness < _species.unhappy_threshold:
 		return MOOD.UNHAPPY
 	return MOOD.NEUTRAL if happiness < _species.happy_threshold else MOOD.HAPPY
-
-func work_efficiency() -> float:
-	return lerpf(0.7,1.1,clampf(happiness/100.0,0.0,1.0))
 
 func prepare_appearance() -> void:
 	var appearance := get_node_or_null("Model") as Node3D
@@ -292,8 +288,11 @@ func prepare_appearance() -> void:
 func restore_satiety(amount: float) -> void:
 	satiety = clampf(satiety+maxf(0.0,amount),0.0,100.0)
 
-func available_for_breeding() -> bool:
+func is_grounded() -> bool:
 	return _state == STATE.GROUNDED and not is_queued_for_deletion()
+
+func available_for_breeding() -> bool:
+	return is_grounded()
 
 func interrupt_activity() -> void:
 	if _navigation != null:

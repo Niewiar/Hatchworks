@@ -2,8 +2,8 @@
 [ext_resource type="PackedScene" path="res://assets/creatures/bloomlet/bloomlet_female.glb" id="model"]
 [ext_resource type="Script" path="res://code/creatures/CreatureCelAppearance.gd" id="appearance"]
 [node name="Model" instance=ExtResource("model")]
-position = Vector3(0, -0.1462500000, 0)
+position = Vector3(0, -0.2000000, 0)
 script = ExtResource("appearance")
-walk_distance = 0.143
+walk_distance = 0.0812959666
 walk_speed = 0.3
-work_contact_offset = Vector3(0, 0, 0.195159733)
+work_contact_offset = Vector3(0, 0, 0.3029948496)

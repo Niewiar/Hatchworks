@@ -1,8 +1,26 @@
 # Hatchworks
 
+## Hatchworks Forge
+
+W edytorze wybierz **Project → Tools → Hatchworks Forge**, a następnie zakładkę **Creatures**.
+Natywne okno zawiera listę gatunków, oba modele płci, podgląd rzeczywistych materiałów
+i animacji oraz widoki Podgląd, Dane, Zachowanie i Historia. Kamera obsługuje obrót,
+przesuwanie, zoom i gotowe ujęcia; odtwarzacz oferuje pauzę, przewijanie, klatki, tempo,
+pętlę, siatkę i kości. Ustawienia odtwarzacza dotyczą wyłącznie podglądu.
+
+Zapis aktualizuje istniejące zasoby kreatur po podsumowaniu zmian i walidacji bazy.
+ID oraz odwołania do plików pozostają tylko do odczytu. Forge sprawdza zmiany na dysku
+i niezapisane edycje Inspektora, zachowuje UID-y oraz kopie danych. Zamknięcie okna
+zachowuje szkic. Szkice, historia i transakcje trafiają do
+`../Hatchworks-workbench/forge/<tożsamość-projektu>/creatures/`. Uruchom rozgrywkę
+ponownie, aby wczytać nowe dane. Powiązane jaja i badania można otworzyć w Inspektorze.
+
+Zakładka nie zawiera komentarzy dla AI ani serwera WWW. Poprzedni panel WWW usunięto,
+a jego istniejące uwagi zachowano w archiwum danych migracji w workbenchu.
+
 ## First creature
 
-A new game begins on flat, bare soil with one placed Incubator, no egg and zero of every resource. The Incubator unlocks Life immediately. Further Incubators remain available in Build. All structures currently have zero material costs as a temporary balance setting. Invalid sites spend nothing.
+A new game begins on flat, bare soil with Soil and Life discovered, no buildings and zero resources. The first placement of each discovered building type is free once per save. Later prices use the current number of intact buildings of that type, never dropping below the base price after the free placement is used. Invalid sites spend nothing.
 
 Soil and Life are the initial discoveries. A new world contains no buildings and starts with zero materials. Sculpt a pond with Lower to reveal and discover Water. Open Discoveries using the book button. Drag cards onto the board and onto each other, hold LMB to carry a card with the cursor and release it on the board or another card. Discovered concepts are reusable and combining them consumes no resources. Only the first discovery of a result grants its item reward. The Discover tab contains the combination board. The Discoveries tab lists known concepts and combinations. Discovery cards have no tooltips. New concepts have an exclamation mark until a card for that concept is hovered; seen state is shared between the catalog, board and discovery archive.
 
@@ -12,7 +30,7 @@ Click a built Incubator with tools turned off. Its selector lists only owned egg
 
 A Tuftling has its own sex and starts with full satiety. Satiety decreases continuously; the default full-to-empty duration is 240 seconds. Below 35%, it seeks a stocked Feeder when one is reachable. At zero, it stops production and may only seek and eat food. It finds reachable water, bathes, walks to free dry soil and shakes to create grassy ground and grass tufts. Gathering mature tufts yields Plant Fiber and preserves the grassy ground. Click a Feeder to transfer available Plant Fiber into its storage. Hungry Tuftlings walk to a reachable feeding spot, eat one meal and restore 60 percentage points of satiety. Fences block these routes. Food is consumed only after eating completes; empty or submerged Feeders cannot feed creatures. A brass SupplyInput marker marks the future transport connection.
 
-World Balance's natural start option is disabled. Optional natural generation creates terrain, plants and deposits once. Sculpting does not spawn flora. Newly sown plants mature and can be harvested; harvested plants do not regrow by themselves. Players can sculpt, gather plants, chop trees and mine rocks. There is no moss, moisture simulation, ground painting or ground harvesting.
+World Balance's natural start option is disabled. Optional natural generation creates terrain, plants and deposits once. Sculpting does not spawn flora. Newly sown plants mature and can be harvested; harvested plants do not regrow by themselves. Players can sculpt, paint and collect ground, gather plants, chop trees and mine rocks. There is no moss or moisture simulation.
 
 The stone incubator has a brass heat inlet on its side. The scene's HeatInput marker gives the future heating pipe connection point and its outward orientation. Its base is a continuous low stone disc with a rounded edge. The three stone supports have rounded caps and smooth shading.
 
@@ -21,6 +39,8 @@ Incubator surfaces use a material atlas developed from the selected stone incuba
 Egg models use an EggShell root with separately shaped rigid shell fragments and a crack overlay. The default egg has 27 curved pieces with shell thickness, inner surfaces and convex collision shapes. Cracks appear before the fragments detach, tumble and land on the presentation floor. The reveal keeps its black backdrop and clears the fragments after acceptance.
 
 ## Controls and inspection
+
+- Select Hoe in Gather, then hold RMB and drag its 3D blade along the ground to collect low plants and small loose stones. The whole swept segment is collected; passing over UI breaks contact so it cannot sweep through that gap. Releasing RMB stops the hoe; Esc or the base button leaves the mode. Axe and pickaxe still use LMB and remain required for trees and large deposits.
 
 - Build opens a shared row for discovered structures and the wooden fence. Undiscovered choices are hidden completely. LMB places a valid structure preview; hold LMB and release to draw a fence. Fences can begin at an existing post. There is no separate Fence mode button or stone fence.
 - With tools turned off, a short LMB click on a creature opens its information panel and focuses the camera. Hold LMB for 0.22 seconds or drag to pick it up. Release to drop it without opening the panel.
@@ -32,11 +52,11 @@ Egg models use an EggShell root with separately shaped rigid shell fragments and
 
 ## Runtime data
 
-Edit native Resource files through the Godot Inspector. Stable IDs and references are shared by gameplay and saved worlds.
+Open Project > Tools > Hatchworks Forge for the independent Forge window. Its first section edits discoveries, recipe connections and tile usage, with drafts, Undo/Redo and complete conflict reporting before save. Other native Resource files remain editable through the Godot Inspector. Stable IDs and references are shared by gameplay and saved worlds. See addons/hatchworks_forge/README.md for save and recovery behavior.
 
 The runtime catalog is `resources/database/game_database.tres`. Flora and fence definitions keep their existing locations. New definitions are created below `resources/database/`.
 
-Built-in resource IDs remain stable: 5 Plant Fiber, 6 herbs, 9 wood and 10 stone. IDs 0, 1, 2, 3, 4, 7 and 8 are reserved. Resource quantities are measured in items. Terrain types are separate from inventory resources.
+Built-in resource IDs remain stable: 0 grass ground, 3 sand ground, 4 rocky ground, 5 Plant Fiber, 6 herbs, 9 wood and 10 stone. IDs 1, 2, 7 and 8 remain reserved. Ground resources are measured in square meters; the other resources are measured in items. Soil is the empty ground left by collection and is not a paintable inventory resource.
 
 Flora habitat uses slope (rise/run), water depth (positive below water, negative above it) and an optional ground material. Growth rate affects only newly sown plants. Tree and deposit harvesting removes them permanently. Fence estimates assume 32 terrain pixels per meter.
 
@@ -88,9 +108,9 @@ The Discoveries and Backpack windows share the same scene-authored outer dimensi
 
 Satiety and Contentment appear below the creature's name and sex in the inspection panel, with short custom tooltips. Low satiety lowers contentment. Hungry creatures prioritize a reachable feeder that has their food, including at zero satiety. When food, a free feeding spot or a route is unavailable, they continue their normal behaviour and retry feeding periodically. Empty or removed feeders release the creature back to its ordinary activities. Zero satiety is not a hard activity lock; current mood permissions still apply. Creatures begin at 75 contentment. Energy is no longer a creature statistic, work cost or breeding requirement.
 
-All species take the configured leisure duration (8-16 seconds by default) on dry ground. Happy creatures complete 2-3 successful work cycles before leisure; Neutral creatures complete one. Unhappy creatures stop work and can eat or rest; Pebblit can also attack. Breaks depend on completed work cycles rather than an energy meter. A swimmer leaves the water before resting. Hunger can interrupt ordinary rest, and navigation changes preserve a rest already in progress.
+All species may work at every happiness level. Successful work runs in fixed series: one cycle below the unhappy threshold (default 40%), two in Neutral (40–69%) and three in Happy (70%+), followed by the existing leisure duration. Happiness does not change animation or production speed. Food, breeding, leisure and Pebblit attacks retain their priorities. Failed attempts do not count as completed work.
 
-Contentment follows a target gradually, with a default 30-second response setting. The baseline combines satiety (45%), the dry-space allowance (35%) and nearby company of the same species (20%), then applies species sensitivities to crowding, noise and other species as described below. The preferred area is 12 square meters per creature, shared among creatures in the same fence-defined region and excluding water. A companion counts within 6 meters in that region. Held creatures do not count as occupants. Space, preferred area and company counts are shown in the panel. Contentment changes bathing and shaking speed from 70% to 110%; its initial 75% corresponds to the original work pace.
+Contentment follows a target gradually, with a default 30-second response setting. Its target combines 35 base comfort, satiety up to 45 points and nearby same-species company 20, minus crowding, noise, unwanted species and unmet preferred ground. Available space is dry region area divided by its occupants; the required allowance is species-specific. A companion counts within 6 meters in the same region. Held creatures do not count as occupants. Happiness changes work-series length, not animation or production speed.
 
 Local movement uses shared position and movement snapshots, gentle separation and courtesy steering. Idle or resting creatures step out of an approaching creature's way. Head-on traffic chooses a consistent passing side; a lower-priority creature can back out of a narrow passage. Physics collisions and static obstacle sweeps remain active. No creature is teleported through another creature, fence or building.
 
@@ -109,7 +129,7 @@ First eggs are discovered through Oak + Life -> Rootle Egg, Boulder + Life -> Pe
 
 Rootle plants oak and shrubs on free grassy ground. Bloomlet sows ferns that can be gathered for Herbs. They approach planting sites, complete a work animation and leave growing specimens; trees yield Wood through chopping. All species eat Plant Fiber through the existing Feeder. Local output caps stop production when the surroundings are full, and harvesting frees room for more. Existing hunger, leisure, contentment, navigation reservations and creature separation apply to these species.
 
-Male Pebblits work on dry soil, grass or rock. Their timed landing gently ripples terrain heights, converts ground to rock and can create a mineable stone deposit. Sand is preserved throughout the impact footprint. Female Pebblits curl up and roll while grinding soil, grass or rock into small sandy clearings. They create no deposits and preserve terrain heights. Sand production pauses once nearby dry-ground coverage reaches the configured limit (30% by default), and both site selection and the effect recheck this cap. Existing deposits are retained. Both sexes keep their hunger, leisure, rocky breeding habitat and aggression rules. Only in Unhappy mood can either sex interrupt ordinary leisure to charge a reachable wooden fence or building. Crowding lowers happiness through the wellbeing calculation; it no longer independently enables attacks in Neutral or Happy mood. Each completed charge is followed by a mandatory rest animation for the configured aggression_cooldown (12 seconds by default), exposed as Rest after each charge (s) in the species resources. If it is still upset after resting, it can charge again. Walls still block routes and attacks. Hunger affects contentment without disabling aggression. Reachable food is checked before choosing a new charge; a completed charge still requires its configured rest. Breeding and being carried keep their existing priority. Remaining recovery is persisted in world saves.
+Male Pebblits create rocky ground up to the shared regional minimum 25%, gently ripple heights while converting it and can create mineable deposits. They continue producing deposits on existing rock after the minimum is met. Females use ShakeSand to create sand up to 25%, then produce small loose stones on existing sand. They preserve terrain height and may rub against deposits during ordinary leisure. Both sexes can replace other species' ground and attack reachable wooden fences or buildings only when Unhappy. Males run on four paws and headbutt their target. Each attack is followed by 12 seconds of mandatory recovery; hunger, breeding and carrying keep their existing priorities.
 
 
 Buildings and built fence elements have durability. Clicking one shows condition and a Repair button in its information panel. Repair currently costs zero. An element at zero durability is removed; any incubating egg, workshop job or stored food is lost without a refund. Destroying an incubator during its hatch presentation closes that presentation and does not spawn a creature. Fence destruction updates the navigation opening.
@@ -164,13 +184,13 @@ Runtime tooltips and database descriptions use short in-world PL/EN copy. The Li
 
 Sensitivities belong to CreatureSpecies, not individual randomized creatures. noise_sensitivity and crowding_sensitivity range from 0 to 1. species_aversions is a directed Dictionary[StringName,float] of other species IDs and strengths from 0 to 1. Aversion applies whenever a disliked species shares the region, regardless of proximity; reverse relations are independent. Several present aversions add up and clamp to 1. Undiscovered species remain anonymous in the game panel.
 
-The contentment target is clamp(satiety * 0.45 + 35 + company * 20 - crowding_stress * 35 - noise_stress * 25 - species_stress * 25, 0, 100). Crowding is the missing fraction of preferred dry space times crowding sensitivity, replacing the previous space term rather than adding a second penalty. Noise stress is the sampled local noise level times noise sensitivity. Contentment still approaches the target at the configured response rate. Preferred space and companion range remain editable. A shared regional snapshot refreshes once per second and is invalidated when regions change or a world loads.
+The contentment target is clamp(satiety *0.45 +35 +company *20 -crowding_stress *35 -noise_stress *25 -species_stress *25 -terrain_stress *terrain_happiness_penalty,0,100). The default terrain penalty is25 points at zero fulfillment and decreases linearly to0 at the regional terrain minimum. The target approaches actual conditions gradually. Preferred space, terrain profiles, penalty and companion range remain editable in Forge. Regional wellbeing is sampled once per second; transient terrain rebuilds preserve the previous valid fulfillment.
 
 Initial values (noise / crowding / aversion) are Tuftling 0.75 / 0.65 / Pebblit 0.65; Rootle 0.40 / 0.85 / Pebblit 0.35; Pebblit 0.10 / 1.00 / Bloomlet 0.30; Bloomlet 1.00 / 0.50 / Pebblit 0.85. These are starting balance values, editable through species resources in the Godot Inspector.
 
 NoiseController belongs to the map. Working incubators and workshops are continuous sources; chopping, mining and Pebblit impacts create transient pulses. Distance attenuates noise across fences and regions. An idle feeder is quiet. A creature ignores its own pulses. Noise fades with simulation time and pauses with the world; load clears transient sources and rebuilds machine sources from active states. Derived stress values are recomputed rather than added to the strict creature save record, retaining existing save compatibility.
 
-The creature inspection panel uses PNG icons, satiety/contentment bars, a short activity state, dry-space/company numbers, sensitivity levels and current-stress bars. Food, habitat, sex, breeding requirements and aversions use shared custom tooltip scenes. A compact CreatureCard instance is used only in inspection; the hatch card retains its description. All layout remains native Control/Container scenes.
+The creature inspection panel groups mood and its live conditions, preferred ground with current/minimum coverage and a fulfillment bar, satiety and breeding. Custom Control tooltips explain each condition. The full hatching card retains its description. All layout remains native Control/Container scenes.
 
 SoundEffects is a spatial-audio autoload with an Effects bus and a separately persisted volume slider in the pause menu. Fifteen original baked mono WAV effects cover four creature voices, grass/plant/herb work, water, chopping, mining, Pebblit impacts, machine start/ready and the two working-machine loops. Female and male voices use mild pitch variation; ambient voices are spaced apart and playback is bounded. Machine loops stop when work ends, and deleting their source stops its audio. Sound volume does not change simulated noise or creature stress. Offline synthesis sources and audio previews remain outside the game.
 
@@ -201,7 +221,7 @@ The full-screen hatch presentation is ordered above toolbar badges, notification
 
 Esc dismisses the current panel, tool mode or inspected creature/building before opening the pause menu. It also returns an unfinished hatch presentation to its incubator without losing the egg. A subsequent Esc opens the pause menu. While inspecting an actor, its inspection-bounds center stays in the camera center, including during movement and orbiting. Leaving focus preserves the current camera position and rotation and smoothly increases orthographic size by 20%. The factor is exported as `focus_release_zoom_factor`; saved camera views preserve this resulting location and zoom.
 
-The happiness meter has face icons and boundaries at 40% and 70%: Unhappy below 40%, Neutral below 70%, Happy from 70%. Its custom cursor tooltip displays current happiness, the level and actual contributions from base comfort, satiety, company, crowding, noise and unwanted neighbours. These contributions come from the same calculation used by the creature, and happiness still approaches its target gradually.
+The happiness meter displays its current face, bar and value. Its short custom tooltip states the mood and work-series length. A preferred-ground block below the comfort conditions shows the material icon, actual share of dry land, required regional minimum and percentage fulfilled. A30% share against a50% target is60% fulfillment and, with the default penalty, subtracts10 contentment points.
 
 CreatureSpecies.ai_graph stores the runtime action rules: Eat, Attack, Rest and Work, with an Any source for global checks. Conditions and priorities are validated by CreatureAiGraph. Mood restrictions apply independently of graph rules.
 
@@ -209,21 +229,91 @@ An empty graph uses the existing default behaviour ordering. An explicitly autho
 
 ## Mood-dependent creature AI
 
-Mood is derived from saved happiness using per-species unhappy_threshold (default40)
-and happy_threshold (default70). Unhappy is below40, Neutral is40 to below70, Happy
-is70 or above. There is no separate aggression_threshold. The inspection meter and AI
-share Creature.mood(). CreatureSpecies resources expose the two thresholds and happy/neutral
-work-cycle ranges. leisure_cycles_min/max are the Happy range (2-3); the new
-neutral_leisure_cycles_min/max default to1-1. Leisure duration and happiness-based work
-speed keep their existing settings. Breeding remains the separate player-initiated action.
+Mood is derived from saved happiness using per-species unhappy_threshold (default 40) and happy_threshold (default 70). Every species can work in all three moods, with fixed series of 1/2/3 completed jobs. Work animations and production timers have the same rate in every mood. The old random leisure-cycle ranges and happiness work-speed multiplier are removed. Existing hunger, breeding, ordinary rest and the mandatory pause after each Pebblit charge remain active. Happy/Neutral mood still cancels aggression.
 
-Mood restrictions run before species-specific animation phases and graph decisions.
-Unhappy mood interrupts pending production, releases its reservation and goes to food,
-rest or a supported attack. Happy/Neutral mood cancels an active attack. Completed
-effects are retained. Pebblit rests after completed charges and after an attack cancelled
-by mood recovery. With no reachable food or attack target, an Unhappy creature rests;
-it cannot fall through to Work, including with an old/custom graph or a resumed job.
 Existing activity numbers and save version remain unchanged.
 
 Feeder approach markers now sit outside the building's circular navigation exclusion
 and physical body so creatures can actually reach an eating destination.
+
+## Modular Life Workshop and persistent ruins
+
+The Life Workshop now assembles nine textured Meshy source models into one rigged
+GLB with 24 bones, 25 meshes and 50,715 triangles. It retains the existing world
+footprint and contextual egg scale of 0.63. The egg seat is at y=0.544 and the
+resting Socket is (0,0.7224,0.43). Working animates the wheel, shaft, rotor, press,
+ingredient bowls and a separate textured page; its 12-second clip follows the
+actual recipe duration. Idle, Ready and Collect keep their existing state roles.
+
+Fatal damage cancels production and egg presentation, plays Destroy for 2.6
+seconds, and leaves the final Ruins pose. Ruins remain saved at zero health,
+block navigation and construction, and are excluded from attacks and repair.
+Their inspection panel offers Clear ruins after collapse. Clearing frees the
+site without resetting lifetime placement counts. Existing version-1 saves
+remain readable; a ruined workshop reloads in its final collapsed pose.
+
+Reproducible Blender sources, original GLBs, backup assets, renderer captures,
+silent MP4 previews and integration reports live outside the game project in
+`../Hatchworks-workbench/laboratory-assembly-20261101/`. Its `review.html` shows
+the actual Godot export. Full integration passed 72 checks, including save/load
+while working, with a ready egg, and as ruins, collection without duplication,
+destruction during Ready and Collect, and navigation after cleanup.
+
+Buildings have no overhead labels or warning markers. Every successful creature hit against a building creates its own attack notification. Clicking it smoothly frames the building and attacker without latching inspection focus; deleted objects use their captured attack-time bounds. Cards retain the ten-card limit, expiry and X dismissal.
+
+## Regional landscape production
+
+CreatureSpecies.terrain_minimums and female_terrain_minimums store percentages from 0 to 100 by terrain name. The female dictionary overrides the base dictionary when nonempty. Forge exposes them through named percentage controls for every species. Defaults: Tuftling, Rootle and Bloomlet grass 50%; male Pebblit rock 25%; female Pebblit sand 25%. Rootle and Bloomlet retain flora-only production. One region shares the maximum target for each material across residents; population does not multiply it. Coverage counts dry land only.
+
+LandscapeController caches regional coverage and updates local changed areas. Jobs can find deficits across the whole region; effects recheck the quota on commit and are clipped to the current fence region. Species may replace one another's terrain. Once a target is reached, terrain conversion stops, while suitable existing ground can still receive grass tufts, trees/herbs or deposits within their object limits. Female Pebblit produces small loose stones on existing sand after its target is reached. Each gives one Stone when swept with the hoe. Loose stones are nonblocking and persisted through an optional version1 save field; old saves load without them.
+
+
+## Creature inspection and native Forge parameters
+
+The creature inspection scene groups actionable information by purpose: identity and activity, happiness with current space/company/noise/neighbour conditions and preferred-ground fulfillment, satiety and breeding. Space per resident and terrain composition are distinct needs. Both influence contentment. Live discomfort replaces raw sensitivity percentages in the player panel. Undiscovered unwanted neighbours remain anonymous. The full hatching card is independent from this compact inspection view.
+
+Forge provides one Model and Parameters workspace and a History view. The parameter form has ordered categories, units, brief explanations and controls appropriate to each creature's real controller. IDs, resource paths, structural roles, unsupported diets and irrelevant role parameters are omitted from the form. Ordinary gait stays bound to current model limits; Pebblit's configurable base charge speed is labeled separately. No gameplay mechanics or species balance values are changed by this presentation update.
+
+Terrain targets and species aversions use native percentage rows. Aversion percentages convert to stored fractions, while terrain targets remain stored as 0–100 percentages. Empty female profiles inherit the base profile; explicit zero overrides remain distinguishable. Old or malformed draft entries remain recoverable, and validation covers changes in hidden categories. Existing source fingerprints, native Inspector conflict checks, UID-preserving transactions, change summaries, history and protected drafts remain active.
+
+The HTML editor and server were retired before this update. The active project contains only the native Forge editor; historical backups remain outside the game.
+
+
+## Ground collection and painting
+
+Paint is mode 1, separate from terrain sculpting. The Ground tool is Harvest tool 0; existing Hoe 1, Axe 2 and Mining 3 IDs remain stable. Hold LMB to paint the selected grass/sand/rock material or collect ground with its brush. RMB closes these tools; Hoe retains its hold-RMB interaction. The wheel changes brush size in Paint, Ground and Sculpt, and otherwise retains camera zoom. UI, camera navigation, focus loss, mode/material/tool changes, modal panels and release stop or separate the stroke.
+
+All ground stock starts at 0. Collection replaces the affected ground with soil and credits the actual collected area of each of the three materials. Recollecting soil yields 0. Painting consumes only the actual increase of its selected material, measured after image quantization and capped by available stock. Overwritten other material is not refunded. Both operations interpolate fast strokes and notify regional coverage. Resources appear in a second HUD row with square-meter quantities; resource flights keep their two-second presentation delay. MapManager owns gameplay input; TerrainController owns the pixel operations.
+
+Version1 saves remain readable. A narrow migration fills only newly introduced missing ground resource keys 0/3/4 with 0, then the existing strict validation runs. Ground/influence images retain their format and no extra bare-soil mask is introduced.
+
+
+## Handel i odbudowa
+
+Przycisk **Handlarz** na głównym pasku otwiera wymianę siedmiu zasobów i podłoży oraz zakupy za naukę. Wybierz oddawany zasób, ilość i towar otrzymywany; podgląd pokazuje wynik i oba stany magazynu po wymianie. Barter uwzględnia 25% prowizji, a nauka ma oddzielny stały kurs. Parametry są zapisane w zasobach ResourceDefinition oraz WorldBalance. Szczegóły cennika są w `docs/DESIGN.md`.
+
+Cena budynku zależy od liczby istniejących, niezniszczonych budynków tego samego typu. Pierwszy jest darmowy raz na zapis; utrata obiektów obniża cenę do bazowej, bez przywracania darmowej sztuki. Ruiny nie podnoszą ceny i nadal wymagają uprzątnięcia, aby zwolnić miejsce.
+
+
+## Population-weighted hatch sex
+
+The first hatch presentation samples the current population of that species on the same map. Each sex has weight one plus the number of the opposite sex. The female probability is (males+1)/(males+females+2), with equal odds for a tie or an empty population. Both sexes always retain a chance. Held and airborne creatures count; other species, other terrain maps/viewports, previews and queued deletions do not. Already assigned eggs remain unchanged across cancellation, blocked spawning and version 1 save/load. Accepting a hatch updates the population considered by later eggs; starting a new incubation clears the assignment as before.
+
+### Map views
+
+The upper-right map panel switches between Normal, Noise and Regions independently of the active tool. Noise displays the actual distance-attenuated simulation field and source markers. Regions follow fences and show dry-land area and grass/soil/sand/rock percentages, with water reported separately over the whole region. Labels simplify at distance or when space is limited; hover reveals the full breakdown. Native scenes define the panel layout, and all hints use TooltipController. Overlays follow sculpting, flooding and fence edits, hide during modal windows, and require no save-format changes. Verification and rendered previews are in `../Hatchworks-workbench/map-views-20261103/`.
+
+## Tuftling free time
+
+Tuftling breaks offer sleep with closing eyelids and Z signs, short dry-ground walks, or a three-second hopping play session with another free Tuftling of either sex. Pairs approach and play directly; retired greeting stages in saved games resume as Play. Animation Viewer presents paired Play and joyful Call, continuous Work droplets and synchronized local sound, while retaining notes for retired clips.
+
+
+## Animation review tool
+
+Project > Tools > Hatchworks Animation Viewer opens an independent native editor for all creature variants and their animations. It provides orbit/pan/zoom, exact frame/FPS control, loop playback and whole-animation notes. Export defaults to `Hatchworks-animation-review.md` on the Desktop. See `addons/hatchworks_forge/README.md` for controls and note workflow.
+
+### Moving and removing structures
+
+Manage opens Move and Remove tools. In Move, click a building, choose a valid site, and click again to confirm. Hold R to rotate continuously while placing or moving. RMB cancels a move; another RMB closes the tool. Moving is free and preserves contents and progress, with production paused while the building is picked up. Camera navigation temporarily hides the placement preview without cancelling the move.
+
+Remove highlights buildings or individual fence spans and demolishes them on click. It refunds the recorded payment, including zero for a free first building; contents are lost. Old building saves without payment data use the base price. Shared fence posts are refunded only when their last connected span is removed. Workshop ruins can only be cleared after collapsing and return nothing. Creature attacks do not issue demolition refunds. The save preserves rotations and paid costs, and cancels unfinished moves before capturing the world.

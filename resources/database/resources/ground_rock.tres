@@ -1,15 +1,14 @@
 [gd_resource type="Resource" script_class="ResourceDefinition" format=3 uid="uid://bu0qu50r1n10f"]
 
 [ext_resource type="Script" uid="uid://bvpcguh38i5u8" path="res://code/database/ResourceDefinition.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://djt52flv14yhr" path="res://assets/ui/icons.png" id="2"]
-
-[sub_resource type="AtlasTexture" id="icon"]
-atlas = ExtResource("2")
-region = Rect2(768, 256, 256, 256)
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/rock.svg" id="2"]
 
 [resource]
 script = ExtResource("1")
 kind = 4
-icon = SubResource("icon")
+icon = ExtResource("2")
+starting_amount = 0.0
 id = &"ground_rock"
 display_name = "Rock"
+
+trade_value = 2.0

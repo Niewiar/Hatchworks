@@ -1,0 +1,209 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/discoveries/views/discovery_inspector.gd" id="script"]
+
+[node name="Inspector" type="ScrollContainer"]
+custom_minimum_size = Vector2(330, 0)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+script = ExtResource("script")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="Content" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Tile" type="VBoxContainer" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="Header" type="HBoxContainer" parent="Margin/Content/Tile"]
+layout_mode = 2
+
+[node name="Portrait" type="TextureRect" parent="Margin/Content/Tile/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Heading" type="Label" parent="Margin/Content/Tile/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeHeading"
+text = "Kafel"
+
+[node name="EditTile" type="Button" parent="Margin/Content/Tile/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "Edytuj kafel"
+
+[node name="TileName" type="Label" parent="Margin/Content/Tile"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="TileId" type="Label" parent="Margin/Content/Tile"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+
+[node name="TileFields" type="VBoxContainer" parent="Margin/Content/Tile"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="NameLabel" type="Label" parent="Margin/Content/Tile/TileFields"]
+layout_mode = 2
+text = "Nazwa"
+
+[node name="Name" type="LineEdit" parent="Margin/Content/Tile/TileFields"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CategoryLabel" type="Label" parent="Margin/Content/Tile/TileFields"]
+layout_mode = 2
+text = "Typ"
+
+[node name="Category" type="OptionButton" parent="Margin/Content/Tile/TileFields"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_to_longest_item = false
+
+[node name="IconLabel" type="Label" parent="Margin/Content/Tile/TileFields"]
+layout_mode = 2
+text = "Ikona"
+
+[node name="IconRow" type="HBoxContainer" parent="Margin/Content/Tile/TileFields"]
+layout_mode = 2
+
+[node name="IconPath" type="LineEdit" parent="Margin/Content/Tile/TileFields/IconRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "res://…"
+
+[node name="ChooseIcon" type="Button" parent="Margin/Content/Tile/TileFields/IconRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Wybierz"
+
+[node name="DescriptionLabel" type="Label" parent="Margin/Content/Tile/TileFields"]
+layout_mode = 2
+text = "Opis"
+
+[node name="Description" type="TextEdit" parent="Margin/Content/Tile/TileFields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+wrap_mode = 1
+
+[node name="Separator" type="HSeparator" parent="Margin/Content"]
+layout_mode = 2
+
+[node name="NoRecipe" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Brak receptur dla tego kafla. Dodaj nową recepturę nad grafem."
+autowrap_mode = 3
+
+[node name="Recipe" type="VBoxContainer" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Heading" type="Label" parent="Margin/Content/Recipe"]
+layout_mode = 2
+theme_type_variation = &"ForgeHeading"
+text = "Receptura"
+
+[node name="RecipeChoice" type="OptionButton" parent="Margin/Content/Recipe"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_to_longest_item = false
+
+[node name="FirstLabel" type="Label" parent="Margin/Content/Recipe"]
+layout_mode = 2
+text = "Składnik A"
+
+[node name="First" type="OptionButton" parent="Margin/Content/Recipe"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_to_longest_item = false
+
+[node name="SecondLabel" type="Label" parent="Margin/Content/Recipe"]
+layout_mode = 2
+text = "+ Składnik B"
+
+[node name="Second" type="OptionButton" parent="Margin/Content/Recipe"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_to_longest_item = false
+
+[node name="ResultLabel" type="Label" parent="Margin/Content/Recipe"]
+layout_mode = 2
+text = "→ Wynik"
+
+[node name="Result" type="OptionButton" parent="Margin/Content/Recipe"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_to_longest_item = false
+
+[node name="ScienceLabel" type="Label" parent="Margin/Content/Recipe"]
+layout_mode = 2
+text = "Punkty nauki"
+
+[node name="Science" type="SpinBox" parent="Margin/Content/Recipe"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1000.0
+step = 1.0
+
+[node name="RecipeId" type="Label" parent="Margin/Content/Recipe"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+autowrap_mode = 3
+
+[node name="Problems" type="Label" parent="Margin/Content/Recipe"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeError"
+autowrap_mode = 3
+
+[node name="ShowConflicts" type="Button" parent="Margin/Content/Recipe"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Pokaż wszystkie konflikty"
+
+[node name="Actions" type="HBoxContainer" parent="Margin/Content/Recipe"]
+layout_mode = 2
+
+[node name="Duplicate" type="Button" parent="Margin/Content/Recipe/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Duplikuj"
+
+[node name="Remove" type="Button" parent="Margin/Content/Recipe/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Usuń recepturę"
+
+[node name="IconDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Ikona odkrycia"
+size = Vector2i(850, 600)
+file_mode = 0
+filters = PackedStringArray("*.png, *.svg, *.webp ; Obrazy")

@@ -1,10 +1,11 @@
 [gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
-[ext_resource type="Script" path="res://code/database/DiscoveryRecipe.gd" id="script"]
+
+[ext_resource type="Script" uid="uid://b2ma6xf73f6ms" path="res://code/database/DiscoveryRecipe.gd" id="1_2ntbc"]
+
 [resource]
-script = ExtResource("script")
+script = ExtResource("1_2ntbc")
+first = &"bloomlet_egg"
+second = &"incubator"
+result = &"bloomlet"
 id = &"bloomlet_egg_soil_bloomlet"
 display_name = "Bloomlet Egg + Soil"
-first = &"bloomlet_egg"
-second = &"soil"
-result = &"bloomlet"
-science_reward = 1

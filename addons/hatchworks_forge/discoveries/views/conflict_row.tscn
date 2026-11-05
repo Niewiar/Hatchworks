@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[node name="ConflictRow" type="HBoxContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Labels" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Equation" type="Label" parent="Labels"]
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 3
+
+[node name="Id" type="Label" parent="Labels"]
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+autowrap_mode = 3
+
+[node name="Edit" type="Button" parent="."]
+layout_mode = 2
+text = "Popraw"
+
+[node name="Remove" type="Button" parent="."]
+layout_mode = 2
+text = "Usuń"

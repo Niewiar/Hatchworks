@@ -4,3 +4,5 @@
 [node name="Model" instance=ExtResource("model")]
 script = ExtResource("script")
 female = true
+walk_distance = 0.1588476781
+walk_speed = 0.35

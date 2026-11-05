@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_noise.svg" id="icon"]
+
+[node name="NoiseSource" type="TextureRect"]
+mouse_filter = 2
+custom_minimum_size = Vector2(28,28)
+texture = ExtResource("icon")
+expand_mode = 1
+stretch_mode = 5

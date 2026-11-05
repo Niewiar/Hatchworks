@@ -80,7 +80,7 @@ func _process(delta: float) -> void:
 
 func _start(entry: Dictionary) -> void:
 	var view := FLIGHT.instantiate() as RewardFlight
-	view.configure(entry.icon,entry.quantity)
+	view.configure(entry.icon,entry.quantity,entry.category == 0 and entry.key in ResourceInventory.GROUND_TYPES)
 	add_child(view)
 	entry.view = view
 	entry.start = _origin_point(entry.origin)

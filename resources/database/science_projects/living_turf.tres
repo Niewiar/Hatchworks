@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ScienceProjectDefinition" format=3]
+
+[ext_resource type="Script" path="res://code/database/ScienceProjectDefinition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"living_turf"
+display_name = "Living turf"
+description = "Examine the roots and moisture held by a patch of grass."
+costs = Dictionary[int, int]({0: 9})
+science_reward = 1

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DiscoveryRecipe" format=3]
+
+[ext_resource type="Script" uid="uid://b2ma6xf73f6ms" path="res://code/database/DiscoveryRecipe.gd" id="1_4fp2m"]
+
+[resource]
+script = ExtResource("1_4fp2m")
+first = &"life"
+second = &"rootle_egg"
+result = &"life_workshop"
+science_reward = 0
+id = &"life_egg_workshop_copy_6dd6265da5648dc2"
+display_name = "Life + Tuftling Egg → Life Workshop"

@@ -2,12 +2,13 @@ extends Node
 
 const STREAMS := {
 	&"tuftling_voice":"res://assets/audio/effects/tuftling_voice.wav",
+	&"tuftling_call":"res://assets/audio/effects/tuftling_call.wav",
+	&"tuftling_shake":"res://assets/audio/effects/tuftling_shake.wav",
 	&"rootle_voice":"res://assets/audio/effects/rootle_voice.wav",
 	&"pebblit_voice":"res://assets/audio/effects/pebblit_voice.wav",
 	&"bloomlet_voice":"res://assets/audio/effects/bloomlet_voice.wav",
 	&"plant_work":"res://assets/audio/effects/plant_work.wav",
 	&"herb_work":"res://assets/audio/effects/herb_work.wav",
-	&"grass_work":"res://assets/audio/effects/grass_work.wav",
 	&"stone_impact":"res://assets/audio/effects/stone_impact.wav",
 	&"wood_hit":"res://assets/audio/effects/wood_hit.wav",
 	&"mining_hit":"res://assets/audio/effects/mining_hit.wav",
@@ -96,7 +97,7 @@ func _make_player(id: StringName) -> AudioStreamPlayer3D:
 		loop.loop_end = roundi(loop.get_length()*loop.mix_rate)
 		player.stream = loop
 	player.bus = &"Effects"
-	player.volume_db = -7.0
+	player.volume_db = -11.0 if id == &"tuftling_shake" else (-9.0 if id == &"tuftling_call" else -7.0)
 	player.unit_size = 12.0
 	player.max_distance = 45.0
 	player.attenuation_filter_cutoff_hz = 18000.0

@@ -3,6 +3,7 @@ render_mode diffuse_lambert, specular_disabled;
 uniform sampler2D ground_map : hint_default_transparent, filter_linear, repeat_disable;
 uniform sampler2D ground_influence : hint_default_black, filter_linear, repeat_disable;
 uniform sampler2D nature_map : hint_default_transparent, filter_linear, repeat_disable;
+uniform bool natural_ground_enabled = false;
 uniform vec2 map_size = vec2(512.0);
 uniform vec2 world_size = vec2(16.0);
 uniform float water_level = -1000.0;
@@ -48,6 +49,7 @@ vec2 boundary_warp(vec2 p) {
 }
 
 vec4 ground_weights(vec2 uv) {
+	if (!natural_ground_enabled) { return clamp(texture(ground_map,uv),vec4(0.0),vec4(1.0)); }
 	return clamp(texture(ground_map,uv) + texture(nature_map,uv) * (1.0-texture(ground_influence,uv).r),vec4(0.0),vec4(1.0));
 }
 

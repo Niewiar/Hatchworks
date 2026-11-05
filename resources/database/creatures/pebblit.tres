@@ -6,6 +6,9 @@
 
 [resource]
 script = ExtResource("3_y2v01")
+terrain_happiness_penalty = 25.0
+terrain_minimums = Dictionary[StringName, float]({&"rock": 25.0})
+female_terrain_minimums = Dictionary[StringName, float]({&"sand": 25.0})
 scene = ExtResource("2_30why")
 icon = ExtResource("1_oxhof")
 walk_speed = 0.35
@@ -25,4 +28,4 @@ unhappy_threshold = 40.0
 happy_threshold = 70.0
 id = &"pebblit"
 display_name = "Pebblit"
-description = "Armored and stubborn. Males walk on four paws and charge on stone elbows when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard."
+description = "Armored and stubborn. Males walk on four paws and run at their target and strike with their head when angry. Sandy females shake off sand; rubbing on rocks is their leisure. Give them room — a cornered Pebblit hits hard."

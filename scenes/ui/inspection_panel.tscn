@@ -1,74 +1,12 @@
-
-
-
 [gd_scene format=3]
-
-
 
 [ext_resource type="Script" path="res://code/ui/InspectionPanel.gd" id="script"]
 
-
-
 [ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
 
-
-
-[ext_resource type="PackedScene" path="res://scenes/ui/creature_card.tscn" id="creature"]
-
-
+[ext_resource type="PackedScene" path="res://scenes/ui/creature_inspection.tscn" id="creature_view"]
 
 [ext_resource type="PackedScene" path="res://scenes/ui/workshop_panel.tscn" id="workshop"]
-
-
-
-[ext_resource type="PackedScene" path="res://scenes/ui/breeding_panel.tscn" id="breeding"]
-
-
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_satiety.svg" id="satiety"]
-
-
-
-[ext_resource type="PackedScene" path="res://scenes/ui/happiness_meter.tscn" id="happiness"]
-
-
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_noise.svg" id="noise"]
-
-
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_crowding.svg" id="crowding"]
-
-
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_neighbours.svg" id="neighbours"]
-
-
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_space.svg" id="space"]
-
-
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_company.svg" id="company"]
-
-
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_rest.svg" id="rest"]
-
-
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/water.svg" id="water"]
-
-
-
-[sub_resource type="StyleBoxFlat" id="SatietyFill"]
-bg_color = Color(0.345, 0.416, 0.231, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_left = 5
-corner_radius_bottom_right = 5
-
-
 
 [sub_resource type="StyleBoxFlat" id="SatietyBackground"]
 bg_color = Color(0.898, 0.843, 0.702, 1)
@@ -78,16 +16,12 @@ corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
 border_color = Color(0.66,0.56,0.38,1)
 
-
-
 [sub_resource type="StyleBoxFlat" id="DurabilityFill"]
 bg_color = Color(0.345, 0.416, 0.231, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
-
-
 
 [node name="InspectionPanel" type="Control"]
 layout_mode = 3
@@ -100,8 +34,6 @@ mouse_filter = 2
 theme = ExtResource("theme")
 script = ExtResource("script")
 
-
-
 [node name="Position" type="MarginContainer" parent="."]
 propagate_maximum_size = true
 layout_mode = 1
@@ -111,10 +43,8 @@ anchor_bottom = 1.0
 mouse_filter = 2
 theme_override_constants/margin_left = 18
 theme_override_constants/margin_right = 18
-theme_override_constants/margin_top = 104
+theme_override_constants/margin_top = 182
 theme_override_constants/margin_bottom = 148
-
-
 
 [node name="Panel" type="PanelContainer" parent="Position"]
 unique_name_in_owner = true
@@ -124,19 +54,16 @@ custom_minimum_size = Vector2(352,0)
 custom_maximum_size = Vector2(390,640)
 propagate_maximum_size = true
 size_flags_horizontal = 8
-size_flags_vertical = 4
+size_flags_vertical = 3
 theme_type_variation = &"WindowPanel"
-
-
 
 [node name="Scroll" type="ScrollContainer" parent="Position/Panel"]
 propagate_maximum_size = false
 layout_mode = 2
 horizontal_scroll_mode = 0
-vertical_scroll_mode = 5
-custom_maximum_size = Vector2(-1,560)
-
-
+vertical_scroll_mode = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="Content" type="VBoxContainer" parent="Position/Panel/Scroll"]
 propagate_maximum_size = true
@@ -144,339 +71,15 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-
-
 [node name="Close" type="Button" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Close focus - Esc / RMB"
 
-
-
-[node name="CreatureClose" type="Button" parent="Position/Panel/Scroll/Content"]
+[node name="CreatureView" parent="Position/Panel/Scroll/Content" instance=ExtResource("creature_view")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-size_flags_horizontal = 8
-custom_minimum_size = Vector2(32,32)
-text = "×"
-theme_override_font_sizes/font_size = 21
-theme_override_constants/h_separation = 0
-
-
-[node name="CreatureCard" parent="Position/Panel/Scroll/Content" instance=ExtResource("creature")]
-unique_name_in_owner = true
-layout_mode = 2
-compact = true
-
-
-
-[node name="CreatureDetails" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-theme_override_constants/separation = 6
-
-
-
-[node name="Satiety" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 10
-
-
-
-[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/Satiety"]
-custom_minimum_size = Vector2(26,26)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("satiety")
-expand_mode = 1
-stretch_mode = 5
-
-
-
-[node name="SatietyBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/Satiety"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0,14)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-mouse_filter = 2
-show_percentage = false
-theme_override_styles/fill = SubResource("SatietyFill")
-theme_override_styles/background = SubResource("SatietyBackground")
-
-
-
-[node name="SatietyValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/Satiety"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(46,0)
-layout_mode = 2
-mouse_filter = 2
-horizontal_alignment = 2
-text = "100%"
-
-
-
-[node name="Happiness" parent="Position/Panel/Scroll/Content/CreatureDetails" instance=ExtResource("happiness")]
-unique_name_in_owner = true
-layout_mode = 2
-
-
-
-[node name="CreatureState" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 10
-
-
-
-[node name="ActivityIcon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/CreatureState"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(26,26)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("rest")
-expand_mode = 1
-stretch_mode = 5
-
-
-
-[node name="ActivityName" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/CreatureState"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-text = "Resting"
-autowrap_mode = 3
-
-
-
-[node name="HabitatReadings" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
-layout_mode = 2
-theme_override_constants/separation = 18
-
-
-
-[node name="Space" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
-
-
-
-[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings/Space"]
-custom_minimum_size = Vector2(24,24)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("space")
-expand_mode = 1
-stretch_mode = 5
-
-
-
-[node name="SpaceValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings/Space"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-text = "12 / 12 m²"
-theme_override_font_sizes/font_size = 15
-
-
-
-[node name="Company" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
-
-
-
-[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings/Company"]
-custom_minimum_size = Vector2(24,24)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("company")
-expand_mode = 1
-stretch_mode = 5
-
-
-
-[node name="CompanyValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings/Company"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-text = "×1"
-theme_override_font_sizes/font_size = 15
-
-
-
-[node name="CarriedWater" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/HabitatReadings"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(24,24)
-layout_mode = 2
-texture = ExtResource("water")
-expand_mode = 1
-stretch_mode = 5
-
-
-
-[node name="Separator" type="HSeparator" parent="Position/Panel/Scroll/Content/CreatureDetails"]
-layout_mode = 2
-
-
-
-[node name="SensitivityTiles" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
-layout_mode = 2
-theme_override_constants/separation = 18
-
-
-
-[node name="NoiseSensitivity" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-
-
-[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NoiseSensitivity"]
-layout_mode = 2
-mouse_filter = 2
-alignment = 1
-theme_override_constants/separation = 6
-
-
-
-[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NoiseSensitivity/Header"]
-custom_minimum_size = Vector2(27,27)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("noise")
-expand_mode = 1
-stretch_mode = 5
-
-
-
-[node name="NoiseSensitivityValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NoiseSensitivity/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-text = "0%"
-theme_override_font_sizes/font_size = 16
-
-
-
-[node name="NoiseStress" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NoiseSensitivity"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0,6)
-layout_mode = 2
-mouse_filter = 2
-show_percentage = false
-theme_override_styles/fill = SubResource("DurabilityFill")
-theme_override_styles/background = SubResource("SatietyBackground")
-
-
-
-[node name="CrowdingSensitivity" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-
-
-[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/CrowdingSensitivity"]
-layout_mode = 2
-mouse_filter = 2
-alignment = 1
-theme_override_constants/separation = 6
-
-
-
-[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/CrowdingSensitivity/Header"]
-custom_minimum_size = Vector2(27,27)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("crowding")
-expand_mode = 1
-stretch_mode = 5
-
-
-
-[node name="CrowdingSensitivityValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/CrowdingSensitivity/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-text = "0%"
-theme_override_font_sizes/font_size = 16
-
-
-
-[node name="CrowdingStress" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/CrowdingSensitivity"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0,6)
-layout_mode = 2
-mouse_filter = 2
-show_percentage = false
-theme_override_styles/fill = SubResource("DurabilityFill")
-theme_override_styles/background = SubResource("SatietyBackground")
-
-
-
-[node name="NeighboursSensitivity" type="VBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-
-
-[node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NeighboursSensitivity"]
-layout_mode = 2
-mouse_filter = 2
-alignment = 1
-theme_override_constants/separation = 6
-
-
-
-[node name="Icon" type="TextureRect" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NeighboursSensitivity/Header"]
-custom_minimum_size = Vector2(27,27)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("neighbours")
-expand_mode = 1
-stretch_mode = 5
-
-
-
-[node name="NeighboursSensitivityValue" type="Label" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NeighboursSensitivity/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-text = "0%"
-theme_override_font_sizes/font_size = 16
-
-
-
-[node name="NeighboursStress" type="ProgressBar" parent="Position/Panel/Scroll/Content/CreatureDetails/SensitivityTiles/NeighboursSensitivity"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0,6)
-layout_mode = 2
-mouse_filter = 2
-show_percentage = false
-theme_override_styles/fill = SubResource("DurabilityFill")
-theme_override_styles/background = SubResource("SatietyBackground")
-
-
-
-[node name="AversionIcons" type="HFlowContainer" parent="Position/Panel/Scroll/Content/CreatureDetails"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 6
-
-
 
 [node name="Generic" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
 propagate_maximum_size = true
@@ -484,16 +87,12 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 14
 
-
-
 [node name="Title" type="Label" parent="Position/Panel/Scroll/Content/Generic"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
 text = "Incubator"
 theme_type_variation = &"HeadingLabel"
-
-
 
 [node name="StructureArt" type="TextureRect" parent="Position/Panel/Scroll/Content/Generic"]
 unique_name_in_owner = true
@@ -503,8 +102,6 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-
-
 [node name="Description" type="RichTextLabel" parent="Position/Panel/Scroll/Content/Generic"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -512,13 +109,9 @@ bbcode_enabled = true
 fit_content = true
 scroll_active = false
 
-
-
 [node name="EggChoice" type="OptionButton" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-
-
 
 [node name="Status" type="Label" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
@@ -526,15 +119,11 @@ layout_mode = 2
 autowrap_mode = 3
 theme_type_variation = &"MutedLabel"
 
-
-
 [node name="Progress" type="ProgressBar" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 show_percentage = false
-
-
 
 [node name="Action" type="Button" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
@@ -543,14 +132,10 @@ layout_mode = 2
 text = "Start incubation"
 theme_type_variation = &"PrimaryButton"
 
-
-
 [node name="Workshop" parent="Position/Panel/Scroll/Content" instance=ExtResource("workshop")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-
-
 
 [node name="Durability" type="VBoxContainer" parent="Position/Panel/Scroll/Content"]
 unique_name_in_owner = true
@@ -558,26 +143,18 @@ visible = false
 layout_mode = 2
 theme_override_constants/separation = 8
 
-
-
 [node name="Header" type="HBoxContainer" parent="Position/Panel/Scroll/Content/Durability"]
 layout_mode = 2
-
-
 
 [node name="Name" type="Label" parent="Position/Panel/Scroll/Content/Durability/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Condition"
 
-
-
 [node name="DurabilityValue" type="Label" parent="Position/Panel/Scroll/Content/Durability/Header"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "100%"
-
-
 
 [node name="DurabilityBar" type="ProgressBar" parent="Position/Panel/Scroll/Content/Durability"]
 unique_name_in_owner = true
@@ -587,17 +164,8 @@ show_percentage = false
 theme_override_styles/fill = SubResource("DurabilityFill")
 theme_override_styles/background = SubResource("SatietyBackground")
 
-
-
 [node name="Repair" type="Button" parent="Position/Panel/Scroll/Content/Durability"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Repair · Free"
 theme_type_variation = &"PrimaryButton"
-
-
-
-[node name="Breeding" parent="Position/Panel/Scroll/Content" instance=ExtResource("breeding")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2

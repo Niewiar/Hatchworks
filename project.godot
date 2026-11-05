@@ -34,6 +34,10 @@ window/size/borderless=true
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/hatchworks_forge/plugin.cfg")
+
 [internationalization]
 
 locale/translations=PackedStringArray("res://localization/game.en.translation", "res://localization/game.pl.translation")

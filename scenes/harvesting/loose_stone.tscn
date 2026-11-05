@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://code/harvesting/LooseStone.gd" id="script"]
+
+[node name="LooseStone" type="MeshInstance3D"]
+script = ExtResource("script")

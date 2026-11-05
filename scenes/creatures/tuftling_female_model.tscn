@@ -2,8 +2,8 @@
 [ext_resource type="PackedScene" path="res://assets/creatures/tuftling/tuftling_female.glb" id="model"]
 [ext_resource type="Script" path="res://code/creatures/CreatureCelAppearance.gd" id="appearance"]
 [node name="Model" instance=ExtResource("model")]
-position = Vector3(0, -0.1625000000, 0)
+position = Vector3(0, -0.22000000, 0)
 script = ExtResource("appearance")
-walk_distance = 0.13
+walk_distance = 0.07692307692308
 walk_speed = 0.17
-work_contact_offset = Vector3(0, 0, 0)
+work_contact_offset = Vector3(0.0000000000, 0.0000000000, 0.0000000000)

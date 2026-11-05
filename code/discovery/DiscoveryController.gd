@@ -89,4 +89,4 @@ func _on_plant_sown(species: FloraSpecies, world_position: Vector3) -> void:
 func _on_resource_gained(kind: int, _quantity: float, origin: Variant) -> void:
 	var definition: ResourceDefinition = _map.inventory.definition(kind)
 	if definition != null:
-		discover(definition.id,origin)
+		discover(&"rock" if kind == ResourceInventory.KIND.GROUND_ROCK else definition.id,origin)

@@ -6,6 +6,9 @@
 
 [resource]
 script = ExtResource("3_dpqeq")
+terrain_happiness_penalty = 25.0
+terrain_minimums = Dictionary[StringName, float]({&"grass": 50.0})
+female_terrain_minimums = Dictionary[StringName, float]({})
 scene = ExtResource("2_eisw8")
 icon = ExtResource("1_lxn36")
 satiety_seconds = 120.0

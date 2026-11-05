@@ -1,13 +1,10 @@
 class_name PebblitController
 extends EcosystemCreatureController
 
-const RIDE_DISTANCE := 0.590318495
-const FEMALE_WALK_DISTANCE := 0.22285714750000002
-const MALE_WALK_DISTANCE := 0.13
 const FEMALE_MODEL = preload("res://scenes/creatures/pebblit_female_model.tscn")
 const MALE_MODEL = preload("res://scenes/creatures/pebblit_model.tscn")
 
-enum POSE { OPEN, CURLING, RIDING, IMPACT, UNCURLING }
+enum POSE { OPEN, CHARGING, HEADBUTT }
 
 var _model_initialized := false
 var _pose := POSE.OPEN
@@ -61,8 +58,8 @@ func _tick_priority_activity(delta: float) -> bool:
 		var target = _job.get("target")
 		if not _effect_done and (not is_instance_valid(target) or target.is_queued_for_deletion()):
 			interrupt_activity()
-	if _pose in [POSE.CURLING,POSE.IMPACT,POSE.UNCURLING]:
-		if _pose == POSE.IMPACT:
+	if _pose == POSE.HEADBUTT:
+		if not _effect_done:
 			_elapsed += delta
 			if not _effect_done and _elapsed >= 0.18:
 				_effect_done = true
@@ -117,42 +114,40 @@ func _on_path_started(moving: ACTIVITY) -> void:
 	if moving != ACTIVITY.MOVING_TO_REST:
 		_rubbing_job.clear()
 	super._on_path_started(moving)
-	_curl_remaining = 0.0
-	_uncurl_remaining = 0.0
 	if _path.is_empty():
 		_pose = POSE.OPEN
 		_play_animation(&"Idle")
 	elif sex == SEX.MALE and moving == ACTIVITY.MOVING_TO_GROUND and _job.get("kind","") == "damage":
 		face_point(_path[0],&"Idle")
-		_pose = POSE.CURLING
-		_show_animation(&"Curl")
+		_pose = POSE.CHARGING
+		_show_animation(&"Run")
 
 func _path_tolerance() -> float:
-	return 0.07 if _pose == POSE.RIDING else super._path_tolerance()
+	return 0.07 if _pose == POSE.CHARGING else super._path_tolerance()
 
 func _path_speed() -> float:
-	return _species.walk_speed*6.0 if _pose == POSE.RIDING else super._path_speed()
+	return _species.walk_speed*2.5 if _pose == POSE.CHARGING else super._path_speed()
 
 func _complete_work_path() -> void:
-	if _pose == POSE.RIDING:
+	if _pose == POSE.CHARGING:
 		activity = ACTIVITY.SHAKING
-		_pose = POSE.IMPACT
-		_show_animation(&"Impact",0.04)
+		_pose = POSE.HEADBUTT
+		_elapsed = 0.0
+		velocity = Vector3.ZERO
+		face_point(_job.target.global_position, &"Headbutt")
+		_show_animation(&"Headbutt",0.04)
 	else:
 		super._complete_work_path()
-		_uncurl_remaining = 0.0
 	$Splash.emitting = false
 
 func movement_animation() -> StringName:
-	return &"water/Swim" if _swimming else (&"Ride" if _pose == POSE.RIDING else &"Walk")
+	return &"water/Swim" if _swimming else (&"Run" if _pose == POSE.CHARGING else &"Walk")
 
 func _play_animation(name: StringName, blend: float = 0.12) -> bool:
 	if animation_player == null:
 		return false
 	if name in [&"HeldIdle", &"Fall", &"Land", &"water/Swim"]:
 		_pose = POSE.OPEN
-	if name == &"Uncurl":
-		name = &"Idle"
 	if name == &"behaviour/Call" and _requested_animation != name:
 		SoundEffects.play_at(StringName(str(species_id) + "_voice"), global_position, self, 1.1 if sex == SEX.FEMALE else 0.9)
 	_requested_animation = name
@@ -173,20 +168,14 @@ func _clip_name(name: StringName) -> StringName:
 
 func _show_animation(name: StringName, blend: float = 0.12) -> void:
 	var clip: StringName = name if animation_player.has_animation(name) else &"Idle"
-	if clip not in [&"Ride", &"Walk"]:
+	if clip not in [&"Run", &"Walk"]:
 		animation_player.speed_scale = 1.0
 	if animation_player.current_animation != clip:
 		animation_player.play(clip, blend)
 
 func _on_animation_finished(name: StringName) -> void:
 	super._on_animation_finished(name)
-	if name == &"Curl" and _pose == POSE.CURLING:
-		_pose = POSE.IMPACT if _path.is_empty() else POSE.RIDING
-		_show_animation(&"Impact" if _path.is_empty() else &"Ride", 0.0)
-	elif name == &"Impact" and _pose == POSE.IMPACT:
-		_pose = POSE.UNCURLING
-		_show_animation(&"Uncurl", 0.0)
-	elif name == &"Uncurl" and _pose == POSE.UNCURLING:
+	if name == &"Headbutt" and _pose == POSE.HEADBUTT:
 		_pose = POSE.OPEN
 		_finish_work()
 
@@ -195,14 +184,15 @@ func _update_visual_activity() -> void:
 	if animation_player == null:
 		return
 	var clip := animation_player.current_animation
-	if clip in [&"Walk", &"Ride"]:
-		var stride := RIDE_DISTANCE if clip == &"Ride" else (FEMALE_WALK_DISTANCE if sex == SEX.FEMALE else MALE_WALK_DISTANCE)
+	if clip in [&"Walk", &"Run"]:
+		var appearance := _model as PebblitAppearance
+		var stride := appearance.run_distance if clip == &"Run" else appearance.walk_distance
 		animation_player.speed_scale = Vector2(velocity.x, velocity.z).length() * animation_player.get_animation(clip).length / (stride * absf(_model.scale.x))
 	elif clip in [&"Work", &"ShakeSand", &"Attack"]:
-		animation_player.speed_scale = animation_player.get_animation(clip).length / _species.production_seconds * work_efficiency()
+		animation_player.speed_scale = animation_player.get_animation(clip).length / _species.production_seconds
 
 func _apply_avoidance(delta: float) -> void:
-	if _pose in [POSE.CURLING, POSE.IMPACT, POSE.UNCURLING] or (activity == ACTIVITY.LEISURE and animation_player.current_animation == &"Rub"):
+	if _pose == POSE.HEADBUTT or (activity == ACTIVITY.LEISURE and animation_player.current_animation == &"Rub"):
 		velocity.x = 0.0
 		velocity.z = 0.0
 		return
@@ -217,15 +207,18 @@ func _tick_work(delta: float) -> void:
 		if _effect_done:
 			_finish_work()
 		else:
-			_pose = POSE.CURLING
+			_pose = POSE.HEADBUTT
 			_elapsed = 0.0
-			_show_animation(&"Curl")
+			velocity = Vector3.ZERO
+			if is_instance_valid(_job.get("target")):
+				face_point(_job.target.global_position, &"Headbutt")
+			_show_animation(&"Headbutt")
 		return
 	if _job.get("kind", "") == "damage" and is_instance_valid(_job.get("target")):
 		face_point(_job.target.global_position, work_animation())
 	else:
 		_play_animation(work_animation())
-	_elapsed += delta * work_efficiency()
+	_elapsed += delta
 	if not _effect_done and _elapsed >= _species.impact_time:
 		_effect_done = true
 		if _apply_effect():
@@ -234,7 +227,7 @@ func _tick_work(delta: float) -> void:
 		_finish_work()
 
 func work_animation() -> StringName:
-	return &"ShakeSand" if _job.get("kind", "") == "sand" else (&"Attack" if _job.get("kind", "") == "damage" else &"Work")
+	return &"ShakeSand" if _job.get("kind", "") in ["sand","pebble"] else ((&"Headbutt" if sex == SEX.MALE else &"Attack") if _job.get("kind", "") == "damage" else &"Work")
 
 func _settle_rest() -> void:
 	if _aggression_wait > 0.0:
@@ -289,6 +282,8 @@ func _find_rubbing_rock() -> Dictionary:
 	for node in rocks:
 		var rock := node as HarvestableDeposit
 		if not is_instance_valid(rock) or rock.exhausted or rock.is_queued_for_deletion() or rock.mesh == null:
+			continue
+		if _map.regions_controller.region_id_at(rock.global_position) != _map.regions_controller.region_id_at(global_position):
 			continue
 		if Vector2(rock.global_position.x - global_position.x, rock.global_position.z - global_position.z).length() > _species.production_radius:
 			continue
@@ -353,8 +348,8 @@ func _rest_presentation() -> Dictionary:
 	return super._rest_presentation()
 
 func _work_presentation() -> Dictionary:
-	if activity == ACTIVITY.SHAKING and _job.get("kind","") == "sand":
-		return _present_activity("Working","status_work","Shaking off sand")
+	if activity == ACTIVITY.SHAKING and _job.get("kind","") in ["sand","pebble"]:
+		return _present_activity("Working","status_work","Shaking off pebbles" if _job.get("kind","") == "pebble" else "Shaking off sand")
 	if activity == ACTIVITY.MOVING_TO_GROUND and _job.get("kind","") != "damage":
 		return _present_activity("On the move","status_walk","Walking to a work site")
 	return super._work_presentation()

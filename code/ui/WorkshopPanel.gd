@@ -17,6 +17,8 @@ func configure(target: WorkshopController, map: Node3D) -> void:
 	refresh()
 
 func refresh() -> void:
+	if _target.state == WorkshopController.STATE.RUINED:
+		return
 	var ids: Array[StringName] = []
 	for egg: EggDefinition in _map.database.eggs:
 		if _map.discoveries.knows(egg.id):

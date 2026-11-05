@@ -18,6 +18,11 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/game_menu.tscn" id="game_menu"]
 [ext_resource type="PackedScene" path="res://scenes/ui/camera_tutorial.tscn" id="camera_tutorial"]
 [ext_resource type="PackedScene" path="res://scenes/ui/reward_flight_controller.tscn" id="rewards"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/trader_panel.tscn" id="trader_ui"]
+[ext_resource type="PackedScene" path="res://scenes/ui/science_projects_panel.tscn" id="science_projects_ui"]
+[ext_resource type="PackedScene" path="res://scenes/ui/map_views.tscn" id="map_views"]
+
 [sub_resource type="Environment" id="Environment"]
 background_mode = 1
 background_color = Color(0.15, 0.2, 0.18, 1)
@@ -53,6 +58,11 @@ inspection_panel = NodePath("../CanvasLayer/InspectionPanel")
 hatch_presentation = NodePath("../CanvasLayer/HatchPresentation")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1628525015]
+
+[node name="MapViews" parent="CanvasLayer" node_paths=PackedStringArray("map_manager","tooltip_controller") instance=ExtResource("map_views")]
+map_manager = NodePath("../../Map")
+tooltip_controller = NodePath("../TooltipController")
+
 
 [node name="GameToolbar" parent="CanvasLayer" unique_id=349067347 node_paths=PackedStringArray("map_manager", "tooltip_controller") instance=ExtResource("2")]
 anchors_preset = 7
@@ -101,3 +111,11 @@ map_manager = NodePath("../../Map")
 map_manager = NodePath("../../Map")
 resource_panel = NodePath("../ResourcePanel")
 game_toolbar = NodePath("../GameToolbar")
+
+[node name="Trader" parent="CanvasLayer" node_paths=PackedStringArray("map_manager","tooltip_controller") instance=ExtResource("trader_ui")]
+map_manager = NodePath("../../Map")
+tooltip_controller = NodePath("../TooltipController")
+
+[node name="ScienceProjects" parent="CanvasLayer" node_paths=PackedStringArray("map_manager","tooltip_controller") instance=ExtResource("science_projects_ui")]
+map_manager = NodePath("../../Map")
+tooltip_controller = NodePath("../TooltipController")

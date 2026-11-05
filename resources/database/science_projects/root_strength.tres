@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ScienceProjectDefinition" format=3]
+
+[ext_resource type="Script" path="res://code/database/ScienceProjectDefinition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"root_strength"
+display_name = "Root strength"
+description = "Explore how wood and plant fibers bend under strain."
+costs = Dictionary[int, int]({9: 12, 5: 12})
+science_reward = 2

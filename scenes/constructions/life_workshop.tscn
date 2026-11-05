@@ -1,83 +1,18 @@
 [gd_scene format=3]
 [ext_resource type="Script" path="res://code/contructions/WorkshopController.gd" id="script"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_body.res" id="workshop_body"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_wheel.res" id="workshop_wheel"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_screw.res" id="workshop_screw"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_press.res" id="workshop_press"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_rotor.res" id="workshop_rotor"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_runes.res" id="workshop_runes"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_bowl0.res" id="workshop_bowl0"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_bowl1.res" id="workshop_bowl1"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_bowl2.res" id="workshop_bowl2"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_book.res" id="workshop_book"]
-[ext_resource type="ArrayMesh" path="res://assets/constructions/workshop_pages.res" id="workshop_pages"]
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_dk5av"]
-height = 2.84
-radius = 1.5
-[node name="LifeWorkshop" type="MeshInstance3D" unique_id=1963061726]
-mesh = ExtResource("workshop_body")
+[ext_resource type="PackedScene" path="res://assets/constructions/meshy_workshop.glb" id="model"]
+[sub_resource type="CylinderShape3D" id="shape"]
+height = 2.64
+radius = 1.65
+[node name="LifeWorkshop" instance=ExtResource("model")]
 script = ExtResource("script")
-
-[node name="Wheel" type="MeshInstance3D" parent="." unique_id=41667618]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.67, 0)
-mesh = ExtResource("workshop_wheel")
-
-[node name="Screw" type="MeshInstance3D" parent="." unique_id=926464256]
-unique_name_in_owner = true
-mesh = ExtResource("workshop_screw")
-
-[node name="Press" type="MeshInstance3D" parent="." unique_id=933193755]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88, 0)
-mesh = ExtResource("workshop_press")
-
-[node name="Rotor" type="MeshInstance3D" parent="." unique_id=1358804804]
-unique_name_in_owner = true
-mesh = ExtResource("workshop_rotor")
-
-[node name="Runes" type="MeshInstance3D" parent="Rotor" unique_id=2059747009]
+[node name="Socket" type="Node3D" parent="."]
+position = Vector3(0,0.7224,0.43)
 unique_name_in_owner = true
 visible = false
-mesh = ExtResource("workshop_runes")
-
-[node name="Bowls" type="Node3D" parent="." unique_id=1005993541]
-unique_name_in_owner = true
-
-[node name="Bowl0" type="MeshInstance3D" parent="Bowls" unique_id=1764060938]
-position = Vector3(-0.84,0.63,0.4)
-unique_name_in_owner = true
-mesh = ExtResource("workshop_bowl0")
-
-[node name="Bowl1" type="MeshInstance3D" parent="Bowls" unique_id=1882291204]
-position = Vector3(0.9,0.63,0.4)
-unique_name_in_owner = true
-mesh = ExtResource("workshop_bowl1")
-
-[node name="Bowl2" type="MeshInstance3D" parent="Bowls" unique_id=1825812486]
-position = Vector3(-0.58,0.63,-0.52)
-unique_name_in_owner = true
-mesh = ExtResource("workshop_bowl2")
-
-[node name="Book" type="MeshInstance3D" parent="." unique_id=1834958557]
-rotation_degrees = Vector3(45,0,0)
-position = Vector3(-1.25,1.38,0.7)
-unique_name_in_owner = true
-mesh = ExtResource("workshop_book")
-
-[node name="Pages" type="MeshInstance3D" parent="Book" unique_id=252868661]
-unique_name_in_owner = true
-mesh = ExtResource("workshop_pages")
-
-[node name="Socket" type="Node3D" parent="." unique_id=1803186805]
-position = Vector3(0,0.9036,0)
-unique_name_in_owner = true
-visible = false
-
-[node name="Body" type="StaticBody3D" parent="." unique_id=2093614130]
+[node name="Body" type="StaticBody3D" parent="."]
 collision_layer = 4
 collision_mask = 0
-
-[node name="@CollisionShape3D@274" type="CollisionShape3D" parent="Body" unique_id=137399940]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, 0)
-shape = SubResource("CylinderShape3D_dk5av")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+position = Vector3(0,1.32,0)
+shape = SubResource("shape")

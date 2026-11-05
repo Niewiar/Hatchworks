@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/forge_window.gd" id="script"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/forge_main.tscn" id="main"]
+
+[node name="HatchworksForge" type="Window"]
+title = "Hatchworks Forge"
+size = Vector2i(1440, 900)
+min_size = Vector2i(1280, 760)
+visible = false
+force_native = true
+script = ExtResource("script")
+
+[node name="Forge" parent="." instance=ExtResource("main")]
+unique_name_in_owner = true

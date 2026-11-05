@@ -97,9 +97,11 @@ static func material(highlighted: bool = false) -> Material:
 static func build_post(data: FanceData, integrity: float, seed_value: int, pixels_per_unit: float) -> ArrayMesh:
 	var builder := Builder.new()
 	var phase := float(posmod(seed_value,100))*0.13
-	var width := data.post_width*0.5
-	var depth := data.thickness*0.63
-	var height := data.height*(0.85 if integrity<0.35 else 1.0)
+	var geometry_scale := data.detail_scale()
+	var width := data.post_width*0.5/geometry_scale
+	var depth := data.thickness*0.63/geometry_scale
+	var full_height := data.height/geometry_scale
+	var height := full_height*(0.85 if integrity<0.35 else 1.0)
 	var points: Array[Vector3] = []
 	var radii: Array[Vector2] = []
 	for index in range(9):
@@ -117,8 +119,8 @@ static func build_post(data: FanceData, integrity: float, seed_value: int, pixel
 				var p := points[index]
 				grain.append(p+Vector3(width*(-0.5+line*0.5)+0.35*sin(t*10.0+line),0,side*(depth*(1.0-0.12*t)+0.12)))
 			builder.cord(grain,0.13,data.outline_color.lightened(0.12),4)
-	for elevation in [data.height*0.35,data.height*0.73]:
-		if integrity<0.35 and elevation>data.height*0.6:
+	for elevation in [full_height*0.35,full_height*0.73]:
+		if integrity<0.35 and elevation>full_height*0.6:
 			continue
 		for wrap in range(3):
 			var rope: Array[Vector3] = []
@@ -129,39 +131,47 @@ static func build_post(data: FanceData, integrity: float, seed_value: int, pixel
 	builder.leaf(Vector3(0,height*0.79,depth+0.18),width*0.38,height*0.13,data.outline_color.lightened(0.13))
 	if integrity<0.65:
 		builder.cord([Vector3(-1,height*0.28,depth+0.2),Vector3(0.7,height*0.46,depth+0.3),Vector3(-0.3,height*0.60,depth+0.3)],0.28,data.outline_color,4)
-	return builder.finish(pixels_per_unit)
+	return builder.finish(pixels_per_unit/geometry_scale)
 
 static func build_span(data: FanceData, start: Vector2, end: Vector2, integrity: float, seed_value: int, pixels_per_unit: float, start_height: float = 0.0, end_height: float = 0.0) -> ArrayMesh:
 	var builder := Builder.new()
+	var geometry_scale := data.detail_scale()
+	start /= geometry_scale
+	end /= geometry_scale
+	start_height /= geometry_scale
+	end_height /= geometry_scale
+	var height := data.height/geometry_scale
+	var thickness := data.thickness/geometry_scale
+	var post_width := data.post_width/geometry_scale
 	var length := start.distance_to(end)
 	if length<0.5:
-		return builder.finish(pixels_per_unit)
+		return builder.finish(pixels_per_unit/geometry_scale)
 	var direction := Vector3(end.x-start.x,0,end.y-start.y)/length
 	var normal := Vector3(-direction.z,0,direction.x)
-	var inset := minf(data.post_width*0.35,length*0.2)
+	var inset := minf(post_width*0.35,length*0.2)
 	var first := Vector3(start.x,0,start.y)+direction*inset
 	var distance := length-inset*2
 	var phase := float(posmod(seed_value,100))*0.17
 	for rail in range(2):
 		if integrity<0.35 and rail==1:
 			continue
-		var elevation := data.height*(0.35 if rail==0 else 0.73)+3.5
+		var elevation := height*(0.35 if rail==0 else 0.73)+3.5
 		var points: Array[Vector3] = []
 		var radii: Array[Vector2] = []
 		for index in range(13):
 			var t := float(index)/12
 			points.append(first+direction*(distance*t)+Vector3.UP*(elevation+sin(t*PI)*1.1+sin(t*4.0+phase)*0.35)+normal*sin(t*PI)*0.6)
-			radii.append(Vector2(data.thickness*0.5,3.6+0.3*sin(t*5.0+phase)))
+			radii.append(Vector2(thickness*0.5,3.6+0.3*sin(t*5.0+phase)))
 		builder.tube(points,radii,data.body_color.lightened(0.035*rail),8)
 		for side in [-1,1]:
 			for line in range(3):
 				var grain: Array[Vector3] = []
 				for index in range(13):
 					var t := float(index)/12
-					grain.append(points[index]+normal*(side*(data.thickness*0.5+0.1))+Vector3.UP*(-1.8+line*1.6+sin(t*8.0+line)*0.25))
+					grain.append(points[index]+normal*(side*(thickness*0.5+0.1))+Vector3.UP*(-1.8+line*1.6+sin(t*8.0+line)*0.25))
 				builder.cord(grain,0.12,data.outline_color.lightened(0.19),4)
 		if integrity<0.65:
-			var middle := first+direction*(distance*0.48)+Vector3.UP*elevation+normal*(data.thickness*0.5+0.22)
+			var middle := first+direction*(distance*0.48)+Vector3.UP*elevation+normal*(thickness*0.5+0.22)
 			builder.cord([middle-Vector3.UP*3.4,middle+direction*0.8,middle-direction*0.6+Vector3.UP*3.5],0.30,data.outline_color,4)
 	builder.drape(start,end,start_height,end_height)
-	return builder.finish(pixels_per_unit)
+	return builder.finish(pixels_per_unit/geometry_scale)

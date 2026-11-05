@@ -1,0 +1,193 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/grass.svg" id="grass"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/gather_ground.svg" id="soil"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/sand.svg" id="sand"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/rock.svg" id="rock"]
+
+[sub_resource type="StyleBoxFlat" id="label"]
+bg_color = Color(0.98,0.95,0.85,0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25,0.22,0.16,1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+
+[node name="RegionLabel" type="Control"]
+mouse_filter = 2
+
+[node name="Compact" type="PanelContainer" parent="."]
+layout_mode = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("label")
+
+[node name="Title" type="Label" parent="Compact"]
+layout_mode = 2
+mouse_filter = 2
+text = "Region %d"
+theme_override_font_sizes/font_size = 15
+
+[node name="Detail" type="PanelContainer" parent="."]
+layout_mode = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("label")
+
+[node name="Content" type="VBoxContainer" parent="Detail"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 5
+
+[node name="Header" type="HBoxContainer" parent="Detail/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Swatch" type="ColorRect" parent="Detail/Content/Header"]
+layout_mode = 2
+custom_minimum_size = Vector2(12,12)
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Detail/Content/Header"]
+layout_mode = 2
+mouse_filter = 2
+text = "Region %d"
+theme_type_variation = &"HeadingLabel"
+theme_override_font_sizes/font_size = 17
+
+[node name="Area" type="Label" parent="Detail/Content"]
+layout_mode = 2
+mouse_filter = 2
+text = "Dry land: %s m²"
+theme_override_font_sizes/font_size = 13
+
+[node name="Ground" type="VBoxContainer" parent="Detail/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Kind0" type="HBoxContainer" parent="Detail/Content/Ground"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="TextureRect" parent="Detail/Content/Ground/Kind0"]
+layout_mode = 2
+custom_minimum_size = Vector2(19,19)
+mouse_filter = 2
+texture = ExtResource("grass")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Name" type="Label" parent="Detail/Content/Ground/Kind0"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "Grass"
+theme_override_font_sizes/font_size = 13
+
+[node name="Share" type="Label" parent="Detail/Content/Ground/Kind0"]
+layout_mode = 2
+mouse_filter = 2
+text = "0%"
+theme_override_font_sizes/font_size = 13
+
+[node name="Kind1" type="HBoxContainer" parent="Detail/Content/Ground"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="TextureRect" parent="Detail/Content/Ground/Kind1"]
+layout_mode = 2
+custom_minimum_size = Vector2(19,19)
+mouse_filter = 2
+texture = ExtResource("soil")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Name" type="Label" parent="Detail/Content/Ground/Kind1"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "Soil"
+theme_override_font_sizes/font_size = 13
+
+[node name="Share" type="Label" parent="Detail/Content/Ground/Kind1"]
+layout_mode = 2
+mouse_filter = 2
+text = "0%"
+theme_override_font_sizes/font_size = 13
+
+[node name="Kind3" type="HBoxContainer" parent="Detail/Content/Ground"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="TextureRect" parent="Detail/Content/Ground/Kind3"]
+layout_mode = 2
+custom_minimum_size = Vector2(19,19)
+mouse_filter = 2
+texture = ExtResource("sand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Name" type="Label" parent="Detail/Content/Ground/Kind3"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "Sand"
+theme_override_font_sizes/font_size = 13
+
+[node name="Share" type="Label" parent="Detail/Content/Ground/Kind3"]
+layout_mode = 2
+mouse_filter = 2
+text = "0%"
+theme_override_font_sizes/font_size = 13
+
+[node name="Kind4" type="HBoxContainer" parent="Detail/Content/Ground"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="TextureRect" parent="Detail/Content/Ground/Kind4"]
+layout_mode = 2
+custom_minimum_size = Vector2(19,19)
+mouse_filter = 2
+texture = ExtResource("rock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Name" type="Label" parent="Detail/Content/Ground/Kind4"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "Rocky ground"
+theme_override_font_sizes/font_size = 13
+
+[node name="Share" type="Label" parent="Detail/Content/Ground/Kind4"]
+layout_mode = 2
+mouse_filter = 2
+text = "0%"
+theme_override_font_sizes/font_size = 13
+
+[node name="Flooded" type="Label" parent="Detail/Content"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+text = "No dry land"
+theme_override_font_sizes/font_size = 13
+
+[node name="Water" type="Label" parent="Detail/Content"]
+layout_mode = 2
+mouse_filter = 2
+text = "Water: %s%% of region"
+theme_override_font_sizes/font_size = 12
+theme_type_variation = &"MutedLabel"

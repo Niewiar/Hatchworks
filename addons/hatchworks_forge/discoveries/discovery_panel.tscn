@@ -1,0 +1,146 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/discoveries/discovery_panel.gd" id="script"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/discoveries/views/discovery_graph.tscn" id="graph"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/discoveries/views/discovery_usage.tscn" id="usage"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/discoveries/views/discovery_inspector.tscn" id="inspector"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/discoveries/views/discovery_conflicts.tscn" id="conflicts"]
+
+[node name="Discoveries" type="VBoxContainer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+script = ExtResource("script")
+
+[node name="Toolbar" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="State" type="Label" parent="Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeMuted"
+text = "Wczytywanie danych…"
+autowrap_mode = 3
+
+[node name="Undo" type="Button" parent="Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cofnij"
+
+[node name="Redo" type="Button" parent="Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ponów"
+
+[node name="SaveDraft" type="Button" parent="Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Zachowaj szkic"
+
+[node name="RestoreDraft" type="Button" parent="Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Przywróć szkic"
+
+[node name="Save" type="Button" parent="Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgePrimary"
+text = "Zapisz dane"
+
+[node name="Reload" type="Button" parent="Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Wczytaj pliki"
+
+[node name="Selection" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Selection"]
+layout_mode = 2
+text = "Kafel"
+
+[node name="DiscoveryChoice" type="OptionButton" parent="Selection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="AddDiscovery" type="Button" parent="Selection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "+ Kafel"
+
+[node name="AddRecipe" type="Button" parent="Selection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "+ Receptura"
+
+[node name="SourceNotice" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Message" type="Label" parent="SourceNotice"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeError"
+text = "Wykryto zmiany poza Forge. Szkic jest zachowany; zapis danych został wstrzymany."
+autowrap_mode = 3
+
+[node name="Views" type="TabContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Connections" type="HSplitContainer" parent="Views"]
+layout_mode = 2
+split_offset = 760
+
+[node name="Graph" parent="Views/Connections" instance=ExtResource("graph")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Inspector" parent="Views/Connections" instance=ExtResource("inspector")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Usage" parent="Views" instance=ExtResource("usage")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Conflicts" parent="Views" instance=ExtResource("conflicts")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Totals" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+
+[node name="Status" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+autowrap_mode = 3
+max_lines_visible = 3
+text_overrun_behavior = 3
+
+[node name="SourceTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 2.0
+autostart = true
+
+[node name="Confirmation" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+title = "Hatchworks Forge"
+size = Vector2i(560, 180)
+ok_button_text = "Kontynuuj"
+cancel_button_text = "Anuluj"

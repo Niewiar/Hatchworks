@@ -11,6 +11,7 @@ const DEFAULT_PATH := "res://resources/database/game_database.tres"
 @export var glossary: Array[GlossaryEntry] = []
 @export var creatures: Array[CreatureSpecies] = []
 @export var research: Array[CreatureResearch] = []
+@export var science_projects: Array[ScienceProjectDefinition] = []
 @export var flora: Array[FloraSpecies] = []
 @export var resources: Array[ResourceDefinition] = []
 @export var deposits: Array[DepositDefinition] = []

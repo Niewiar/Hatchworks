@@ -3,14 +3,14 @@ class_name CreatureAiGraph
 extends RefCounted
 
 const STATES := {"any":"Any state","feed":"Eat","attack":"Attack","rest":"Rest","work":"Work"}
-const FIELDS := {"hungry":"Hungry","needs_break":"Needs a break","happy":"Happy mood","neutral":"Neutral mood","unhappy":"Unhappy mood","aggressive":"Unhappy mood (legacy)","can_attack":"Can attack","satiety":"Satiety (%)","happiness":"Happiness (%)","companions":"Companions","crowding":"Crowding stress (%)","noise":"Noise stress (%)","neighbours":"Neighbour stress (%)","work_cycles":"Completed work cycles","female":"Female","carrying_water":"Carrying water","swimming":"Swimming","dry_ground":"On dry ground","navigation_ready":"Navigation ready"}
-const BOOLEAN_FIELDS := ["hungry","needs_break","happy","neutral","unhappy","aggressive","can_attack","female","carrying_water","swimming","dry_ground","navigation_ready"]
+const FIELDS := {"hungry":"Hungry","needs_break":"Needs a break","happy":"Happy mood","neutral":"Neutral mood","unhappy":"Unhappy mood","aggressive":"Unhappy mood (legacy)","can_attack":"Can attack","work_allowed":"Allowed to work","satiety":"Satiety (%)","happiness":"Happiness (%)","companions":"Companions","crowding":"Crowding stress (%)","noise":"Noise stress (%)","neighbours":"Neighbour stress (%)","work_cycles":"Completed work cycles","female":"Female","carrying_water":"Carrying water","swimming":"Swimming","dry_ground":"On dry ground","navigation_ready":"Navigation ready"}
+const BOOLEAN_FIELDS := ["hungry","needs_break","happy","neutral","unhappy","aggressive","can_attack","work_allowed","female","carrying_water","swimming","dry_ground","navigation_ready"]
 const OPERATORS := ["<","<=",">",">=","==","!="]
 const DEFAULT_GRAPH := {"version":1,"nodes":[{"id":"any","enabled":true,"position":[40,170]},{"id":"feed","enabled":true,"position":[340,20]},{"id":"attack","enabled":true,"position":[340,170]},{"id":"rest","enabled":true,"position":[340,320]},{"id":"work","enabled":true,"position":[340,470]}],"transitions":[
 		{"id":"feed","from":"any","to":"feed","priority":100,"match":"all","conditions":[{"field":"hungry","op":"==","value":1}]},
 		{"id":"attack","from":"any","to":"attack","priority":80,"match":"all","conditions":[{"field":"can_attack","op":"==","value":1},{"field":"unhappy","op":"==","value":1}]},
-		{"id":"rest","from":"any","to":"rest","priority":60,"match":"any","conditions":[{"field":"needs_break","op":"==","value":1},{"field":"unhappy","op":"==","value":1}]},
-		{"id":"work","from":"any","to":"work","priority":0,"match":"all","conditions":[{"field":"unhappy","op":"==","value":0}]}
+		{"id":"rest","from":"any","to":"rest","priority":60,"match":"all","conditions":[{"field":"needs_break","op":"==","value":1}]},
+		{"id":"work","from":"any","to":"work","priority":0,"match":"all","conditions":[]}
 	]}
 
 static func validate(graph: Variant) -> String:

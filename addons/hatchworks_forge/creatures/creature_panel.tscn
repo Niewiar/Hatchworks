@@ -1,0 +1,268 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/creatures/creature_panel.gd" id="script"]
+[ext_resource type="Theme" path="res://addons/hatchworks_forge/creatures/creature_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/creatures/creature_preview.tscn" id="preview"]
+[ext_resource type="PackedScene" path="res://addons/hatchworks_forge/creatures/creature_fields.tscn" id="fields"]
+
+[sub_resource type="ButtonGroup" id="sex"]
+
+[sub_resource type="ButtonGroup" id="mode"]
+
+[node name="Creatures" type="PanelContainer"]
+layout_mode = 2
+theme = ExtResource("theme")
+theme_type_variation = &"CreatureMain"
+script = ExtResource("script")
+
+
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Actions" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Connection" type="Label" parent="Layout/Actions"]
+layout_mode = 2
+text = "Balans i zachowania"
+size_flags_horizontal = 3
+theme_type_variation = &"CreatureMuted"
+
+[node name="Refresh" type="Button" parent="Layout/Actions"]
+layout_mode = 2
+text = "↻ Odśwież"
+
+[node name="Revert" type="Button" parent="Layout/Actions"]
+layout_mode = 2
+text = "↶ Cofnij zmiany"
+disabled = true
+
+[node name="Save" type="Button" parent="Layout/Actions"]
+layout_mode = 2
+text = "↓ Zapisz do Godota"
+theme_type_variation = &"CreaturePrimary"
+disabled = true
+
+[node name="Body" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="Library" type="PanelContainer" parent="Layout/Body"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 0)
+
+[node name="Content" type="VBoxContainer" parent="Layout/Body/Library"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Heading" type="HBoxContainer" parent="Layout/Body/Library/Content"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Layout/Body/Library/Content/Heading"]
+layout_mode = 2
+text = "Kreatury"
+size_flags_horizontal = 3
+theme_type_variation = &"CreatureHeading"
+
+[node name="Count" type="Label" parent="Layout/Body/Library/Content/Heading"]
+layout_mode = 2
+text = "0"
+theme_type_variation = &"CreatureMuted"
+
+[node name="Search" type="LineEdit" parent="Layout/Body/Library/Content"]
+layout_mode = 2
+placeholder_text = "Szukaj"
+clear_button_enabled = true
+
+[node name="Scroll" type="ScrollContainer" parent="Layout/Body/Library/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Cards" type="VBoxContainer" parent="Layout/Body/Library/Content/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Workspace" type="VBoxContainer" parent="Layout/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Heading" type="HBoxContainer" parent="Layout/Body/Workspace"]
+layout_mode = 2
+
+[node name="Identity" type="VBoxContainer" parent="Layout/Body/Workspace/Heading"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="Name" type="Label" parent="Layout/Body/Workspace/Heading/Identity"]
+layout_mode = 2
+text = "Kreatura"
+theme_type_variation = &"CreatureTitle"
+
+[node name="Sex" type="HBoxContainer" parent="Layout/Body/Workspace/Heading"]
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 2
+
+[node name="Male" type="Button" parent="Layout/Body/Workspace/Heading/Sex"]
+layout_mode = 2
+text = "Podgląd: ♂"
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("sex")
+
+[node name="Female" type="Button" parent="Layout/Body/Workspace/Heading/Sex"]
+layout_mode = 2
+text = "Podgląd: ♀"
+toggle_mode = true
+button_group = SubResource("sex")
+
+[node name="Modes" type="HBoxContainer" parent="Layout/Body/Workspace"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Editor" type="Button" parent="Layout/Body/Workspace/Modes"]
+layout_mode = 2
+text = "Model i parametry"
+theme_type_variation = &"CreatureTab"
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("mode")
+
+[node name="History" type="Button" parent="Layout/Body/Workspace/Modes"]
+layout_mode = 2
+text = "Historia"
+theme_type_variation = &"CreatureTab"
+toggle_mode = true
+button_pressed = false
+button_group = SubResource("mode")
+
+[node name="Content" type="HBoxContainer" parent="Layout/Body/Workspace"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="ModelScroll" type="ScrollContainer" parent="Layout/Body/Workspace/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.6
+horizontal_scroll_mode = 0
+
+[node name="ModelColumn" type="VBoxContainer" parent="Layout/Body/Workspace/Content/ModelScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2
+theme_override_constants/separation = 12
+
+[node name="Preview" instance=ExtResource("preview") parent="Layout/Body/Workspace/Content/ModelScroll/ModelColumn"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Relations" type="VBoxContainer" parent="Layout/Body/Workspace/Content/ModelScroll/ModelColumn"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Layout/Body/Workspace/Content/ModelScroll/ModelColumn/Relations"]
+layout_mode = 2
+text = "Powiązania"
+theme_type_variation = &"CreatureHeading"
+
+[node name="Links" type="HFlowContainer" parent="Layout/Body/Workspace/Content/ModelScroll/ModelColumn/Relations"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 6
+
+[node name="Inspector" type="PanelContainer" parent="Layout/Body/Workspace/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(380, 0)
+size_flags_horizontal = 3
+
+[node name="Content" type="VBoxContainer" parent="Layout/Body/Workspace/Content/Inspector"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Heading" type="HBoxContainer" parent="Layout/Body/Workspace/Content/Inspector/Content"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Layout/Body/Workspace/Content/Inspector/Content/Heading"]
+layout_mode = 2
+text = "Parametry gatunku"
+size_flags_horizontal = 3
+theme_type_variation = &"CreatureHeading"
+
+[node name="Fields" instance=ExtResource("fields") parent="Layout/Body/Workspace/Content/Inspector/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Dirty" type="Label" parent="Layout/Body/Workspace/Content/Inspector/Content"]
+layout_mode = 2
+text = "Brak niezapisanych zmian"
+theme_type_variation = &"CreatureMuted"
+horizontal_alignment = 2
+
+[node name="History" type="PanelContainer" parent="Layout/Body/Workspace"]
+layout_mode = 2
+size_flags_vertical = 3
+visible = false
+
+[node name="Content" type="VBoxContainer" parent="Layout/Body/Workspace/History"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Layout/Body/Workspace/History/Content"]
+layout_mode = 2
+text = "Historia zapisów"
+theme_type_variation = &"CreatureHeading"
+
+[node name="Rows" type="RichTextLabel" parent="Layout/Body/Workspace/History/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = false
+scroll_active = true
+selection_enabled = true
+text = "Brak zapisów z Forge."
+
+[node name="Status" type="Label" parent="Layout"]
+layout_mode = 2
+text = ""
+theme_type_variation = &"CreatureMuted"
+autowrap_mode = 2
+max_lines_visible = 2
+text_overrun_behavior = 3
+
+[node name="SaveDialog" type="ConfirmationDialog" parent="Layout"]
+title = "Sprawdź zmiany"
+size = Vector2i(720, 460)
+ok_button_text = "Zapisz do Godota"
+cancel_button_text = "Wróć"
+
+[node name="Diff" type="Tree" parent="Layout/SaveDialog"]
+layout_mode = 0
+anchors_preset = 15
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 12
+offset_top = 12
+offset_right = -12
+offset_bottom = -56
+grow_horizontal = 2
+grow_vertical = 2
+columns = 3
+column_titles_visible = true
+hide_root = true
+
+[node name="DiscardDialog" type="ConfirmationDialog" parent="Layout"]
+title = "Niezapisane zmiany"
+size = Vector2i(500, 180)
+dialog_text = "Odrzucić zmiany w bieżącej kreaturze?"
+ok_button_text = "Odrzuć zmiany"
+cancel_button_text = "Zostań"

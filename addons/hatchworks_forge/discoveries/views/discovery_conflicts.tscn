@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/discoveries/views/discovery_conflicts.gd" id="script"]
+
+[node name="Conflicts" type="VBoxContainer"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+script = ExtResource("script")
+
+[node name="Heading" type="Label" parent="."]
+layout_mode = 2
+theme_type_variation = &"ForgeHeading"
+text = "Wszystkie konflikty"
+
+[node name="Explanation" type="Label" parent="."]
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "A + B i B + A to jedna para. Zmiana wyniku nie usuwa konfliktu."
+autowrap_mode = 3
+
+[node name="Summary" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Groups" type="VBoxContainer" parent="Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Empty" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Brak konfliktów. Dane można zapisać."

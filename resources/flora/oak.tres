@@ -2,20 +2,18 @@
 
 [ext_resource type="Script" uid="uid://bvsckk5ula0hu" path="res://code/environment/FloraSpecies.gd" id="1"]
 [ext_resource type="ArrayMesh" path="res://assets/flora/meshes/oak_01.res" id="2"]
-[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/oak_02.res" id="3"]
-[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/oak_03.res" id="4"]
 
 [ext_resource type="Texture2D" path="res://assets/ui/illustrated/oak.svg" id="sapling_icon"]
 
 [resource]
 script = ExtResource("1")
 kind = 0
-variants = Array[Mesh]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+variants = Array[Mesh]([ExtResource("2")])
 density = 0.044
 spacing = 2.45
 growth_rate = 0.012
 canopy_radius = 1.65
-trunk_radius = 0.28
+trunk_radius = 0.38
 trunk_height = 1.4
 harvest_resource = 9
 harvest_amount = 4

@@ -7,6 +7,7 @@ signal on_mouse_move(position: Vector2)
 signal on_mouse_scroll(direction: int)
 signal on_camera_move(direction: Vector2)
 signal on_camera_turn(direction: float)
+signal on_building_rotate(pressed: bool)
 signal on_esc()
 
 func _ready() -> void:
@@ -35,6 +36,9 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion:
 		on_mouse_move.emit(event.position)
 	elif event is InputEventKey:
+		var key: int = event.physical_keycode if event.physical_keycode != 0 else event.keycode
+		if key == KEY_R and not event.is_echo():
+			on_building_rotate.emit(event.pressed)
 		var left := Input.is_physical_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)
 		var right := Input.is_physical_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)
 		var forward := Input.is_physical_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)

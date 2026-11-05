@@ -1,0 +1,206 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://code/ui/CreatureInspection.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/ui/happiness_meter.tscn" id="happiness"]
+[ext_resource type="PackedScene" path="res://scenes/ui/breeding_panel.tscn" id="breeding"]
+[ext_resource type="PackedScene" path="res://scenes/ui/creature_factor_row.tscn" id="factor"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_rest.svg" id="rest"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_space.svg" id="space"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_company.svg" id="company"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_noise.svg" id="noise"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/status_neighbours.svg" id="neighbours"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/male.svg" id="male"]
+
+[node name="CreatureInspection" type="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+script = ExtResource("script")
+
+[node name="Header" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Name" type="Label" parent="Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 25
+theme_type_variation = &"HeadingLabel"
+text = "Tuftling"
+autowrap_mode = 3
+
+[node name="Sex" type="TextureRect" parent="Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24,24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 0
+texture = ExtResource("male")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Close" type="Button" parent="Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32,32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "×"
+theme_override_font_sizes/font_size = 22
+
+[node name="Activity" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 0
+theme_override_constants/separation = 8
+
+[node name="ActivityIcon" type="TextureRect" parent="Activity"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24,24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("rest")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ActivityName" type="Label" parent="Activity"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_type_variation = &"MutedLabel"
+text = "Resting"
+autowrap_mode = 3
+
+[node name="Wellbeing" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Wellbeing"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Happiness"
+
+[node name="Happiness" parent="Wellbeing" instance=ExtResource("happiness")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Factors" type="VBoxContainer" parent="Wellbeing"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="Space" parent="Wellbeing/Factors" instance=ExtResource("factor")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Icon" parent="Wellbeing/Factors/Space" index="0"]
+texture = ExtResource("space")
+
+[node name="Title" parent="Wellbeing/Factors/Space" index="1"]
+text = "Space"
+
+[node name="Company" parent="Wellbeing/Factors" instance=ExtResource("factor")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Icon" parent="Wellbeing/Factors/Company" index="0"]
+texture = ExtResource("company")
+
+[node name="Title" parent="Wellbeing/Factors/Company" index="1"]
+text = "Company"
+
+[node name="Noise" parent="Wellbeing/Factors" instance=ExtResource("factor")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Icon" parent="Wellbeing/Factors/Noise" index="0"]
+texture = ExtResource("noise")
+
+[node name="Title" parent="Wellbeing/Factors/Noise" index="1"]
+text = "Noise"
+
+[node name="Neighbours" parent="Wellbeing/Factors" instance=ExtResource("factor")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Icon" parent="Wellbeing/Factors/Neighbours" index="0"]
+texture = ExtResource("neighbours")
+
+[node name="Title" parent="Wellbeing/Factors/Neighbours" index="1"]
+text = "Neighbours"
+
+[node name="Terrain" type="VBoxContainer" parent="Wellbeing"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 0
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Wellbeing/Terrain"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 17
+text = "Preferred ground"
+
+[node name="TerrainPending" type="Label" parent="Wellbeing/Terrain"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MutedLabel"
+text = "Updating region…"
+autowrap_mode = 3
+
+[node name="TerrainRows" type="VBoxContainer" parent="Wellbeing/Terrain"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Food" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Separator" type="HSeparator" parent="Food"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Food"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Satiety"
+
+[node name="Satiety" type="HBoxContainer" parent="Food"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 0
+theme_override_constants/separation = 10
+
+[node name="FoodIcon" type="TextureRect" parent="Food/Satiety"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28,28)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SatietyBar" type="ProgressBar" parent="Food/Satiety"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0,16)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+show_percentage = false
+
+[node name="SatietyValue" type="Label" parent="Food/Satiety"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(46,0)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+horizontal_alignment = 2
+text = "100%"
+
+[node name="Breeding" parent="." instance=ExtResource("breeding")]
+unique_name_in_owner = true
+layout_mode = 2

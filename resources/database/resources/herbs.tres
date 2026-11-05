@@ -8,3 +8,5 @@ id = &"herbs"
 display_name = "Herbs"
 kind = 6
 icon = ExtResource("2")
+
+trade_value = 4.0

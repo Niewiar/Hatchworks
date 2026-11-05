@@ -17,6 +17,10 @@
 
 [ext_resource type="Texture2D" path="res://assets/ui/illustrated/discoveries.svg" id="science"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/grass.svg" id="grass"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/sand.svg" id="sand"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/rock.svg" id="rock"]
+
 [node name="ResourcePanel" type="MarginContainer"]
 anchors_preset = 10
 anchor_right = 1.0
@@ -31,38 +35,43 @@ size_flags_horizontal = 4
 size_flags_vertical = 0
 theme_type_variation = &"WindowPanel"
 
-[node name="Counters" type="HBoxContainer" parent="Panel"]
+[node name="Rows" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Counters" type="HBoxContainer" parent="Panel/Rows"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 20
 
-[node name="Fiber" parent="Panel/Counters" instance=ExtResource("2")]
+[node name="Fiber" parent="Panel/Rows/Counters" instance=ExtResource("2")]
 layout_mode = 2
 resource_kind = 5
 icon = ExtResource("4")
 
-[node name="Herbs" parent="Panel/Counters" instance=ExtResource("2")]
+[node name="Herbs" parent="Panel/Rows/Counters" instance=ExtResource("2")]
 layout_mode = 2
 resource_kind = 6
 icon = ExtResource("5")
 
-[node name="Wood" parent="Panel/Counters" instance=ExtResource("2")]
+[node name="Wood" parent="Panel/Rows/Counters" instance=ExtResource("2")]
 layout_mode = 2
 resource_kind = 9
 icon = ExtResource("8")
 
-[node name="Stone" parent="Panel/Counters" instance=ExtResource("2")]
+[node name="Stone" parent="Panel/Rows/Counters" instance=ExtResource("2")]
 layout_mode = 2
 resource_kind = 10
 icon = ExtResource("9")
 
-[node name="ScienceCounter" type="HBoxContainer" parent="Panel/Counters"]
+[node name="ScienceCounter" type="HBoxContainer" parent="Panel/Rows/Counters"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Icon" type="TextureRect" parent="Panel/Counters/ScienceCounter"]
+[node name="Icon" type="TextureRect" parent="Panel/Rows/Counters/ScienceCounter"]
 layout_mode = 2
 custom_minimum_size = Vector2(28,28)
 size_flags_vertical = 4
@@ -71,20 +80,42 @@ expand_mode = 1
 stretch_mode = 5
 mouse_filter = 2
 
-[node name="Text" type="VBoxContainer" parent="Panel/Counters/ScienceCounter"]
+[node name="Text" type="VBoxContainer" parent="Panel/Rows/Counters/ScienceCounter"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Name" type="Label" parent="Panel/Counters/ScienceCounter/Text"]
+[node name="Name" type="Label" parent="Panel/Rows/Counters/ScienceCounter/Text"]
 layout_mode = 2
 text = "Science"
 theme_override_font_sizes/font_size = 12
 mouse_filter = 2
 theme_type_variation = &"MutedLabel"
 
-[node name="ScienceValue" type="Label" parent="Panel/Counters/ScienceCounter/Text"]
+[node name="ScienceValue" type="Label" parent="Panel/Rows/Counters/ScienceCounter/Text"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
 mouse_filter = 2
 theme_override_font_sizes/font_size = 22
+
+[node name="GroundCounters" type="HBoxContainer" parent="Panel/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 20
+
+[node name="Grass" parent="Panel/Rows/GroundCounters" instance=ExtResource("2")]
+layout_mode = 2
+resource_kind = 0
+icon = ExtResource("grass")
+
+[node name="Sand" parent="Panel/Rows/GroundCounters" instance=ExtResource("2")]
+layout_mode = 2
+resource_kind = 3
+icon = ExtResource("sand")
+
+[node name="Rock" parent="Panel/Rows/GroundCounters" instance=ExtResource("2")]
+layout_mode = 2
+resource_kind = 4
+icon = ExtResource("rock")

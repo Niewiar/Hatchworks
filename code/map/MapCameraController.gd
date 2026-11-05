@@ -19,8 +19,15 @@ var _orbit_center := Vector3.ZERO
 var _focused := false
 var _releasing := false
 var _focus_point := Vector3.ZERO
+var _focus_offset := Vector3.ZERO
 var _release_size := 4.0
 var _focus_size := 5.0
+var _framing := false
+var _frame_position := Vector3.ZERO
+var _frame_size := 4.0
+
+func _ready() -> void:
+	process_priority = 1
 
 func configure(world_size: Vector2) -> void:
 	_world_size = world_size
@@ -70,6 +77,8 @@ func orbit(horizontal_delta: float) -> void:
 	var center := _focus_point if _focused else _orbit_center
 	global_position = center + turn * (global_position - center)
 	global_basis = (turn * global_basis).orthonormalized()
+	if _focused:
+		_focus_offset = turn*_focus_offset
 	rotated.emit(-horizontal_delta * orbit_sensitivity)
 
 func zoom(direction: int, screen_position: Vector2, surface: Node3D) -> void:
@@ -95,39 +104,73 @@ func _clamp_position(surface: Node3D) -> void:
 	global_position += surface.to_global(local) - focus
 
 func focus_on(point: Vector3) -> void:
+	_framing = false
 	if not _focused:
 		_focus_size = clampf(focus_start_zoom,focus_minimum_zoom,focus_maximum_zoom)
 	_focused = true
 	focus_changed.emit(true)
 	_releasing = false
 	_focus_point = point
-	global_position = _focus_point+global_basis.z*20.0
+	_focus_offset = global_position-(_focus_point+global_basis.z*20.0)
 	set_process(true)
 
 func track_focus(point: Vector3) -> void:
 	_focus_point = point
-	if _focused:
-		global_position = _focus_point+global_basis.z*20.0
 
 func release_focus() -> void:
 	if not _focused:
 		return
 	_focused = false
+	_focus_offset = Vector3.ZERO
 	focus_changed.emit(false)
 	_release_size = clampf(size*focus_release_zoom_factor,focus_minimum_zoom,maximum_zoom)
 	_releasing = true
 	set_process(true)
 
 func begin_navigation() -> void:
+	_framing = false
 	_releasing = false
 	set_process(_focused)
+
+func frame_bounds(bounds: AABB) -> void:
+	if not bounds.position.is_finite() or not bounds.size.is_finite():
+		return
+	var inverse := global_basis.inverse()
+	var projected := AABB(inverse*bounds.position,Vector3.ZERO)
+	for index in 8:
+		projected = projected.expand(inverse*bounds.get_endpoint(index))
+	var viewport_size := get_viewport().get_visible_rect().size
+	var aspect := maxf(viewport_size.x,1.0)/maxf(viewport_size.y,1.0)
+	var desired_size := maxf(projected.size.y+1.0,(projected.size.x+1.0)/aspect)
+	if keep_aspect == KEEP_WIDTH:
+		desired_size *= aspect
+	_frame_size = clampf(desired_size,minimum_zoom,maximum_zoom)
+	_frame_position = global_basis*projected.get_center()+global_basis.z*maxf(20.0,projected.size.z*0.5+near+2.0)
+	if _focused:
+		_focused = false
+		focus_changed.emit(false)
+	_focus_offset = Vector3.ZERO
+	_releasing = false
+	_framing = true
+	set_process(true)
 
 func _process(delta: float) -> void:
 	var previous_size := size
 	var weight := 1.0-exp(-8.0*delta)
 	if _focused:
-		global_position = _focus_point+global_basis.z*20.0
+		_focus_offset = _focus_offset.lerp(Vector3.ZERO,weight)
+		if _focus_offset.length_squared() < 0.000001:
+			_focus_offset = Vector3.ZERO
+		global_position = _focus_point+global_basis.z*20.0+_focus_offset
 		size = lerpf(size,_focus_size,weight)
+	elif _framing:
+		global_position = global_position.lerp(_frame_position,weight)
+		size = lerpf(size,_frame_size,weight)
+		if global_position.distance_squared_to(_frame_position) < 0.000001 and absf(size-_frame_size) < 0.01:
+			global_position = _frame_position
+			size = _frame_size
+			_framing = false
+			set_process(false)
 	elif _releasing:
 		size = lerpf(size,_release_size,weight)
 		if absf(size-_release_size) < 0.01:
@@ -145,7 +188,9 @@ func capture_view() -> Dictionary:
 	return {"transform":global_transform,"size":saved_size}
 
 func restore_view(value: Dictionary) -> void:
+	_framing = false
 	_focused = false
+	_focus_offset = Vector3.ZERO
 	focus_changed.emit(false)
 	_releasing = false
 	if value.get("transform") is Transform3D:

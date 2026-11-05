@@ -2,8 +2,8 @@
 [ext_resource type="PackedScene" path="res://assets/creatures/rootle/rootle_male.glb" id="model"]
 [ext_resource type="Script" path="res://code/creatures/CreatureCelAppearance.gd" id="appearance"]
 [node name="Model" instance=ExtResource("model")]
-position = Vector3(0, -0.1950000000, 0)
+position = Vector3(0, -0.2200000000, 0)
 script = ExtResource("appearance")
-walk_distance = 0.182000
+walk_distance = 0.1787878788
 walk_speed = 0.24
-work_contact_offset = Vector3(-0.0747083768, 0, 0.2266368404)
+work_contact_offset = Vector3(-0.0670000017, 0, 0.2750000095)

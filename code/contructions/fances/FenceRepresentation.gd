@@ -1,3 +1,4 @@
+class_name FenceRepresentation
 extends MeshInstance3D
 
 var state: FenceSpanState
@@ -33,7 +34,7 @@ func configure(span: FenceSpanState, start: Vector2, end: Vector2, pixels_per_un
 	position = Vector3(center.x / pixels_per_unit, center_height, center.y / pixels_per_unit)
 	var seed_value := 0 if preview_mode else hash([start_point.snapped(Vector2(0.25, 0.25)), end_point.snapped(Vector2(0.25, 0.25)), data.id])
 	var delta := end_point - start_point
-	var key := hash([data.id, delta.snapped(Vector2(0.001,0.001)), state.integrity(), seed_value, pixels_per_unit, snappedf(_end_height-_start_height,0.0001)])
+	var key := hash([data.id, delta.snapped(Vector2(0.001,0.001)), state.integrity(), seed_value, data.height, data.post_width, data.thickness, pixels_per_unit, snappedf(_end_height-_start_height,0.0001)])
 	if key != _geometry_key or mesh == null:
 		mesh = FenceGeometry.build_span(data,start_point-center,end_point-center,state.integrity(),seed_value,pixels_per_unit,_start_height*pixels_per_unit,_end_height*pixels_per_unit)
 		_geometry_key = key

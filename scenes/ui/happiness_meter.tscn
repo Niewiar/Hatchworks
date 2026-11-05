@@ -5,10 +5,6 @@
 
 [ext_resource type="Script" path="res://code/ui/HappinessMeter.gd" id="script"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/happiness_unhappy.svg" id="unhappy"]
-
-[ext_resource type="Texture2D" path="res://assets/ui/illustrated/happiness_neutral.svg" id="neutral"]
-
 [ext_resource type="Texture2D" path="res://assets/ui/illustrated/happiness_happy.svg" id="happy"]
 
 [sub_resource type="StyleBoxFlat" id="background"]
@@ -33,9 +29,9 @@ script = ExtResource("script")
 theme = ExtResource("world_theme")
 
 [node name="Icon" type="TextureRect" parent="."]
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-size_flags_vertical = 0
+size_flags_vertical = 4
 mouse_filter = 2
 texture = ExtResource("happy")
 expand_mode = 1
@@ -44,11 +40,12 @@ stretch_mode = 5
 [node name="Scale" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 mouse_filter = 2
 theme_override_constants/separation = 4
 
 [node name="Track" type="Control" parent="Scale"]
-custom_minimum_size = Vector2(0, 14)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 mouse_filter = 2
 
@@ -64,104 +61,11 @@ theme_override_styles/background = SubResource("background")
 theme_override_styles/fill = SubResource("fill")
 show_percentage = false
 
-[node name="UnhappyBoundary" type="ColorRect" parent="Scale/Track"]
-layout_mode = 0
-anchor_left = 0.4
-anchor_right = 0.4
-anchor_bottom = 1.0
-offset_left = -1.0
-offset_right = 1.0
-mouse_filter = 2
-color = Color(0.035, 0.06, 0.05, 1)
-
-[node name="HappyBoundary" type="ColorRect" parent="Scale/Track"]
-layout_mode = 0
-anchor_left = 0.7
-anchor_right = 0.7
-anchor_bottom = 1.0
-offset_left = -1.0
-offset_right = 1.0
-mouse_filter = 2
-color = Color(0.035, 0.06, 0.05, 1)
-
-[node name="Legend" type="HBoxContainer" parent="Scale"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="Unhappy" type="VBoxContainer" parent="Scale/Legend"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 4.0
-mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="Icon" type="TextureRect" parent="Scale/Legend/Unhappy"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_horizontal = 4
-mouse_filter = 2
-texture = ExtResource("unhappy")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Range" type="Label" parent="Scale/Legend/Unhappy"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 10
-text = "0–39%"
-horizontal_alignment = 1
-
-[node name="Neutral" type="VBoxContainer" parent="Scale/Legend"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
-mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="Icon" type="TextureRect" parent="Scale/Legend/Neutral"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_horizontal = 4
-mouse_filter = 2
-texture = ExtResource("neutral")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Range" type="Label" parent="Scale/Legend/Neutral"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 10
-text = "40–69%"
-horizontal_alignment = 1
-
-[node name="Happy" type="VBoxContainer" parent="Scale/Legend"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
-mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="Icon" type="TextureRect" parent="Scale/Legend/Happy"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_horizontal = 4
-mouse_filter = 2
-texture = ExtResource("happy")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Range" type="Label" parent="Scale/Legend/Happy"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 10
-text = "70–100%"
-horizontal_alignment = 1
-
 [node name="Value" type="Label" parent="."]
 custom_minimum_size = Vector2(46, 0)
 layout_mode = 2
-size_flags_vertical = 0
+size_flags_vertical = 4
 mouse_filter = 2
+theme_override_font_sizes/font_size = 21
 text = "75%"
 horizontal_alignment = 2

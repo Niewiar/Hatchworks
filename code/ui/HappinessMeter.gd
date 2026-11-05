@@ -36,25 +36,10 @@ func _show_hint() -> void:
 	if not is_instance_valid(_creature) or not is_instance_valid(_tooltips):
 		return
 	_hovered = true
-	var factors := _creature.happiness_factors()
-	var species := _creature.species_data()
-	var unhappy := String.num(species.unhappy_threshold,2)
-	var happy := String.num(species.happy_threshold,2)
-	var lines := PackedStringArray([
-		tr("Happiness: %d%% · %s") % [floori(_creature.happiness),tr(STATES[_creature.mood()])],
-		tr("Unhappy: below %s%% · Neutral: %s%% to below %s%% · Happy: from %s%%") % [unhappy,unhappy,happy,happy],
-		"",
-		tr("Current conditions: %d%%") % roundi(factors.target),
-		tr("Base comfort: +%.1f pts") % factors.base,
-		tr("Satiety: +%.1f pts (%d%%)") % [factors.satiety,floori(_creature.satiety)],
-		tr("Company: +%.1f pts (%d companions)") % [factors.company,_creature.companions],
-		tr("Crowding: %.1f pts") % factors.crowding,
-		tr("Noise: %.1f pts") % factors.noise,
-		tr("Unwanted neighbours: %.1f pts") % factors.neighbours,
-		"",
-		tr("Happiness gradually follows these conditions.")
-	])
-	_tooltips.show_hint("\n".join(lines),self)
+	var message := tr(STATES[_creature.mood()])+"\n"+tr("Its mood follows the conditions below.")
+	if _creature is CreatureActivityController:
+		message += "\n"+tr("When working: up to %d tasks before a rest.") % _creature.work_burst_size()
+	_tooltips.show_hint(message,self)
 
 func _hide_hint() -> void:
 	_hovered = false

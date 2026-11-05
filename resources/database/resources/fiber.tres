@@ -10,3 +10,5 @@ icon = ExtResource("2")
 starting_amount = 0.0
 id = &"fiber"
 display_name = "Plant Fiber"
+
+trade_value = 1.0

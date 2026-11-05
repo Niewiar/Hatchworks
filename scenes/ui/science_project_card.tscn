@@ -1,0 +1,98 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/discoveries.svg" id="science_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/illustrated/science_projects.svg" id="projects_icon"]
+
+[node name="ScienceProjectCard" type="PanelContainer"]
+custom_minimum_size = Vector2(348,384)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Content" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/Content"]
+layout_mode = 2
+autowrap_mode = 3
+theme_type_variation = &"HeadingLabel"
+theme_override_font_sizes/font_size = 24
+
+[node name="Description" type="Label" parent="Margin/Content"]
+layout_mode = 2
+autowrap_mode = 3
+theme_type_variation = &"MutedLabel"
+
+[node name="Separator" type="HSeparator" parent="Margin/Content"]
+layout_mode = 2
+
+[node name="Materials" type="Label" parent="Margin/Content"]
+layout_mode = 2
+text = "Research materials"
+theme_type_variation = &"MutedLabel"
+
+[node name="Costs" type="VBoxContainer" parent="Margin/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Reward" type="HBoxContainer" parent="Margin/Content"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Margin/Content/Reward"]
+layout_mode = 2
+custom_minimum_size = Vector2(42,42)
+texture = ExtResource("science_icon")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Value" type="Label" parent="Margin/Content/Reward"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.36,0.46,0.28,1)
+text = "+1 Science"
+
+[node name="Complete" type="Button" parent="Margin/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0,48)
+text = "Give materials"
+theme_type_variation = &"PrimaryButton"
+
+[node name="Pending" type="VBoxContainer" parent="Margin"]
+visible = false
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="Icon" type="TextureRect" parent="Margin/Pending"]
+layout_mode = 2
+custom_minimum_size = Vector2(90,90)
+texture = ExtResource("projects_icon")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+modulate = Color(1,1,1,0.5)
+
+[node name="Title" type="Label" parent="Margin/Pending"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = "A new project is on its way"
+theme_type_variation = &"HeadingLabel"
+theme_override_font_sizes/font_size = 23
+
+[node name="Info" type="Label" parent="Margin/Pending"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = "Explore and gather materials while researchers prepare their next request."
+theme_type_variation = &"MutedLabel"

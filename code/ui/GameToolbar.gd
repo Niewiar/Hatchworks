@@ -8,7 +8,9 @@ const BUILD_CHOICE = preload("res://scenes/ui/build_choice.tscn")
 
 @onready var _building_buttons_content: HBoxContainer = %BuildingButtons
 @onready var _base_buttons_content: HBoxContainer = %BaseButtons
+@onready var _editing_buttons_content: HBoxContainer = %EditingButtons
 @onready var _gather_buttons_content: HBoxContainer = %GatherButtons
+@onready var _paint_buttons_content: HBoxContainer = %PaintButtons
 @onready var _build_cost: RichTextLabel = $VBoxContainer/BuildCost
 @onready var _sculpt_buttons_content: HBoxContainer = %SculptButtons
 
@@ -27,11 +29,17 @@ func _ready() -> void:
 		_rewards.connect("presentation_reset",_on_presentation_reset)
 	for button: Button in _base_buttons_content.get_children():
 		button.pressed.connect(_on_base_button_toggled.bind(button,int(button.get_meta("mode"))))
+	for button: Button in _editing_buttons_content.get_children():
+		button.pressed.connect(_on_building_edit_selected.bind(int(button.get_meta("building_edit_tool"))))
+	map_manager.building_editing_controller.changed.connect(_refresh_editing_controls)
+	map_manager.modal_changed.connect(func(_active: bool): _refresh_rotation_hint())
 	for button: Button in _sculpt_buttons_content.get_children():
 		button.pressed.connect(_on_sculpt_selected.bind(int(button.get_meta("sculpt_tool"))))
 	for button: Button in _gather_buttons_content.get_children():
 		button.pressed.connect(_on_gather_selected.bind(int(button.get_meta("harvest_tool"))))
-	for container in [_building_buttons_content,_base_buttons_content,_sculpt_buttons_content,_gather_buttons_content]:
+	for button: Button in _paint_buttons_content.get_children():
+		button.pressed.connect(_on_ground_selected.bind(int(button.get_meta("ground_kind"))))
+	for container in [_building_buttons_content,_base_buttons_content,_sculpt_buttons_content,_paint_buttons_content,_gather_buttons_content,_editing_buttons_content]:
 		for button: Button in container.get_children():
 			button.mouse_entered.connect(_on_button_hovered.bind(button))
 			button.mouse_exited.connect(tooltip_controller.hide_text.bind(button))
@@ -43,8 +51,9 @@ func _ready() -> void:
 	map_manager.discoveries.discovered.connect(_on_discovered)
 	map_manager.building_controller.preview_changed.connect(_on_build_preview_changed)
 	map_manager.building_controller.selection_changed.connect(_on_building_selection_changed)
-	map_manager.building_controller.building_placed.connect(func(_building, _data): _refresh_building_cost())
+	map_manager.building_controller.prices_changed.connect(_refresh_building_cost)
 	_refresh_unlocks()
+	_refresh_ground_amounts()
 	_on_mode_changed(MapManager.MODE.NONE)
 	_refresh_badges()
 
@@ -84,14 +93,18 @@ func _on_mode_changed(mode: MapManager.MODE) -> void:
 		$DiscoveryFlash.stop()
 		%DiscoveriesButton.modulate = Color.WHITE
 	_building_buttons_content.visible = mode in [MapManager.MODE.BUILD,MapManager.MODE.FANCE]
+	_editing_buttons_content.visible = mode == MapManager.MODE.EDIT_BUILDINGS
 	_sculpt_buttons_content.visible = mode == MapManager.MODE.SCULPT
+	_paint_buttons_content.visible = mode == MapManager.MODE.PAINT
 	_gather_buttons_content.visible = mode == MapManager.MODE.HARVEST
 	var base_mode := MapManager.MODE.BUILD if mode in [MapManager.MODE.FANCE,MapManager.MODE.PLANT] else mode
 	for other: Button in _base_buttons_content.get_children():
 		other.set_pressed_no_signal(int(other.get_meta("mode")) == base_mode)
 	_sync_building_selection()
+	_sync_tool_selection()
 	_refresh_building_cost()
 	_refresh_badges()
+	_refresh_editing_controls()
 
 func _on_building_selected(index: int) -> void:
 	map_manager.new_content.mark_building_seen(map_manager.database.buildings[index].id)
@@ -120,9 +133,11 @@ func _sync_building_selection() -> void:
 
 func _on_inventory_changed(_kind: int, _amount: float) -> void:
 	_refresh_building_cost()
+	_refresh_ground_amounts()
 
 func _on_build_preview_changed(_valid: bool, _reason: String) -> void:
 	_refresh_building_cost()
+	_refresh_rotation_hint()
 
 func _refresh_building_cost() -> void:
 	if _mode == MapManager.MODE.PLANT and map_manager.planting_controller.selected != null:
@@ -144,7 +159,7 @@ func _refresh_building_cost() -> void:
 	for kind: int in costs:
 		if costs[kind] > 0:
 			parts.append(_resource_cost(kind,costs[kind]))
-	var first_free := data.first_placement_free and map_manager.building_controller.placement_count(data) == 0
+	var first_free := map_manager.building_controller.first_placement_available(data)
 	_set_build_cost(tr("First one free") if first_free else ("   ".join(parts) if not parts.is_empty() else tr("Free")))
 
 func _resource_cost(kind: int, cost: int) -> String:
@@ -173,17 +188,67 @@ func _on_button_hovered(button: Button) -> void:
 		map_manager.new_content.mark_fence_seen(map_manager.database.construction.fances[int(button.get_meta("fence_index"))].id)
 	elif button.has_meta("sculpt_tool"):
 		map_manager.new_content.mark_tool_seen(MapManager.MODE.SCULPT,int(button.get_meta("sculpt_tool")))
+	elif button.has_meta("ground_kind"):
+		map_manager.new_content.mark_tool_seen(MapManager.MODE.PAINT,int(button.get_meta("ground_kind")))
 	elif button.has_meta("harvest_tool"):
 		map_manager.new_content.mark_tool_seen(MapManager.MODE.HARVEST,int(button.get_meta("harvest_tool")))
-	tooltip_controller.show_text(tr(title),button)
+	elif button.has_meta("building_edit_tool"):
+		map_manager.new_content.mark_tool_seen(MapManager.MODE.EDIT_BUILDINGS,int(button.get_meta("building_edit_tool")))
+	var text := tr(title)
+	if button.has_meta("ground_kind"):
+		text += " · "+tr("%s available") % map_manager.inventory.quantity_text(int(button.get_meta("ground_kind")))
+	if button.has_meta("tooltip_body"):
+		text += "\n"+tr(str(button.get_meta("tooltip_body")))
+	tooltip_controller.show_text(text,button)
+
+func _on_building_edit_selected(tool: int) -> void:
+	map_manager.new_content.mark_tool_seen(MapManager.MODE.EDIT_BUILDINGS,tool)
+	map_manager.select_building_edit_tool(tool)
+	_refresh_editing_controls()
+
+func _refresh_editing_controls() -> void:
+	for button: Button in _editing_buttons_content.get_children():
+		button.set_pressed_no_signal(int(button.get_meta("building_edit_tool")) == int(map_manager.building_editing_controller.selected_tool))
+	_refresh_rotation_hint()
+	_refresh_captions()
+
+func _refresh_rotation_hint() -> void:
+	var building := map_manager.building_controller.definition()
+	var placing := _mode == MapManager.MODE.BUILD and building != null and map_manager.building_controller.unlocked(building)
+	var moving := _mode == MapManager.MODE.EDIT_BUILDINGS and map_manager.building_editing_controller.is_moving()
+	%RotationHint.visible = not map_manager.modal_active and (placing or moving)
 
 func _on_sculpt_selected(index: TerrainController.SCULPT_TOOL) -> void:
 	map_manager.new_content.mark_tool_seen(MapManager.MODE.SCULPT,index)
 	map_manager.select_sculpt_tool(index)
+	_sync_tool_selection()
 
 func _on_gather_selected(tool: HarvestController.TOOL) -> void:
 	map_manager.new_content.mark_tool_seen(MapManager.MODE.HARVEST,tool)
 	map_manager.select_harvest_tool(tool)
+	_sync_tool_selection()
+
+func _on_ground_selected(kind: int) -> void:
+	map_manager.new_content.mark_tool_seen(MapManager.MODE.PAINT,kind)
+	map_manager.select_ground(kind)
+	_sync_tool_selection()
+
+func _sync_tool_selection() -> void:
+	for button: Button in _paint_buttons_content.get_children():
+		button.set_pressed_no_signal(int(button.get_meta("ground_kind")) == map_manager.selected_ground)
+	for button: Button in _sculpt_buttons_content.get_children():
+		button.set_pressed_no_signal(int(button.get_meta("sculpt_tool")) == int(map_manager.selected_sculpt_tool))
+	for button: Button in _gather_buttons_content.get_children():
+		button.set_pressed_no_signal(int(button.get_meta("harvest_tool")) == int(map_manager.harvest_controller.selected_tool))
+	_refresh_ground_amounts()
+	_refresh_captions()
+
+func _refresh_ground_amounts() -> void:
+	for button: Button in _paint_buttons_content.get_children():
+		var kind := int(button.get_meta("ground_kind"))
+		button.get_node("Amount").text = map_manager.inventory.quantity_text(kind)
+		var color := Color(1,0.96,0.84) if button.button_pressed else Color(0.22,0.18,0.13)
+		button.get_node("Amount").add_theme_color_override("font_color",Color(0.62,0.25,0.17) if map_manager.inventory.amount(kind) <= 0.0 else color)
 
 func _refresh_unlocks() -> void:
 	for button: Button in _building_buttons_content.get_children():
@@ -224,8 +289,12 @@ func _refresh_badges() -> void:
 		button.get_node("NewContent").set_count(1 if unread and button.visible else 0)
 	for button: Button in _sculpt_buttons_content.get_children():
 		button.get_node("NewContent").set_count(1 if map_manager.new_content.tool_is_unread(MapManager.MODE.SCULPT,int(button.get_meta("sculpt_tool"))) else 0)
+	for button: Button in _paint_buttons_content.get_children():
+		button.get_node("NewContent").set_count(1 if map_manager.new_content.tool_is_unread(MapManager.MODE.PAINT,int(button.get_meta("ground_kind"))) else 0)
 	for button: Button in _gather_buttons_content.get_children():
 		button.get_node("NewContent").set_count(1 if map_manager.new_content.tool_is_unread(MapManager.MODE.HARVEST,int(button.get_meta("harvest_tool"))) else 0)
+	for button: Button in _editing_buttons_content.get_children():
+		button.get_node("NewContent").set_count(1 if map_manager.new_content.tool_is_unread(MapManager.MODE.EDIT_BUILDINGS,int(button.get_meta("building_edit_tool"))) else 0)
 	if map_manager.new_content.unread_count(MapManager.MODE.DISCOVERIES) > 0 and _mode != MapManager.MODE.DISCOVERIES:
 		if not $DiscoveryFlash.is_playing():
 			$DiscoveryFlash.play(&"new_discovery")
@@ -238,6 +307,6 @@ func _notification(what: int) -> void:
 		_refresh_building_cost()
 
 func _refresh_captions() -> void:
-	for container in [_building_buttons_content,_base_buttons_content,_sculpt_buttons_content,_gather_buttons_content]:
+	for container in [_building_buttons_content,_base_buttons_content,_sculpt_buttons_content,_paint_buttons_content,_gather_buttons_content,_editing_buttons_content]:
 		for button: Button in container.get_children():
 			button.get_node("Caption").add_theme_color_override("font_color",Color(1,0.96,0.84) if button.button_pressed else Color(0.22,0.18,0.13))

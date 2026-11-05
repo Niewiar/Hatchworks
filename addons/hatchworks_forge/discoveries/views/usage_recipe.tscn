@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/discoveries/views/usage_recipe.gd" id="1"]
+
+[node name="UsageRecipe" type="HBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1")
+
+[node name="Equation" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "A + B → Wynik"
+autowrap_mode = 2
+
+[node name="Edit" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Edytuj"

@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://code/map/CreatureDropMarker.gd" id="script"]
+[ext_resource type="Shader" path="res://code/map/creature_drop_marker.gdshader" id="shader"]
+
+[sub_resource type="ShaderMaterial" id="marker_material"]
+resource_local_to_scene = true
+render_priority = 25
+shader = ExtResource("shader")
+
+[sub_resource type="PlaneMesh" id="marker_mesh"]
+size = Vector2(1, 1)
+subdivide_width = 24
+subdivide_depth = 24
+
+[node name="CreatureDropMarker" type="MeshInstance3D"]
+visible = false
+cast_shadow = 0
+material_override = SubResource("marker_material")
+mesh = SubResource("marker_mesh")
+script = ExtResource("script")

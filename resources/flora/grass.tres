@@ -1,16 +1,14 @@
-[gd_resource type="Resource" script_class="FloraSpecies" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="FloraSpecies" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://code/environment/FloraSpecies.gd" id="1"]
 [ext_resource type="ArrayMesh" path="res://assets/flora/meshes/grass_01.res" id="2"]
-[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/grass_02.res" id="3"]
-[ext_resource type="ArrayMesh" path="res://assets/flora/meshes/grass_03.res" id="4"]
 
 [ext_resource type="Texture2D" path="res://assets/ui/illustrated/grass.svg" id="sapling_icon"]
 
 [resource]
 script = ExtResource("1")
 kind = 4
-variants = Array[Mesh]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+variants = Array[Mesh]([ExtResource("2")])
 density = 0.8
 spacing = 0.32
 growth_rate = 0.22

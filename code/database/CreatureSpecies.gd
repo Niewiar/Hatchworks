@@ -40,15 +40,12 @@ extends DatabaseEntry
 @export_group("Leisure")
 @export_range(1.0,120.0,0.5) var leisure_seconds_min := 8.0
 @export_range(1.0,120.0,0.5) var leisure_seconds_max := 16.0
-@export_range(1,10,1) var leisure_cycles_min := 2
-@export_range(1,10,1) var leisure_cycles_max := 3
-@export_range(1,10,1) var neutral_leisure_cycles_min := 1
-@export_range(1,10,1) var neutral_leisure_cycles_max := 1
 
 @export_group("Contentment")
 @export_range(0.0,100.0,1.0) var unhappy_threshold := 40.0
 @export_range(0.0,100.0,1.0) var happy_threshold := 70.0
 @export_range(1.0,300.0,1.0) var happiness_response_seconds := 30.0
+@export_range(0.0,100.0,0.5) var terrain_happiness_penalty := 25.0
 @export_range(1.0,100.0,0.5) var preferred_area := 12.0
 @export_range(1.0,30.0,0.5) var company_radius := 6.0
 
@@ -66,10 +63,13 @@ enum PRODUCTION { NONE, GARDENER, QUARRY, HERBALIST, SAND_MAKER }
 @export var requires_water := true
 @export_range(-1,4,1) var habitat_ground := 0
 
+@export_group("Region terrain targets")
+@export var terrain_minimums: Dictionary[StringName,float] = {}
+@export var female_terrain_minimums: Dictionary[StringName,float] = {}
+
 @export_group("Ecosystem production")
 @export var production: PRODUCTION = PRODUCTION.NONE
 @export var female_production: PRODUCTION = PRODUCTION.NONE
-@export_range(0.05,0.75,0.05) var sand_coverage_limit := 0.3
 @export_range(1.0,30.0,0.1) var production_seconds := 4.0
 @export_range(0.1,30.0,0.1) var impact_time := 2.0
 @export_range(1.0,15.0,0.5) var production_radius := 5.0
@@ -81,3 +81,6 @@ enum PRODUCTION { NONE, GARDENER, QUARRY, HERBALIST, SAND_MAKER }
 
 func production_for(female: bool) -> PRODUCTION:
 	return female_production if female and female_production != PRODUCTION.NONE else production
+
+func terrain_targets(female: bool) -> Dictionary[StringName,float]:
+	return female_terrain_minimums if female and not female_terrain_minimums.is_empty() else terrain_minimums

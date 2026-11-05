@@ -1,0 +1,309 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/hatchworks_forge/creatures/creature_preview.gd" id="script"]
+
+[sub_resource type="ButtonGroup" id="ViewGroup"]
+allow_unpress = true
+
+[sub_resource type="StyleBoxFlat" id="PreviewSurface"]
+bg_color = Color(0.105, 0.16, 0.125, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.33, 0.27, 1)
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.12, 0.19, 0.145, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.77, 0.84, 0.74, 1)
+ambient_light_energy = 0.8
+reflected_light_source = 2
+tonemap_mode = 0
+
+[sub_resource type="StandardMaterial3D" id="GridMaterial"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(0.4, 0.55, 0.44, 0.27)
+
+[sub_resource type="StandardMaterial3D" id="BoneMaterial"]
+shading_mode = 0
+no_depth_test = true
+albedo_color = Color(0.35, 0.95, 0.9, 1)
+
+[sub_resource type="StandardMaterial3D" id="FloorMaterial"]
+albedo_color = Color(0.145, 0.205, 0.16, 1)
+roughness = 1.0
+
+[sub_resource type="PlaneMesh" id="FloorMesh"]
+material = SubResource("FloorMaterial")
+size = Vector2(100, 100)
+
+[node name="CreaturePreview" type="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+script = ExtResource("script")
+
+[node name="ViewportFrame" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("PreviewSurface")
+
+[node name="FrameContent" type="VBoxContainer" parent="ViewportFrame"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ViewTools" type="HBoxContainer" parent="ViewportFrame/FrameContent"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="ViewportFrame/FrameContent/ViewTools"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeMuted"
+text = "Podgląd 3D"
+
+[node name="Front" type="Button" parent="ViewportFrame/FrameContent/ViewTools"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ViewGroup")
+text = "Przód"
+
+[node name="Side" type="Button" parent="ViewportFrame/FrameContent/ViewTools"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ViewGroup")
+text = "Bok"
+
+[node name="ThreeQuarter" type="Button" parent="ViewportFrame/FrameContent/ViewTools"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ViewGroup")
+text = "¾"
+
+[node name="Fit" type="Button" parent="ViewportFrame/FrameContent/ViewTools"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "⤢"
+
+[node name="ViewportArea" type="Control" parent="ViewportFrame/FrameContent"]
+custom_minimum_size = Vector2(200, 260)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="ViewportContainer" type="SubViewportContainer" parent="ViewportFrame/FrameContent/ViewportArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+stretch = true
+
+[node name="Viewport" type="SubViewport" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer"]
+unique_name_in_owner = true
+own_world_3d = true
+handle_input_locally = false
+size = Vector2i(800, 400)
+render_target_update_mode = 4
+audio_listener_enable_3d = false
+physics_object_picking = false
+
+[node name="Stage" type="Node3D" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport/Stage"]
+environment = SubResource("Environment")
+
+[node name="Camera" type="Camera3D" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport/Stage"]
+unique_name_in_owner = true
+position = Vector3(1, 0.8, 1.4)
+current = true
+fov = 36.0
+near = 0.005
+far = 100.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport/Stage"]
+rotation_degrees = Vector3(-48, -35, 0)
+light_color = Color(1, 0.94, 0.78, 1)
+light_energy = 1.6
+shadow_enabled = true
+
+[node name="FillLight" type="DirectionalLight3D" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport/Stage"]
+rotation_degrees = Vector3(-30, 140, 0)
+light_color = Color(0.68, 0.81, 0.75, 1)
+light_energy = 0.55
+
+[node name="Floor" type="MeshInstance3D" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport/Stage"]
+position = Vector3(0, -0.004, 0)
+mesh = SubResource("FloorMesh")
+cast_shadow = 0
+
+[node name="GridMesh" type="MeshInstance3D" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport/Stage"]
+unique_name_in_owner = true
+material_override = SubResource("GridMaterial")
+cast_shadow = 0
+
+[node name="BoneMesh" type="MeshInstance3D" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport/Stage"]
+unique_name_in_owner = true
+material_override = SubResource("BoneMaterial")
+cast_shadow = 0
+
+[node name="ModelRoot" type="Node3D" parent="ViewportFrame/FrameContent/ViewportArea/ViewportContainer/Viewport/Stage"]
+unique_name_in_owner = true
+
+[node name="ModelStatus" type="Label" parent="ViewportFrame/FrameContent/ViewportArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+text = "Wybierz kreaturę"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ViewFooter" type="HBoxContainer" parent="ViewportFrame/FrameContent"]
+layout_mode = 2
+
+[node name="ModelLabel" type="Label" parent="ViewportFrame/FrameContent/ViewFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeMuted"
+
+[node name="Muted" type="Label" parent="ViewportFrame/FrameContent/ViewFooter"]
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "Dźwięk wyciszony"
+
+[node name="Grid" type="CheckButton" parent="ViewportFrame/FrameContent/ViewFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Siatka"
+
+[node name="Bones" type="CheckButton" parent="ViewportFrame/FrameContent/ViewFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Kości"
+
+[node name="AnimationHeader" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Animations" type="Label" parent="AnimationHeader"]
+layout_mode = 2
+theme_type_variation = &"ForgeHeading"
+text = "Animacje"
+
+[node name="ClipCount" type="Label" parent="AnimationHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ForgeMuted"
+text = "0"
+
+[node name="NativeClip" type="Label" parent="AnimationHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+
+[node name="ClipButtons" type="HFlowContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="ClipTemplate" type="Button" parent="ClipButtons"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+toggle_mode = true
+
+[node name="NoAnimations" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "Brak animacji w modelu"
+
+[node name="Playback" type="HFlowContainer" parent="."]
+layout_mode = 2
+theme_override_constants/h_separation = 7
+theme_override_constants/v_separation = 7
+
+[node name="Play" type="Button" parent="Playback"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(38, 36)
+layout_mode = 2
+theme_type_variation = &"ForgePrimary"
+text = "▶"
+
+[node name="PreviousFrame" type="Button" parent="Playback"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 36)
+layout_mode = 2
+text = "Ⅰ◀"
+
+[node name="NextFrame" type="Button" parent="Playback"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 36)
+layout_mode = 2
+text = "▶Ⅰ"
+
+[node name="Timeline" type="HSlider" parent="Playback"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.001
+
+[node name="Time" type="Label" parent="Playback"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(112, 0)
+layout_mode = 2
+theme_type_variation = &"ForgeMuted"
+text = "0,00 / 0,00 s"
+horizontal_alignment = 1
+
+[node name="Speed" type="OptionButton" parent="Playback"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 2
+item_count = 5
+popup/item_0/text = "0,25×"
+popup/item_0/id = 0
+popup/item_1/text = "0,5×"
+popup/item_1/id = 1
+popup/item_2/text = "1×"
+popup/item_2/id = 2
+popup/item_3/text = "1,5×"
+popup/item_3/id = 3
+popup/item_4/text = "2×"
+popup/item_4/id = 4
+
+[node name="Loop" type="Button" parent="Playback"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+text = "↻"

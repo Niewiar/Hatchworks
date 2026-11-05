@@ -1,0 +1,212 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://code/ui/MapViews.gd" id="script"]
+[ext_resource type="Theme" path="res://resources/ui/tooltip_theme.tres" id="theme"]
+
+[sub_resource type="ButtonGroup" id="views"]
+
+[sub_resource type="Gradient" id="noise_colors"]
+offsets = PackedFloat32Array(0,0.3,0.65,1)
+colors = PackedColorArray(0.35,0.72,0.43,1,1,0.86,0.27,1,1,0.43,0.13,1,0.84,0.12,0.12,1)
+
+[sub_resource type="GradientTexture2D" id="noise_gradient"]
+gradient = SubResource("noise_colors")
+width = 256
+height = 8
+fill_from = Vector2(0,0)
+fill_to = Vector2(1,0)
+
+[sub_resource type="StyleBoxFlat" id="view_normal"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.96863,0.92549,0.81569,1)
+border_color = Color(0.52549,0.42353,0.27451,1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="view_hover"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(1,0.96078,0.84706,1)
+border_color = Color(0.86275,0.6549,0.25098,1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[sub_resource type="StyleBoxFlat" id="view_pressed"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.3451,0.41569,0.23137,1)
+border_color = Color(0.22353,0.18039,0.12549,1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
+[node name="MapViews" type="Control"]
+process_priority = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
+script = ExtResource("script")
+
+[node name="RegionLabels" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="NoiseMarkers" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Dock" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 16
+
+[node name="Panel" type="PanelContainer" parent="Dock"]
+layout_mode = 2
+custom_minimum_size = Vector2(260,0)
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_type_variation = &"WindowPanel"
+
+[node name="Content" type="VBoxContainer" parent="Dock/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Dock/Panel/Content"]
+layout_mode = 2
+text = "Map views"
+theme_type_variation = &"HeadingLabel"
+theme_override_font_sizes/font_size = 18
+
+[node name="Views" type="HBoxContainer" parent="Dock/Panel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Normal" type="Button" parent="Dock/Panel/Content/Views"]
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("views")
+text = "Normal"
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("view_normal")
+theme_override_styles/hover = SubResource("view_hover")
+theme_override_styles/pressed = SubResource("view_pressed")
+theme_override_styles/disabled = SubResource("view_normal")
+metadata/view = 0
+metadata/hint = "Show the world without map overlays."
+
+[node name="Noise" type="Button" parent="Dock/Panel/Content/Views"]
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("views")
+text = "Noise"
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("view_normal")
+theme_override_styles/hover = SubResource("view_hover")
+theme_override_styles/pressed = SubResource("view_pressed")
+theme_override_styles/disabled = SubResource("view_normal")
+metadata/view = 1
+metadata/hint = "Show local noise and its sources."
+
+[node name="Regions" type="Button" parent="Dock/Panel/Content/Views"]
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("views")
+text = "Regions"
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("view_normal")
+theme_override_styles/hover = SubResource("view_hover")
+theme_override_styles/pressed = SubResource("view_pressed")
+theme_override_styles/disabled = SubResource("view_normal")
+metadata/view = 2
+metadata/hint = "Show fence regions and their ground composition."
+
+[node name="NoiseLegend" type="VBoxContainer" parent="Dock/Panel/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Gradient" type="TextureRect" parent="Dock/Panel/Content/NoiseLegend"]
+layout_mode = 2
+custom_minimum_size = Vector2(0,8)
+mouse_filter = 2
+texture = SubResource("noise_gradient")
+expand_mode = 1
+
+[node name="Scale" type="HBoxContainer" parent="Dock/Panel/Content/NoiseLegend"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Quiet" type="Label" parent="Dock/Panel/Content/NoiseLegend/Scale"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "Quiet · 0"
+theme_override_font_sizes/font_size = 12
+
+[node name="Loud" type="Label" parent="Dock/Panel/Content/NoiseLegend/Scale"]
+layout_mode = 2
+mouse_filter = 2
+text = "100 · Loud"
+theme_override_font_sizes/font_size = 12
+
+[node name="RegionLegend" type="Label" parent="Dock/Panel/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+text = "Ground percentages refer to dry land."
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 12
+theme_type_variation = &"MutedLabel"

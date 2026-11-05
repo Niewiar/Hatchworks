@@ -4,6 +4,9 @@
 [ext_resource type="Texture2D" path="res://assets/ui/illustrated/bloomlet_portrait.png" id="icon"]
 [resource]
 script = ExtResource("script")
+terrain_happiness_penalty = 25.0
+terrain_minimums = Dictionary[StringName, float]({&"grass": 50.0})
+female_terrain_minimums = Dictionary[StringName, float]({})
 unhappy_threshold = 40.0
 happy_threshold = 70.0
 id = &"bloomlet"

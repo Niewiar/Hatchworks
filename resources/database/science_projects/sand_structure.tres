@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ScienceProjectDefinition" format=3]
+
+[ext_resource type="Script" path="res://code/database/ScienceProjectDefinition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"sand_structure"
+display_name = "Sand structure"
+description = "Compare the shape and texture of sand grains."
+costs = Dictionary[int, int]({3: 18})
+science_reward = 1

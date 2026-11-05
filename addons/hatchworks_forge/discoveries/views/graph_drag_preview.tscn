@@ -1,0 +1,5 @@
+[gd_scene format=3]
+
+[node name="DiscoveryDragPreview" type="Label"]
+mouse_filter = 2
+text = "Kafel"

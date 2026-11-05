@@ -5,7 +5,9 @@ signal added(kind: KIND, quantity: float)
 signal gained(kind: KIND, quantity: float, origin: Variant)
 signal changed(kind: KIND, amount: float)
 
-enum KIND { FIBER = 5, HERBS = 6, WOOD = 9, STONE = 10 }
+enum KIND { GRASS = 0, SAND = 3, GROUND_ROCK = 4, FIBER = 5, HERBS = 6, WOOD = 9, STONE = 10 }
+
+const GROUND_TYPES := [KIND.GRASS,KIND.SAND,KIND.GROUND_ROCK]
 
 var definitions: Array[ResourceDefinition] = []
 
@@ -61,6 +63,16 @@ func spend_costs(costs: Dictionary[int, int]) -> bool:
 			changed.emit(kind,_amounts[kind])
 	return true
 
+func refund_costs(costs: Dictionary[int,int]) -> void:
+	for kind: int in costs:
+		if not _amounts.has(kind) or costs[kind] < 0:
+			return
+	for kind: int in costs:
+		_amounts[kind] += costs[kind]
+	for kind: int in costs:
+		if costs[kind] > 0:
+			changed.emit(kind,_amounts[kind])
+
 func add(kind: int, quantity: float, origin: Variant = null) -> void:
 	if not _amounts.has(kind) or not is_finite(quantity) or quantity <= 0.0:
 		return
@@ -70,4 +82,4 @@ func add(kind: int, quantity: float, origin: Variant = null) -> void:
 	added.emit(kind,quantity)
 
 func quantity_text(kind: int) -> String:
-	return str(floori(amount(kind)+0.000001))
+	return "%.2f m²" % amount(kind) if kind in GROUND_TYPES else str(floori(amount(kind)+0.000001))

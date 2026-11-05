@@ -68,10 +68,9 @@ func _physics_process(delta: float) -> void:
 	var threshold := _species.minimum_swim_depth-0.1 if _swimming else _species.minimum_swim_depth
 	var was_swimming := _swimming
 	_swimming = depth >= threshold and global_position.y <= _map.water_controller.global_position.y+0.8
-	var near_ground := global_position.y-terrain_controller.surface_position(global_position).y <= body_radius()+0.35
-	if _swimming and not was_swimming:
+	if _swimming and not was_swimming and species_id != &"tuftling":
 		SoundEffects.play_at(&"water_splash",global_position,self)
-	if not _swimming and (_state == STATE.LANDING or (_state == STATE.FALLING and not near_ground)):
+	if not _swimming and _state in [STATE.LANDING,STATE.FALLING]:
 		super._physics_process(delta)
 		return
 	if _swimming:
@@ -112,11 +111,11 @@ func _update_skeletal_animation_speed() -> void:
 		var distance := appearance.walk_distance * absf(appearance.scale.x)
 		animation_player.speed_scale = Vector2(velocity.x, velocity.z).length() * animation_player.get_animation(clip).length / maxf(distance, 0.001)
 	elif clip == &"Work":
-		animation_player.speed_scale = animation_player.get_animation(clip).length * work_efficiency() / maxf(work_cycle_seconds(), 0.01)
+		animation_player.speed_scale = animation_player.get_animation(clip).length / maxf(work_cycle_seconds(), 0.01)
 
 func walk_direction(direction: Vector2, speed: float) -> void:
 	var appearance := _model as CreatureCelAppearance
-	if appearance != null and not _swimming:
+	if appearance != null and movement_animation() == &"Walk":
 		speed = minf(speed, appearance.walk_speed)
 	super.walk_direction(direction, speed)
 
@@ -220,14 +219,24 @@ func _finish_break() -> void:
 	activity = _next_work_activity()
 	_elapsed = 0.0
 
-func _leisure_cycles() -> Vector2i:
-	if mood() == MOOD.HAPPY:
-		return Vector2i(_species.leisure_cycles_min,maxi(_species.leisure_cycles_min,_species.leisure_cycles_max))
-	return Vector2i(_species.neutral_leisure_cycles_min,maxi(_species.neutral_leisure_cycles_min,_species.neutral_leisure_cycles_max))
+func work_burst_size() -> int:
+	match mood():
+		MOOD.HAPPY:
+			return 3
+		MOOD.NEUTRAL:
+			return 2
+	return 1
 
 func _choose_leisure_interval() -> void:
-	var cycles := _leisure_cycles()
-	_cycles_until_leisure = randi_range(cycles.x,cycles.y)
+	_cycles_until_leisure = work_burst_size()
+
+func _continue_work() -> void:
+	_map.navigation.release_place(self)
+	if _work_cycles >= work_burst_size():
+		_begin_break()
+	else:
+		activity = _next_work_activity()
+		_elapsed = 0.8
 
 func _start_path(path: PackedVector3Array, moving: ACTIVITY, failure: ACTIVITY) -> void:
 	_map.navigation.release_place(self)
@@ -356,24 +365,21 @@ func _try_aggression() -> bool:
 
 func _mood_allows(action: String) -> bool:
 	match action:
-		"feed", "rest":
+		"feed", "rest", "work":
 			return true
-		"work":
-			return mood() != MOOD.UNHAPPY
 		"attack":
 			return mood() == MOOD.UNHAPPY and _can_attack()
 	return false
 
 func _enforce_mood() -> void:
-	var cycles := _leisure_cycles()
-	_cycles_until_leisure = clampi(_cycles_until_leisure,cycles.x,cycles.y)
+	_cycles_until_leisure = work_burst_size()
 	if _map.breeding.is_breeding(self) or _mood_allows(_ai_state()):
 		return
 	interrupt_activity()
 	_begin_break()
 
 func _ai_context() -> Dictionary:
-	return {"hungry":int(satiety <= _species.feeding_threshold),"needs_break":int(_work_cycles >= _cycles_until_leisure),"happy":int(mood() == MOOD.HAPPY),"neutral":int(mood() == MOOD.NEUTRAL),"unhappy":int(mood() == MOOD.UNHAPPY),"aggressive":int(mood() == MOOD.UNHAPPY),"can_attack":int(_can_attack()),"satiety":satiety,"happiness":happiness,"companions":companions,"crowding":crowding_stress*100.0,"noise":noise_stress*100.0,"neighbours":species_stress*100.0,"work_cycles":_work_cycles,"female":int(sex == SEX.FEMALE),"carrying_water":int(carrying_water),"swimming":int(_swimming),"dry_ground":int(_on_dry_ground()),"navigation_ready":int(_map.navigation.ready_for_paths)}
+	return {"hungry":int(satiety <= _species.feeding_threshold),"needs_break":int(_work_cycles >= _cycles_until_leisure),"happy":int(mood() == MOOD.HAPPY),"neutral":int(mood() == MOOD.NEUTRAL),"unhappy":int(mood() == MOOD.UNHAPPY),"aggressive":int(mood() == MOOD.UNHAPPY),"can_attack":int(_can_attack()),"work_allowed":int(_mood_allows("work")),"satiety":satiety,"happiness":happiness,"companions":companions,"crowding":crowding_stress*100.0,"noise":noise_stress*100.0,"neighbours":species_stress*100.0,"work_cycles":_work_cycles,"female":int(sex == SEX.FEMALE),"carrying_water":int(carrying_water),"swimming":int(_swimming),"dry_ground":int(_on_dry_ground()),"navigation_ready":int(_map.navigation.ready_for_paths)}
 
 func _tick_ai(delta: float) -> bool:
 	if activity in [ACTIVITY.MOVING_TO_FOOD,ACTIVITY.EATING]:
@@ -401,7 +407,7 @@ func _tick_ai(delta: float) -> bool:
 					return true
 			"work":
 				return false
-	if mood() == MOOD.UNHAPPY:
+	if not _mood_allows("work"):
 		if _ai_state() in ["rest","attack"]:
 			return false
 		interrupt_activity()
@@ -492,7 +498,7 @@ func movement_animation() -> StringName:
 	return &"water/Swim" if _swimming else &"Walk"
 
 func _on_navigation_changed() -> void:
-	if _map == null or not _map.navigation.ready_for_paths or _state == STATE.HELD or _map.breeding.is_breeding(self):
+	if _map == null or not _map.navigation.ready_for_paths or not is_grounded() or _map.breeding.is_breeding(self):
 		return
 	if _preserve_work_on_navigation_changed():
 		_path_revision = _map.navigation.revision

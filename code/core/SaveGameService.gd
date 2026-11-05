@@ -8,6 +8,7 @@ const MAGIC := "HATCHWORKS-SAVE\n"
 const VERSION := 1
 const MAX_FILE_BYTES := 268435456
 const MAX_ENTITIES := 100000
+const LEGACY_FLORA_VARIANT_COUNTS := {"oak":3,"shrub":2,"fern":2,"reeds":2,"grass":3}
 const CREATURE_FIELDS := ["satiety","happiness","breeding_cooldown","_happiness_target","_wellbeing_elapsed"]
 const ACTIVITY_FIELDS := ["carrying_water","_elapsed","_bath_elapsed","_food_retry","_work_cycles","_cycles_until_leisure","_leisure_duration","_leisure_elapsed","_swimming"]
 
@@ -99,9 +100,11 @@ func load_game(map: MapManager) -> Error:
 	_restore_terrain(map,state.terrain)
 	_restore_flora(map,state.flora)
 	_restore_rocks(map,state.rocks)
+	map.rock_controller.restore_pebbles(state.get("pebbles",[]))
 	_restore_fences(map,state.fences)
 	var buildings := _restore_buildings(map,state.buildings,state.get("building_counts",{}))
 	_restore_inventory(map,state)
+	map.science_projects.restore_state(state.get("science_projects",{}))
 	map.new_content.restore_state(state.get("new_content",{}))
 	_reset_reward_presentation(map)
 	var actors := _restore_creatures(map,state.creatures,buildings)
@@ -123,7 +126,17 @@ func load_game(map: MapManager) -> Error:
 		await tree.process_frame
 	for index in actors.size():
 		_restore_activity(actors[index],state.creatures[index],buildings,map)
+		if actors[index]._state == Creature.STATE.FALLING:
+			actors[index]._play_animation(&"Fall")
+	for index in actors.size():
+		var tuftling := actors[index] as TuftlingController
+		if tuftling != null:
+			tuftling.restore_leisure_state(state.creatures[index].get("tuftling_leisure",{}))
 	_restore_pairs(map,state.pairs,actors)
+	for index in actors.size():
+		var tuftling := actors[index] as TuftlingController
+		if tuftling != null:
+			tuftling.restore_leisure_partner(state.creatures[index].get("tuftling_leisure",{}),actors)
 	navigation.process_mode = old_navigation_mode
 	map.regions_controller.process_mode = old_regions_mode
 	_restore_interface(map,state)
@@ -134,6 +147,7 @@ func load_game(map: MapManager) -> Error:
 	return OK
 
 func _capture(map: MapManager) -> Dictionary:
+	map.building_controller.cancel_relocation()
 	var actors: Array[Creature] = []
 	for node in get_tree().get_nodes_in_group("creatures"):
 		if node is Creature and map.get_parent().is_ancestor_of(node) and node.get_viewport() == map.get_viewport() and not node.is_queued_for_deletion():
@@ -141,12 +155,14 @@ func _capture(map: MapManager) -> Dictionary:
 	var buildings := map.building_controller.get_buildings()
 	var terrain := map.terrain_controller
 	var result := {"version":VERSION,"map_size":map.map_size,"pixels_per_unit":map.pixels_per_unit,"saved_at":Time.get_unix_time_from_system(),"terrain":{"world_seed":terrain.world_seed,"nature_enabled":map.environment_controller.enabled,"heights":terrain._heights.duplicate(),"ground":terrain._ground_image.save_png_to_buffer(),"influence":terrain._ground_influence.save_png_to_buffer(),"nature":terrain._natural_image.save_png_to_buffer() if terrain._natural_image != null else PackedByteArray(),"water_level":map.water_controller.water_level},"resources":map.inventory._amounts.duplicate(),"items":map.items._amounts.duplicate(),"known":map.discoveries._known.keys(),"unread":map.discoveries._unread.keys(),"recipes":map.discoveries._recipes.keys(),"science":map.science.amount,"research":map.science._completed.keys(),"flora":[],"rocks":[],"fences":{"posts":[],"spans":[]},"buildings":[],"creatures":[],"eggs":[],"pairs":[],"board":[],"camera":{}}
+	result["science_projects"] = map.science_projects.capture_state()
 	result["new_content"] = map.new_content.capture_state()
 	result["building_counts"] = map.building_controller._build_counts.duplicate()
 	var tutorial := map.get_parent().get_node_or_null("CanvasLayer/CameraTutorial")
 	if tutorial != null:
 		result["camera_tutorial_step"] = tutorial.step
 	result.flora = map.vegetation_controller.capture_state()
+	result["pebbles"] = map.rock_controller.capture_pebbles()
 	for rock: HarvestableDeposit in map.rock_controller._rocks:
 		if not is_instance_valid(rock) or rock.exhausted or rock.is_queued_for_deletion():
 			continue
@@ -156,12 +172,12 @@ func _capture(map: MapManager) -> Dictionary:
 				result.rocks.append({"id":data.id,"variant":variant,"position":rock.global_position,"scale":rock.scale.x,"yaw":rock._rest_rotation.y,"hits":rock._hits,"hits_required":rock.hits_required,"yield_amount":rock.yield_amount,"resource_kind":rock.resource_kind})
 				break
 	for post: FencePostState in map.fances_controller.get_posts():
-		result.fences.posts.append({"id":post.id,"point":post.position,"type":post.data.id,"health":post.health})
+		result.fences.posts.append({"id":post.id,"point":post.position,"type":post.data.id,"health":post.health,"paid_costs":map.fances_controller.post_costs(post.id)})
 	for span: FenceSpanState in map.fances_controller.get_spans():
-		result.fences.spans.append({"id":span.id,"start":span.start_post_id,"end":span.end_post_id,"type":span.data.id,"health":span.health})
+		result.fences.spans.append({"id":span.id,"start":span.start_post_id,"end":span.end_post_id,"type":span.data.id,"health":span.health,"paid_costs":map.fances_controller.span_costs(span.id)})
 	for building: Node3D in buildings:
 		var data := map.building_controller.building_definition(building)
-		var record := {"id":data.id,"kind":_building_kind(data),"transform":building.global_transform,"health":map.building_controller._health[building]}
+		var record := {"id":data.id,"kind":_building_kind(data),"transform":building.global_transform,"health":map.building_controller._health[building],"paid_costs":map.building_controller.paid_costs(building)}
 		if building is FeederController:
 			record["stock"] = building.stock
 		elif building is IncubatorController or building is WorkshopController:
@@ -178,6 +194,10 @@ func _capture(map: MapManager) -> Dictionary:
 			record["activity"] = actor.activity
 			record["activity_values"] = _capture_fields(actor,ACTIVITY_FIELDS)
 			record["feeder"] = buildings.find(actor._feeder)
+		if actor is TuftlingController:
+			var leisure: Dictionary = actor.capture_leisure_state(actors)
+			if not leisure.is_empty():
+				record["tuftling_leisure"] = leisure
 		if actor is EcosystemCreatureController:
 			record["effect_done"] = actor._effect_done
 			record["aggression_wait"] = actor._aggression_wait
@@ -204,7 +224,7 @@ func _capture(map: MapManager) -> Dictionary:
 		var male := actors.find(pair.male)
 		var female := actors.find(pair.female)
 		if male >= 0 and female >= 0:
-			result.pairs.append({"male":male,"female":female,"elapsed":pair.elapsed,"call_elapsed":pair.call_elapsed,"age":pair.age,"courting":pair.courting})
+			result.pairs.append({"male":male,"female":female,"caller":actors.find(pair.get("caller",pair.male)),"elapsed":pair.elapsed,"call_elapsed":pair.call_elapsed,"age":pair.age,"courting":pair.courting})
 	var panel := map.get_parent().get_node_or_null("CanvasLayer/Discoveries")
 	if panel != null and panel.has_method("capture_workspace"):
 		result.board = panel.capture_workspace()
@@ -223,14 +243,14 @@ func _clear_world(map: MapManager) -> void:
 		map.breeding.cancel(pair.male)
 	for node in get_tree().get_nodes_in_group("creatures")+get_tree().get_nodes_in_group("loose_eggs"):
 		if map.get_parent().is_ancestor_of(node) and node.get_viewport() == map.get_viewport():
+			if node is TuftlingController:
+				node.interrupt_activity()
 			node.free()
 	for building in map.building_controller.get_buildings():
 		building.free()
 	map.building_controller._build_counts.clear()
 	map.vegetation_controller.clear()
-	for child in map.rock_controller.get_children():
-		child.free()
-	map.rock_controller._rocks.clear()
+	map.rock_controller.clear()
 	var fences := map.fances_controller
 	for child in fences._built_root.get_children():
 		child.free()
@@ -309,7 +329,7 @@ func _restore_rocks(map: MapManager, records: Array) -> void:
 		rock.hits_required = record.hits_required
 		rock.yield_amount = record.yield_amount
 		map.rock_controller.add_child(rock)
-		var source := data.variants[record.variant]
+		var source := data.variants[clampi(record.variant,0,data.variants.size()-1)]
 		var bounds := source.get_aabb()
 		rock.configure(source,data.material,record.yaw,maxf(bounds.size.x,bounds.size.z)*0.42,bounds.size.y*0.9)
 		rock.scale = Vector3.ONE*record.scale
@@ -328,11 +348,13 @@ func _restore_fences(map: MapManager, state: Dictionary) -> void:
 		fences._next_post_id = record.id
 		var id := fences._ensure_post(record.point,data)
 		fences._posts[id].health = record.health
+		fences._posts[id].paid_costs.assign(record.get("paid_costs",{}))
 		maximum_post = maxi(maximum_post,id)
 	for record: Dictionary in state.spans:
 		var data := _fence(map.database,record.type)
 		fences._next_span_id = record.id
 		var id := fences._add_span(record.start,record.end,data,record.health/data.max_health)
+		fences._spans[id].paid_costs.assign(record.get("paid_costs",{}))
 		maximum_span = maxi(maximum_span,id)
 	fences._next_post_id = maximum_post+1
 	fences._next_span_id = maximum_span+1
@@ -345,7 +367,7 @@ func _restore_buildings(map: MapManager, records: Array, counts: Dictionary = {}
 		var building := data.scene.instantiate() as Node3D
 		map.building_controller.add_child(building)
 		building.global_transform = record.transform
-		map.building_controller._register_building(building,data)
+		map.building_controller._register_building(building,data,record.get("paid_costs"))
 		map.building_controller._health[building] = record.health
 		if building is FeederController:
 			building.stock = record.stock
@@ -364,7 +386,9 @@ func _restore_buildings(map: MapManager, records: Array, counts: Dictionary = {}
 					building.get_node("EggSocket").add_child(building._egg_visual)
 				building.get_node("EggSocket").visible = building.state != IncubatorController.STATE.EMPTY
 			else:
-				if building.state == WorkshopController.STATE.READY:
+				if building.state == WorkshopController.STATE.RUINED:
+					building.restore_ruins()
+				elif building.state == WorkshopController.STATE.READY:
 					building._egg_visual = building.current_egg.model.instantiate()
 					building._egg_visual.process_mode = Node.PROCESS_MODE_DISABLED
 					building._egg_visual.scale = Vector3.ONE*0.63
@@ -403,7 +427,8 @@ func _restore_creatures(map: MapManager, records: Array, buildings: Array[Node3D
 		map.get_parent().add_child(actor)
 		_restore_fields(actor,record.values)
 		actor.velocity = Vector3.ZERO
-		actor._state = Creature.STATE.GROUNDED
+		var ground_height: float = map.terrain_controller.surface_position(actor.global_position).y
+		actor._state = Creature.STATE.FALLING if actor.global_position.y > ground_height+actor.body_radius()+0.1 else Creature.STATE.GROUNDED
 		result.append(actor)
 	return result
 
@@ -472,21 +497,23 @@ func _restore_pairs(map: MapManager, records: Array, actors: Array[Creature]) ->
 	for record: Dictionary in records:
 		var male := actors[record.male]
 		var female := actors[record.female]
-		var path := map.navigation.route_to_partner(female,male)
+		var caller := actors[int(record.get("caller",record.male))]
+		var visitor := female if caller == male else male
+		var path := map.navigation.route_to_partner(visitor,caller)
 		if path.is_empty() and not record.courting:
 			continue
 		for actor in [male,female]:
 			actor.interrupt_activity()
 			actor.tree_exiting.connect(map.breeding.cancel.bind(actor))
-		var pair := {"male":male,"female":female,"path":path,"index":0,"revision":map.navigation.revision,"elapsed":record.elapsed,"call_elapsed":record.call_elapsed,"age":record.age,"courting":record.courting,"stuck":0.0,"last_position":female.global_position,"male_position":male.global_position,"check":0.0,"blocked_retries":0}
+		var pair := {"male":male,"female":female,"caller":caller,"path":path,"index":0,"revision":map.navigation.revision,"elapsed":record.elapsed,"call_elapsed":record.call_elapsed,"age":record.age,"courting":record.courting,"stuck":0.0,"last_position":visitor.global_position,"caller_position":caller.global_position,"check":0.0,"blocked_retries":0}
 		map.breeding._pairs.append(pair)
 		map.breeding._active[male] = pair
 		map.breeding._active[female] = pair
-		map.navigation.reserve_place(male,male.global_position)
-		map.navigation.reserve_place(female,female.global_position if record.courting or path.is_empty() else path[-1])
+		map.navigation.reserve_place(caller,caller.global_position)
+		map.navigation.reserve_place(visitor,visitor.global_position if record.courting or path.is_empty() else path[-1])
 		male.set_breeding_effect(record.courting)
 		female.set_breeding_effect(record.courting)
-		male.face_point(female.global_position,&"Idle" if record.courting else &"behaviour/Call")
+		caller.face_point(visitor.global_position,&"Idle" if record.courting else &"behaviour/Call")
 	map.breeding.set_physics_process(not map.breeding._pairs.is_empty())
 	map.breeding.changed.emit()
 
@@ -588,6 +615,10 @@ func _read_file(path: String) -> Dictionary:
 	var value: Variant = bytes_to_var(payload)
 	if not value is Dictionary:
 		return {}
+	if value.get("version",0) == VERSION and value.get("resources") is Dictionary:
+		for kind: int in ResourceInventory.GROUND_TYPES:
+			if not value.resources.has(kind):
+				value.resources[kind] = 0.0
 	if value.get("version",0) == VERSION and value.get("creatures") is Array:
 		for record in value.creatures:
 			if not record is Dictionary:
@@ -637,6 +668,10 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 			return "The saved terrain textures are invalid."
 	if not _integer(state.get("science"),0,2147483647):
 		return "The saved science is invalid."
+	if state.has("science_projects"):
+		var project_error := map.science_projects.validate_state(state.science_projects)
+		if not project_error.is_empty():
+			return project_error
 	for kind in state.resources:
 		if not kind is int or map.inventory.definition(kind) == null or not _number(state.resources[kind],0,1e12):
 			return "The saved inventory is invalid."
@@ -662,13 +697,25 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 		if not record is Dictionary or not _id(record.get("id")):
 			return "The saved plants are invalid."
 		var data := map.database.plant(record.id)
-		if data == null or not _point2(record.get("point"),map.terrain_controller.world_size*0.5) or not _integer(record.get("variant"),0,data.variants.size()-1) or not _number(record.get("scale"),0.01,100) or not _number(record.get("yaw"),-1000,1000) or not _number(record.get("growth"),0,1) or not _integer(record.get("hits"),0,data.hits_required-1):
+		var variant_count := maxi(data.variants.size(),int(LEGACY_FLORA_VARIANT_COUNTS.get(str(data.id),0))) if data != null else 0
+		if data == null or data.variants.is_empty() or not _point2(record.get("point"),map.terrain_controller.world_size*0.5) or not _integer(record.get("variant"),0,variant_count-1) or not _number(record.get("scale"),0.01,100) or not _number(record.get("yaw"),-1000,1000) or not _number(record.get("growth"),0,1) or not _integer(record.get("hits"),0,data.hits_required-1):
 			return "The saved plants are invalid."
 	for record in state.rocks:
 		if not record is Dictionary or not _id(record.get("id")):
 			return "The saved deposits are invalid."
 		var data := _deposit(map.database,record.id)
-		if data == null or not _point3(record.get("position"),map) or not _integer(record.get("variant"),0,data.variants.size()-1) or not _number(record.get("scale"),0.01,100) or not _number(record.get("yaw"),-1000,1000) or not _integer(record.get("hits_required"),1,10000) or not _integer(record.get("hits"),0,record.hits_required-1) or not _integer(record.get("yield_amount"),1,2147483647) or map.inventory.definition(record.get("resource_kind",-1)) == null:
+		var variant_count := maxi(data.variants.size(),RockController.LEGACY_PEBBLE_WIDTHS.get(str(data.id),[]).size()) if data != null else 0
+		if data == null or data.variants.is_empty() or not _point3(record.get("position"),map) or not _integer(record.get("variant"),0,variant_count-1) or not _number(record.get("scale"),0.01,100) or not _number(record.get("yaw"),-1000,1000) or not _integer(record.get("hits_required"),1,10000) or not _integer(record.get("hits"),0,record.hits_required-1) or not _integer(record.get("yield_amount"),1,2147483647) or map.inventory.definition(record.get("resource_kind",-1)) == null:
+			return "The saved deposits are invalid."
+	var pebbles: Variant = state.get("pebbles",[])
+	if not pebbles is Array or pebbles.size() > MAX_ENTITIES:
+		return "The saved deposits are invalid."
+	for record in pebbles:
+		if not record is Dictionary or not _id(record.get("id")):
+			return "The saved deposits are invalid."
+		var data := _deposit(map.database,record.id)
+		var variant_count := maxi(data.variants.size(),RockController.LEGACY_PEBBLE_WIDTHS.get(str(data.id),[]).size()) if data != null else 0
+		if data == null or data.variants.is_empty() or not _point3(record.get("position"),map) or not _integer(record.get("variant"),0,variant_count-1) or data.pebble_mesh == null or not _number(record.get("scale"),0.001,100) or not _number(record.get("yaw"),-1000,1000) or (record.has("width") and (not _number(record.width,0.001,100) or record.variant != 0)):
 			return "The saved deposits are invalid."
 	var fence_ids := {}
 	var post_points := {}
@@ -679,6 +726,8 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 			return "The saved fences are invalid."
 		var data := _fence(map.database,record.type)
 		if data == null or not _integer(record.get("id"),1,2147483646) or fence_ids.has(record.id) or not _point2(record.get("point"),Vector2(map.map_size)*0.5) or not _number(record.get("health"),0.001,data.post_max_health):
+			return "The saved fences are invalid."
+		if record.has("paid_costs") and (not _valid_paid_costs(record.paid_costs,map) or record.paid_costs.is_empty()):
 			return "The saved fences are invalid."
 		var key := Vector2i((record.point/FenceController.MERGE_DISTANCE).floor())
 		for y in range(key.y-1,key.y+2):
@@ -699,6 +748,8 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 		var data := _fence(map.database,record.type)
 		if data == null or not _integer(record.get("id"),1,2147483646) or span_ids.has(record.id) or not _integer(record.get("start"),1,2147483646) or not _integer(record.get("end"),1,2147483646) or not fence_ids.has(record.start) or not fence_ids.has(record.end) or record.start == record.end or not _number(record.get("health"),0.001,data.max_health):
 			return "The saved fences are invalid."
+		if record.has("paid_costs") and (not _valid_paid_costs(record.paid_costs,map) or record.paid_costs.is_empty()):
+			return "The saved fences are invalid."
 		var connection := Vector2i(mini(record.start,record.end),maxi(record.start,record.end))
 		if connections.has(connection):
 			return "The saved fences are invalid."
@@ -712,7 +763,12 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 		if not record is Dictionary or not _id(record.get("id")):
 			return "The saved buildings are invalid."
 		var data := _building(map.database,record.id)
-		if data == null or not record.get("transform") is Transform3D or not record.transform.is_finite() or not _point3(record.transform.origin,map) or not _number(record.get("health"),0.001,data.max_health):
+		if record.has("paid_costs") and not _valid_paid_costs(record.paid_costs,map):
+			return "The saved buildings are invalid."
+		var ruined: bool = record.get("kind") == "workshop" and record.get("state") == WorkshopController.STATE.RUINED
+		if data == null or not record.get("transform") is Transform3D or not record.transform.is_finite() or not _point3(record.transform.origin,map) or not _number(record.get("health"),0.0 if ruined else 0.001,data.max_health):
+			return "The saved buildings are invalid."
+		if ruined and (record.health != 0.0 or record.get("egg") != &"" or record.get("remaining") != 0.0):
 			return "The saved buildings are invalid."
 		if record.get("kind") != _building_kind(data):
 			return "The saved buildings are invalid."
@@ -720,7 +776,7 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 			if not _integer(record.get("stock"),0,data.storage_capacity):
 				return "The saved buildings are invalid."
 		elif record.kind in ["incubator","workshop"]:
-			if not _id(record.get("egg")) or (not str(record.egg).is_empty() and map.database.egg(record.egg) == null) or not _integer(record.get("state"),0,3 if record.kind == "incubator" else 2) or not _number(record.get("remaining"),0,86400) or (record.state != 0 and str(record.egg).is_empty()):
+			if not _id(record.get("egg")) or (not str(record.egg).is_empty() and map.database.egg(record.egg) == null) or not _integer(record.get("state"),0,3) or not _number(record.get("remaining"),0,86400) or (record.state != 0 and not ruined and str(record.egg).is_empty()):
 				return "The saved buildings are invalid."
 			if record.kind == "incubator" and (not _integer(record.get("sex"),0,1) or not record.get("sex_assigned") is bool):
 				return "The saved buildings are invalid."
@@ -761,9 +817,11 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 					return "The saved creature activities are invalid."
 			elif not _number(value,-86400,86400):
 				return "The saved creature activities are invalid."
+		if record.has("tuftling_leisure") and not _valid_tuftling_leisure(record,state.creatures,map):
+			return "The saved creature activities are invalid."
 		if record.has("job"):
 			var job: Variant = record.job
-			if not job is Dictionary or not job.get("kind") in ["plant","quarry","sand","damage"] or not _point3(job.get("point"),map) or not _number(record.get("aggression_wait"),0,86400) or not record.get("effect_done") is bool:
+			if not job is Dictionary or not job.get("kind") in ["plant","quarry","sand","pebble","damage"] or not _point3(job.get("point"),map) or not _number(record.get("aggression_wait"),0,86400) or not record.get("effect_done") is bool:
 				return "The saved creature activities are invalid."
 			if job.kind == "plant" and (not _id(job.get("plant")) or map.database.plant(job.plant) == null):
 				return "The saved creature activities are invalid."
@@ -775,6 +833,8 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 	var paired := {}
 	for record in state.pairs:
 		if not record is Dictionary or not _integer(record.get("male"),0,state.creatures.size()-1) or not _integer(record.get("female"),0,state.creatures.size()-1) or record.male == record.female or paired.has(record.male) or paired.has(record.female) or not record.get("courting") is bool:
+			return "The saved breeding pairs are invalid."
+		if record.has("caller") and (not _integer(record.caller,0,state.creatures.size()-1) or record.caller not in [record.male,record.female]):
 			return "The saved breeding pairs are invalid."
 		var male: Dictionary = state.creatures[record.male]
 		var female: Dictionary = state.creatures[record.female]
@@ -791,6 +851,30 @@ func _validate(state: Dictionary, map: MapManager) -> String:
 	if not state.camera.is_empty() and (not state.camera.get("transform") is Transform3D or not state.camera.transform.is_finite() or not _number(state.camera.get("size"),0.1,10000)):
 		return "The saved camera is invalid."
 	return ""
+
+func _valid_tuftling_leisure(record: Dictionary, actors: Array, map: MapManager) -> bool:
+	var state: Variant = record.tuftling_leisure
+	if not state is Dictionary or state.get("action") not in ["sleep","wander","play"] or not _point3(state.get("target"),map) or not state.get("moving") is bool or record.activity != CreatureActivityController.ACTIVITY.LEISURE:
+		return false
+	if state.action != "play":
+		return state.size() == 3
+	if state.size() != 8 or not _integer(state.get("partner"),-1,actors.size()-1) or not state.get("leader") is bool or not _integer(state.get("phase"),0,2) or not _number(state.get("elapsed"),0,86400) or not _number(state.get("age"),0,86400):
+		return false
+	if state.partner < 0:
+		return not state.leader and state.phase == 0
+	var partner: Variant = actors[state.partner]
+	if not partner is Dictionary or partner == record or partner.get("id") != record.id or partner.get("activity") != CreatureActivityController.ACTIVITY.LEISURE:
+		return false
+	var other: Variant = partner.get("tuftling_leisure")
+	return other is Dictionary and other.get("action") == "play" and other.get("partner") == actors.find(record) and other.get("leader") == (not state.leader) and other.get("phase") == state.phase
+
+func _valid_paid_costs(value: Variant, map: MapManager) -> bool:
+	if not value is Dictionary or value.size() > map.inventory.definitions.size():
+		return false
+	for kind in value:
+		if not kind is int or map.inventory.definition(kind) == null or not _integer(value[kind],0,1000000000000):
+			return false
+	return true
 
 func _id(value: Variant) -> bool:
 	return (value is String or value is StringName) and str(value).length() <= 256

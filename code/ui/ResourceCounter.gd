@@ -41,7 +41,8 @@ func _on_changed(kind: int, _amount: float) -> void:
 
 func _refresh_value() -> void:
 	if _inventory != null:
-		_value.text = str(floori(maxf(0.0,_inventory.amount(resource_kind)-_pending_gain)+0.000001))
+		var visible_amount := maxf(0.0,_inventory.amount(resource_kind)-_pending_gain)
+		_value.text = "%.2f m²" % visible_amount if resource_kind in ResourceInventory.GROUND_TYPES else str(floori(visible_amount+0.000001))
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and _inventory != null:
